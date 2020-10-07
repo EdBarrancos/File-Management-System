@@ -35,11 +35,11 @@ void errorParse(){
     exit(EXIT_FAILURE);
 }
 
-void processInput(){
+void processInput(char *filePath){
     char line[MAX_INPUT_SIZE];
-
+    FILE *filePointer = fopen(filePath, "r");
     /* break loop with ^Z or ^D */
-    while (fgets(line, sizeof(line)/sizeof(char), stdin)) {
+    while (fgets(line, sizeof(line)/sizeof(char), filePointer)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
 
@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
     init_fs();
 
     /* process input and print tree */
-    processInput();
+    processInput(argv[1]);
     applyCommands();
     print_tecnicofs_tree(stdout);
 
