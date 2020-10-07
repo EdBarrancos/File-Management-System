@@ -79,6 +79,7 @@ void processInput(char *filePath){
             }
         }
     }
+    fclose(filePointer);
 }
 
 void applyCommands(){
