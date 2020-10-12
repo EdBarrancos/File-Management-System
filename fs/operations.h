@@ -1,6 +1,8 @@
 #ifndef FS_H
 #define FS_H
 #include "state.h"
+#include <pthread.h>
+
 
 void init_fs();
 void destroy_fs();

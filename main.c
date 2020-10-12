@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <ctype.h>
+#include <pthread.h>
 #include "fs/operations.h"
 
 #define MAX_COMMANDS 150000
@@ -133,13 +134,46 @@ void applyCommands(){
     }
 }
 
+void *fnThread(void* arg){
+
+    applyCommands();
+
+    return NULL;
+    
+}
+
+void poolThreads(char* numThreads){
+
+    numberThreads = *numThreads - '0';
+    pthread_t tid[numberThreads];
+    int i;
+
+
+    for (i=0; i<numberThreads; i++){
+        if (pthread_create(&tid[i], NULL, fnThread, NULL)!=0){
+            printf("Erro ao esperar por tarefa.\n");
+            exit(1);
+        }
+
+    }
+        
+    for (i=0; i<numberThreads; i++){
+        pthread_join(tid[i], NULL);
+    }
+
+
+    return;
+    
+
+}
+
 int main(int argc, char* argv[]) {
     /* init filesystem */
     init_fs();
 
     /* process input and print tree */
     processInput(argv[1]);
-    applyCommands();
+    poolThreads(argv[2]);
     print_tecnicofs_tree(stdout);
 
     /* release allocated memory */
