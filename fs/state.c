@@ -20,11 +20,13 @@ void insert_delay(int cycles) {
  * Initializes the i-nodes table.
  */
 void inode_table_init() {
+    //i zona critica: write
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         inode_table[i].nodeType = T_NONE;
         inode_table[i].data.dirEntries = NULL;
         inode_table[i].data.fileContents = NULL;
     }
+    //f zona critica
 }
 
 /*
@@ -32,6 +34,7 @@ void inode_table_init() {
  */
 
 void inode_table_destroy() {
+    //i zona critica: write
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         if (inode_table[i].nodeType != T_NONE) {
             /* as data is an union, the same pointer is used for both dirEntries and fileContents */
@@ -40,6 +43,7 @@ void inode_table_destroy() {
             free(inode_table[i].data.dirEntries);
         }
     }
+    //f zona critica
 }
 
 /*
@@ -54,8 +58,7 @@ int inode_create(type nType) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    //i zona critica read
-
+    //i zona critica: read
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
         if (inode_table[inumber].nodeType == T_NONE) {
             inode_table[inumber].nodeType = nType;
@@ -89,22 +92,21 @@ int inode_delete(int inumber) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    //i zona critica read
+    //i zona critica write
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_delete: invalid inumber\n");
         return FAIL;
     } 
 
-    //f zona critica 
-
-    
 
     inode_table[inumber].nodeType = T_NONE;
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
     return SUCCESS;
+
+    //f zona critica
 }
 
 /*
@@ -120,6 +122,8 @@ int inode_get(int inumber, type *nType, union Data *data) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
+    //i zona critica: write
+
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_get: invalid inumber %d\n", inumber);
         return FAIL;
@@ -132,6 +136,9 @@ int inode_get(int inumber, type *nType, union Data *data) {
         *data = inode_table[inumber].data;
 
     return SUCCESS;
+
+    //f zona critica
+
 }
 
 
@@ -145,6 +152,8 @@ int inode_get(int inumber, type *nType, union Data *data) {
 int dir_reset_entry(int inumber, int sub_inumber) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
+
+    //i zona critica: write ? 
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_reset_entry: invalid inumber\n");
@@ -170,6 +179,8 @@ int dir_reset_entry(int inumber, int sub_inumber) {
         }
     }
     return FAIL;
+
+    //f zona critica
 }
 
 
@@ -184,6 +195,8 @@ int dir_reset_entry(int inumber, int sub_inumber) {
 int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
+
+    //i zona critica write?
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_add_entry: invalid inumber\n");
@@ -214,6 +227,8 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
         }
     }
     return FAIL;
+
+    //f zona critica 
 }
 
 
@@ -224,6 +239,8 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
  *  - name: pointer to the name of current file/dir
  */
 void inode_print_tree(FILE *fp, int inumber, char *name) {
+
+    //i zona critica: read
     if (inode_table[inumber].nodeType == T_FILE) {
         fprintf(fp, "%s\n", name);
         return;
@@ -241,4 +258,6 @@ void inode_print_tree(FILE *fp, int inumber, char *name) {
             }
         }
     }
+
+    //f zona critica
 }

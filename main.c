@@ -21,23 +21,19 @@ int headQueue = 0;
 
 
 int insertCommand(char* data) {
-    //zona critica: write
     if(numberCommands != MAX_COMMANDS) {
         strcpy(inputCommands[numberCommands++], data);
         return 1;
     }
     return 0;
-    //zona critica
 }
 
 char* removeCommand() {
-    //zona critica: write
     if(numberCommands > 0){
         numberCommands--;
         return inputCommands[headQueue++];  
     }
     return NULL;
-    //zona critica
 }
 
 void processInput(char *filePath){
@@ -88,7 +84,7 @@ void processInput(char *filePath){
 }
 
 void applyCommands(){
-    //zona critica: write
+    //i zona critica: mutex  
     while (numberCommands > 0){
         const char* command = removeCommand();
         if (command == NULL){
@@ -100,7 +96,7 @@ void applyCommands(){
         int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
         if (numTokens < 2)
             errorParse("Error: invalid command in Queue\n");
-
+    //f zona critica: mutex
         int searchResult;
         switch (token) {
             case 'c':
