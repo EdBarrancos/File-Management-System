@@ -159,13 +159,13 @@ int main(int argc, char* argv[]) {
     /* Define Arguments */
     setInitialValues(&inputFile, &outputFile, &synchStrategy, argv);
 
-    /* init filesystem */
-    init_fs();
-
     /* init synch system */
     if(initLock(synchStrategy) && numberThreads != 1)
         /* Error Handling */
         errorParse("Error: Incorrect number of threads for a nosync system\n");
+
+    /* init filesystem */
+    init_fs();
 
     /* process input and print tree */
     processInput(inputFile);

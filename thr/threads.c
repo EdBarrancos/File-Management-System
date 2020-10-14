@@ -75,12 +75,12 @@ syncType getSyncType(const char *syncTypeString){
     else if(!strcmp(syncTypeString, "rwlock"))
         return RWLOCK;
     else if(!strcmp(syncTypeString, "nosync"))
-        syncLock = NOSYNC;
-    else{
-        errorParse("Error: syncstrategy wrongly formatted\n");
-        return UNKNOWN;
-    }
+        return NOSYNC;
+
+    errorParse("Error: syncstrategy wrongly formatted\n");
+    return UNKNOWN;
 }
+
 
 /*  Input
         cont char *syncType -> defines the type of sync
@@ -102,13 +102,19 @@ int initLock(syncType syncType){
             return 0;
         case NOSYNC:
             return 1;
+        case UNKNOWN:
+            errorParse("Error: Unkown Sync Strategy\n");
+            break;
     }
+
+    /* Supposed to have already returned */
+    exit(EXIT_FAILURE); /* Compilador quer que eu devolva alguma cena */
 }
 
 /*  Locks Section of code
     Input
         syncType forceSync
-            pass NULL unless required specific lock */
+            pass UNKOWN unless required specific lock */
 void lockReadSection(syncType forceSync){
     syncType currentSync = syncLock;
     if(forceSync != UNKNOWN)
@@ -123,15 +129,19 @@ void lockReadSection(syncType forceSync){
             break;
         case NOSYNC:
             break;
+        case UNKNOWN:
+            errorParse("Error: Unkown Sync Strategy\n");
+            break;
     }
 }
 
 /*  Locks Section of code
     Input
         syncType forceSync
-            pass NULL unless required specific lock */
+            pass UNKOWN unless required specific lock */
 void lockWriteSection(syncType forceSync){
     syncType currentSync = syncLock;
+    
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
 
@@ -144,13 +154,17 @@ void lockWriteSection(syncType forceSync){
             break;
         case NOSYNC:
             break;
+        case UNKNOWN:
+            printf("HERE");
+            errorParse("Error: Unkown Sync Strategy\n");
+            break;
     }
 }
 
 /*  unlocks Section of code
     Input
         syncType forceSync
-            pass NULL unless required specific lock */
+            pass UNKOWN unless required specific lock */
 void unlockSection(syncType forceSync){
     syncType currentSync = syncLock;
     if(forceSync != UNKNOWN)
@@ -162,6 +176,9 @@ void unlockSection(syncType forceSync){
         case RWLOCK:    
             unlockRW();
         case NOSYNC:
+            break;
+        case UNKNOWN:
+            errorParse("Error: Unkown Sync Strategy\n");
             break;
     }
 }

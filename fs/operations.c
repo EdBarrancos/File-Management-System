@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "../er/error.h"
+#include "../thr/threads.h"
 
 
 /* Given a path, fills pointers with strings for the parent path and child
@@ -273,7 +274,7 @@ int lookup(char *name) {
  *  - fp: pointer to output file
  */
 void print_tecnicofs_tree(FILE *fp){
-	//i zona critica mutex read
+	lockReadSection(UNKNOWN);
 	inode_print_tree(fp, FS_ROOT, "");
-	//f zona critica mutex rw
+	unlockSection(UNKNOWN);
 }
