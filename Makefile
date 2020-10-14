@@ -34,7 +34,7 @@ main.o: main.c fs/operations.h fs/state.h fh/fileHandling.h thr/threads.h er/err
 
 clean:
 	@echo Cleaning...
-	rm -f fs/*.o *.o tecnicofs
+	rm -f fh/*.o thr/*.o er/*.o fs/*.o *.o tecnicofs
 
 run: tecnicofs
 	./tecnicofs
