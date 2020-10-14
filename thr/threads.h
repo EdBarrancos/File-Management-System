@@ -9,9 +9,11 @@ syncType syncLock;
 pthread_mutex_t mutexLock;
 pthread_rwlock_t rwlockLock;
 
-int poolThreads(char* numThreads, void *(*fnThread)());
+void poolThreads(int numberThreads, void *(*fnThread)());
+int getNumberThreads(char *numThreads);
 
-int initLock(const char *syncType);
+syncType getSyncType(const char *syncTypeString);
+int initLock(syncType syncType);
 void lockReadSection(syncType forceSync);
 void lockWriteSection(syncType forceSync);
 void unlockSection(syncType forceSync);

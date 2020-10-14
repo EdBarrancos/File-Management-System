@@ -40,11 +40,10 @@ char* removeCommand() {
     return NULL;
 }
 
-void processInput(char *filePath){
+void processInput(FILE *inputFile){
     char line[MAX_INPUT_SIZE];
-    FILE *filePointer = openFile(filePath, "r");
     /* break loop with ^Z or ^D */
-    while (fgets(line, sizeof(line)/sizeof(char), filePointer)) {
+    while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
 
@@ -84,7 +83,7 @@ void processInput(char *filePath){
             }
         }
     }
-    closeFile(filePointer);
+    closeFile(inputFile);
 }
 
 void applyCommands(){
@@ -139,14 +138,40 @@ void *fnThread(void* arg){
     return NULL;
 }
 
+/*  Argv:
+        1 -> inputfile
+        2 -> outputfile
+        3 -> numThreads
+        4 -> synchstrategy */
+void setInitialValues(FILE **inputFile, FILE **outputFile, syncType *synchStrategy, char *argv[]){
+    *inputFile = openFile(argv[1], "r");
+    *outputFile = openFile(argv[2], "w");
+    numberThreads = getNumberThreads(argv[3]);
+    *synchStrategy = getSyncType(argv[4]);
+}
+
 int main(int argc, char* argv[]) {
+
+    FILE *inputFile, *outputFile;
+    syncType synchStrategy;
+
+    /* Define Arguments */
+    setInitialValues(&inputFile, &outputFile, &synchStrategy, argv);
+
     /* init filesystem */
     init_fs();
 
+    /* init synch system */
+    if(initLock(synchStrategy) && numberThreads != 1)
+        /* Error Handling */
+        errorParse("Error: Incorrect number of threads for a nosync system\n");
+
     /* process input and print tree */
-    processInput(argv[1]);
-    numberThreads = poolThreads(argv[2], fnThread);
-    print_tecnicofs_tree(stdout);
+    processInput(inputFile);
+    poolThreads(numberThreads, fnThread);
+    print_tecnicofs_tree(outputFile);
+    
+    closeFile(outputFile);
 
     /* release allocated memory */
     destroy_fs();

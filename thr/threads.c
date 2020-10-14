@@ -8,17 +8,11 @@
 /*  Creates threads and associates tasks
     Input
         char* numThreads -> Number of threads to be created
-        void *(*fnThread)() -> Pointer to the functions to be executed
-    Returns 
-        int -> number of Threads */
-int poolThreads(char* numThreads, void *(*fnThread)()){
-    int numberThreads = atoi(numThreads);
+        void *(*fnThread)() -> Pointer to the functions to be executed */
+void poolThreads(int numberThreads, void *(*fnThread)()){
+    
     pthread_t tid[numberThreads];
     int i;
-
-    if (!numberThreads)
-        /* Error Handling */
-        errorParse( "Error Number of Threads Wrongly Formatted\n");
 
     for (i=0; i<numberThreads; i++){
         if (pthread_create(&tid[i], NULL, fnThread, NULL)!=0)
@@ -27,8 +21,18 @@ int poolThreads(char* numThreads, void *(*fnThread)()){
     }
 
     for (i=0; i<numberThreads; i++){
-        pthread_join(tid[i], NULL);
+        if(pthread_join(tid[i], NULL))
+            /* Error Handling */
+            errorParse("Error while joining the threads\n");
     }
+}
+
+int getNumberThreads(char *numThreads){
+    int numberThreads = atoi(numThreads);
+
+    if (!numberThreads)
+        /* Error Handling */
+        errorParse( "Error Number of Threads Wrongly Formatted\n");
 
     return numberThreads;
 }
@@ -65,7 +69,18 @@ void lockRWWrite(){
 }
 /* Locks And Unlocks for Mutex and Rwlock */
 
-
+syncType getSyncType(const char *syncTypeString){
+    if(!strcmp(syncTypeString, "mutex"))
+        return MUTEX;
+    else if(!strcmp(syncTypeString, "rwlock"))
+        return RWLOCK;
+    else if(!strcmp(syncTypeString, "nosync"))
+        syncLock = NOSYNC;
+    else{
+        errorParse("Error: syncstrategy wrongly formatted\n");
+        return UNKNOWN;
+    }
+}
 
 /*  Input
         cont char *syncType -> defines the type of sync
@@ -75,24 +90,18 @@ void lockRWWrite(){
     Output
         0 if type is either  mutex or rwlock 
         1 if type is nosync */
-int initLock(const char *syncType){
+int initLock(syncType syncType){
+    syncLock = syncType;
+
     pthread_mutex_init(&mutexLock, NULL); /* Has to be initialized for the applyCommands */
-    if(!strcmp(syncType, "mutex")){
-        syncLock = MUTEX;
-        return 0;
-    }
-    else if(!strcmp(syncType, "rwlock")){
-        syncLock = RWLOCK;
-        pthread_rwlock_init(&rwlockLock, NULL);
-        return 0;
-    }
-    else if(!strcmp(syncType, "nosync")){
-        syncLock = NOSYNC;
-        return 1;
-    }
-    else{
-        errorParse("Error: syncstrategy wrongly formatted\n");
-        return 1;
+    switch(syncType){
+        case MUTEX:
+            return 0;
+        case RWLOCK:    
+            pthread_rwlock_init(&rwlockLock, NULL);
+            return 0;
+        case NOSYNC:
+            return 1;
     }
 }
 
