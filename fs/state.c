@@ -20,13 +20,11 @@ void insert_delay(int cycles) {
  * Initializes the i-nodes table.
  */
 void inode_table_init() {
-    //i zona critica: write
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         inode_table[i].nodeType = T_NONE;
         inode_table[i].data.dirEntries = NULL;
         inode_table[i].data.fileContents = NULL;
     }
-    //f zona critica
 }
 
 /*
@@ -58,7 +56,6 @@ int inode_create(type nType) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    //i zona critica: read
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
         if (inode_table[inumber].nodeType == T_NONE) {
             inode_table[inumber].nodeType = nType;
@@ -79,7 +76,6 @@ int inode_create(type nType) {
     }
     return FAIL;
 
-    //f zona critica
 }
 
 /*
@@ -240,7 +236,6 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
  */
 void inode_print_tree(FILE *fp, int inumber, char *name) {
 
-    //i zona critica: read
     if (inode_table[inumber].nodeType == T_FILE) {
         fprintf(fp, "%s\n", name);
         return;
@@ -259,5 +254,4 @@ void inode_print_tree(FILE *fp, int inumber, char *name) {
         }
     }
 
-    //f zona critica
 }

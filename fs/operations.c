@@ -48,14 +48,13 @@ void init_fs() {
 	//i zona critica write
 	inode_table_init();
 	
-	/* create root inode */
 	int root = inode_create(T_DIRECTORY);
 	
 	if (root != FS_ROOT) {
+		//f zona critica
 		printf("failed to create node for tecnicofs root\n");
 		exit(EXIT_FAILURE);
 	}
-	//f zona critica
 }
 
 
@@ -84,8 +83,10 @@ int is_dir_empty(DirEntry *dirEntries) {
 			return FAIL;
 		}
 	}
-	return SUCCESS;
+
 	//f zona critica
+
+	return SUCCESS;
 }
 
 
@@ -108,9 +109,8 @@ int lookup_sub_node(char *name, DirEntry *entries) {
             return entries[i].inumber;
         }
     }
+	//f zona
 	return FAIL;
-
-	//f zona critica
 }
 
 
@@ -280,5 +280,7 @@ int lookup(char *name) {
  *  - fp: pointer to output file
  */
 void print_tecnicofs_tree(FILE *fp){
+	//i zona critica: read
 	inode_print_tree(fp, FS_ROOT, "");
+	//f zona critica
 }
