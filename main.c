@@ -4,7 +4,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <pthread.h>
+
 #include "fs/operations.h"
+#include "fh/fileHandling.h"
 
 #define MAX_COMMANDS 150000
 #define MAX_INPUT_SIZE 100
@@ -43,7 +45,7 @@ void errorParse(){
 
 void processInput(char *filePath){
     char line[MAX_INPUT_SIZE];
-    FILE *filePointer = fopen(filePath, "r");
+    FILE *filePointer = openFile(filePath, "r");
     /* break loop with ^Z or ^D */
     while (fgets(line, sizeof(line)/sizeof(char), filePointer)) {
         char token, type;
@@ -85,7 +87,7 @@ void processInput(char *filePath){
             }
         }
     }
-    fclose(filePointer);
+    closeFile(filePointer);
 }
 
 void applyCommands(){
