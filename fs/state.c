@@ -54,6 +54,8 @@ int inode_create(type nType) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
+    //i zona critica read
+
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
         if (inode_table[inumber].nodeType == T_NONE) {
             inode_table[inumber].nodeType = nType;
@@ -73,6 +75,8 @@ int inode_create(type nType) {
         }
     }
     return FAIL;
+
+    //f zona critica
 }
 
 /*
@@ -85,10 +89,16 @@ int inode_delete(int inumber) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
+    //i zona critica read
+
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_delete: invalid inumber\n");
         return FAIL;
     } 
+
+    //f zona critica 
+
+    
 
     inode_table[inumber].nodeType = T_NONE;
     /* see inode_table_destroy function */

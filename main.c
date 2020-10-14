@@ -15,20 +15,25 @@ char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
 int numberCommands = 0;
 int headQueue = 0;
 
+
 int insertCommand(char* data) {
+    //zona critica: write
     if(numberCommands != MAX_COMMANDS) {
         strcpy(inputCommands[numberCommands++], data);
         return 1;
     }
     return 0;
+    //zona critica
 }
 
 char* removeCommand() {
+    //zona critica: write
     if(numberCommands > 0){
         numberCommands--;
         return inputCommands[headQueue++];  
     }
     return NULL;
+    //zona critica
 }
 
 void errorParse(){
@@ -84,6 +89,7 @@ void processInput(char *filePath){
 }
 
 void applyCommands(){
+    //zona critica: write
     while (numberCommands > 0){
         const char* command = removeCommand();
         if (command == NULL){
