@@ -29,13 +29,14 @@ int insertCommand(char* data) {
 }
 
 char* removeCommand() {
-    //i zona critica mutex
+    lockWriteSection(MUTEX);
+    
     if(numberCommands > 0){
         numberCommands--;
         return inputCommands[headQueue++];  
     }
 
-    //f zona critica mutex
+    unlockSection(MUTEX);
     
     return NULL;
 }
