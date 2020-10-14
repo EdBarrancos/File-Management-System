@@ -1,6 +1,7 @@
 #include "threads.h"
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "../er/error.h"
 
 /*  Creates threads and associates tasks
