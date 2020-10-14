@@ -33,86 +33,6 @@ int poolThreads(char* numThreads, void *(*fnThread)()){
     return numberThreads;
 }
 
-/*  Input
-        cont char *syncType -> defines the type of sync
-            mutex
-            rwlock
-            nosync
-    Output
-        0 if type is either  mutex or rwlock 
-        1 if type is nosync */
-int initLock(const char *syncType){
-    pthread_mutex_init(&mutexLock, NULL); /* Has to be initialized for the applyCommands */
-    if(!strcmp(syncType, "mutex")){
-        syncLock = MUTEX;
-        return 0;
-    }
-    else if(!strcmp(syncType, "rwlock")){
-        syncLock = RWLOCK;
-        pthread_rwlock_init(&rwlockLock, NULL);
-        return 0;
-    }
-    else if(!strcmp(syncType, "nosync")){
-        syncLock = NOSYNC;
-        return 1;
-    }
-    else
-        errorParse("Error: syncstrategy wrongly formatted\n");
-}
-
-/*  Locks Section of code
-    Input
-        syncType forceSync
-            pass NULL unless required specific lock */
-void lockReadSection(syncType forceSync){
-    syncType currentSync = syncLock;
-    if(forceSync != NULL)
-        currentSync = forceSync;
-
-    switch(currentSync){
-        case MUTEX:
-            lockMutex();
-        case RWLOCK:    
-            lockRWWrite();
-    }
-}
-
-/*  Locks Section of code
-    Input
-        syncType forceSync
-            pass NULL unless required specific lock */
-void lockWriteSection(syncType forceSync){
-    syncType currentSync = syncLock;
-    if(forceSync != NULL)
-        currentSync = forceSync;
-
-    switch(currentSync){
-        case MUTEX:
-            lockMutex();
-        case RWLOCK:    
-            lockRWWrite();
-    }
-}
-
-/*  unlocks Section of code
-    Input
-        syncType forceSync
-            pass NULL unless required specific lock */
-void unlockSection(syncType forceSync){
-    syncType currentSync = syncLock;
-    if(forceSync != NULL)
-        currentSync = forceSync;
-
-    switch(currentSync){
-        case MUTEX:
-            unlockMutex();
-        case RWLOCK:    
-            unlockRW();
-    }
-}
-
-
-
 /* Locks And Unlocks for Mutex and Rwlock */
 void unlockMutex(){
     if(!pthread_mutex_unlock(&mutexLock))
@@ -143,3 +63,99 @@ void lockRWWrite(){
         /* Error Handling */
         errorParse("Error while Syncing threads with rwlock\n");
 }
+/* Locks And Unlocks for Mutex and Rwlock */
+
+
+
+/*  Input
+        cont char *syncType -> defines the type of sync
+            mutex
+            rwlock
+            nosync
+    Output
+        0 if type is either  mutex or rwlock 
+        1 if type is nosync */
+int initLock(const char *syncType){
+    pthread_mutex_init(&mutexLock, NULL); /* Has to be initialized for the applyCommands */
+    if(!strcmp(syncType, "mutex")){
+        syncLock = MUTEX;
+        return 0;
+    }
+    else if(!strcmp(syncType, "rwlock")){
+        syncLock = RWLOCK;
+        pthread_rwlock_init(&rwlockLock, NULL);
+        return 0;
+    }
+    else if(!strcmp(syncType, "nosync")){
+        syncLock = NOSYNC;
+        return 1;
+    }
+    else{
+        errorParse("Error: syncstrategy wrongly formatted\n");
+        return 1;
+    }
+}
+
+/*  Locks Section of code
+    Input
+        syncType forceSync
+            pass NULL unless required specific lock */
+void lockReadSection(syncType forceSync){
+    syncType currentSync = syncLock;
+    if(forceSync != UNKNOWN)
+        currentSync = forceSync;
+
+    switch(currentSync){
+        case MUTEX:
+            lockMutex();
+            break;
+        case RWLOCK:    
+            lockRWWrite();
+            break;
+        case NOSYNC:
+            break;
+    }
+}
+
+/*  Locks Section of code
+    Input
+        syncType forceSync
+            pass NULL unless required specific lock */
+void lockWriteSection(syncType forceSync){
+    syncType currentSync = syncLock;
+    if(forceSync != UNKNOWN)
+        currentSync = forceSync;
+
+    switch(currentSync){
+        case MUTEX:
+            lockMutex();
+            break;
+        case RWLOCK:    
+            lockRWWrite();
+            break;
+        case NOSYNC:
+            break;
+    }
+}
+
+/*  unlocks Section of code
+    Input
+        syncType forceSync
+            pass NULL unless required specific lock */
+void unlockSection(syncType forceSync){
+    syncType currentSync = syncLock;
+    if(forceSync != UNKNOWN)
+        currentSync = forceSync;
+
+    switch(currentSync){
+        case MUTEX:
+            unlockMutex();
+        case RWLOCK:    
+            unlockRW();
+        case NOSYNC:
+            break;
+    }
+}
+
+
+

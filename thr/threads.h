@@ -3,7 +3,7 @@
 
 #include <pthread.h>
 
-typedef enum syncType { MUTEX, RWLOCK , NOSYNC} syncType;
+typedef enum syncType { UNKNOWN, MUTEX, RWLOCK , NOSYNC} syncType;
 
 syncType syncLock;
 pthread_mutex_t mutexLock;
