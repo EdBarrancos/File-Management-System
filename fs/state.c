@@ -20,12 +20,13 @@ void insert_delay(int cycles) {
  * Initializes the i-nodes table.
  */
 void inode_table_init() {
-    
+    //i zona critica mutex write
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         inode_table[i].nodeType = T_NONE;
         inode_table[i].data.dirEntries = NULL;
         inode_table[i].data.fileContents = NULL;
     }
+    //f zona critica mutex rw
 }
 
 /*
@@ -33,7 +34,7 @@ void inode_table_init() {
  */
 
 void inode_table_destroy() {
-    //i zona critica: write
+    //i zona critica mutex write
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         if (inode_table[i].nodeType != T_NONE) {
             /* as data is an union, the same pointer is used for both dirEntries and fileContents */
@@ -42,7 +43,7 @@ void inode_table_destroy() {
             free(inode_table[i].data.dirEntries);
         }
     }
-    //f zona critica
+    //f zona critica mutex rw
 }
 
 /*
@@ -56,7 +57,7 @@ void inode_table_destroy() {
 int inode_create(type nType) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
-
+    //i zona critica mutex write
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
         if (inode_table[inumber].nodeType == T_NONE) {
             inode_table[inumber].nodeType = nType;
@@ -75,6 +76,7 @@ int inode_create(type nType) {
             return inumber;
         }
     }
+    //f zona critica mutex rw
     return FAIL;
 
 }
@@ -101,9 +103,11 @@ int inode_delete(int inumber) {
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
+    
+    //f zona critica mutex rw
+
     return SUCCESS;
 
-    //f zona critica
 }
 
 /*
@@ -119,7 +123,7 @@ int inode_get(int inumber, type *nType, union Data *data) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    //i zona critica: write
+    //i zona critica mutex read
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_get: invalid inumber %d\n", inumber);
@@ -132,9 +136,10 @@ int inode_get(int inumber, type *nType, union Data *data) {
     if (data)
         *data = inode_table[inumber].data;
 
+    //f zona critica mutex rw
+
     return SUCCESS;
 
-    //f zona critica
 
 }
 
@@ -150,20 +155,29 @@ int dir_reset_entry(int inumber, int sub_inumber) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    //i zona critica: write ? 
+    //i zona critica mutex write 
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_reset_entry: invalid inumber\n");
+
+        //f zona critica mutex rw
+
         return FAIL;
     }
 
     if (inode_table[inumber].nodeType != T_DIRECTORY) {
         printf("inode_reset_entry: can only reset entry to directories\n");
+
+        //f zona critica mutex rw
+
         return FAIL;
     }
 
     if ((sub_inumber < FREE_INODE) || (sub_inumber > INODE_TABLE_SIZE) || (inode_table[sub_inumber].nodeType == T_NONE)) {
         printf("inode_reset_entry: invalid entry inumber\n");
+
+        //f zona critica mutex rw
+
         return FAIL;
     }
 
@@ -172,12 +186,17 @@ int dir_reset_entry(int inumber, int sub_inumber) {
         if (inode_table[inumber].data.dirEntries[i].inumber == sub_inumber) {
             inode_table[inumber].data.dirEntries[i].inumber = FREE_INODE;
             inode_table[inumber].data.dirEntries[i].name[0] = '\0';
+            
+            //f zona critica mutex rw
+
             return SUCCESS;
         }
     }
+
+    //f zona critica mutex rw
+
     return FAIL;
 
-    //f zona critica
 }
 
 
@@ -193,26 +212,30 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    //i zona critica write?
+    //i zona critica mutex write
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_add_entry: invalid inumber\n");
+        //f zona critica mutex rw    
         return FAIL;
     }
 
     if (inode_table[inumber].nodeType != T_DIRECTORY) {
         printf("inode_add_entry: can only add entry to directories\n");
+        //f zona critica mutex rw
         return FAIL;
     }
 
     if ((sub_inumber < 0) || (sub_inumber > INODE_TABLE_SIZE) || (inode_table[sub_inumber].nodeType == T_NONE)) {
         printf("inode_add_entry: invalid entry inumber\n");
+        //f zona critica mutex rw
         return FAIL;
     }
 
     if (strlen(sub_name) == 0 ) {
         printf("inode_add_entry: \
                entry name must be non-empty\n");
+        //f zona critica mutex rw
         return FAIL;
     }
     
@@ -220,12 +243,13 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
         if (inode_table[inumber].data.dirEntries[i].inumber == FREE_INODE) {
             inode_table[inumber].data.dirEntries[i].inumber = sub_inumber;
             strcpy(inode_table[inumber].data.dirEntries[i].name, sub_name);
+            //f zona critica mutex rw
             return SUCCESS;
         }
     }
-    return FAIL;
 
-    //f zona critica 
+    //f zona critica mutex rw
+    return FAIL;
 }
 
 
