@@ -7,6 +7,8 @@
 
 #include "fs/operations.h"
 #include "fh/fileHandling.h"
+#include "thr/threads.h"
+#include "er/error.h"
 
 #define MAX_COMMANDS 150000
 #define MAX_INPUT_SIZE 100
@@ -38,11 +40,6 @@ char* removeCommand() {
     //zona critica
 }
 
-void errorParse(){
-    fprintf(stderr, "Error: command invalid\n");
-    exit(EXIT_FAILURE);
-}
-
 void processInput(char *filePath){
     char line[MAX_INPUT_SIZE];
     FILE *filePointer = openFile(filePath, "r");
@@ -60,21 +57,21 @@ void processInput(char *filePath){
         switch (token) {
             case 'c':
                 if(numTokens != 3)
-                    errorParse();
+                    errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
                 return;
             
             case 'l':
                 if(numTokens != 2)
-                    errorParse();
+                    errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
                 return;
             
             case 'd':
                 if(numTokens != 2)
-                    errorParse();
+                    errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
                 return;
@@ -83,7 +80,7 @@ void processInput(char *filePath){
                 break;
             
             default: { /* error */
-                errorParse();
+                errorParse("Error: command invalid\n");
             }
         }
     }
@@ -101,10 +98,8 @@ void applyCommands(){
         char token, type;
         char name[MAX_INPUT_SIZE];
         int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
-        if (numTokens < 2) {
-            fprintf(stderr, "Error: invalid command in Queue\n");
-            exit(EXIT_FAILURE);
-        }
+        if (numTokens < 2)
+            errorParse("Error: invalid command in Queue\n");
 
         int searchResult;
         switch (token) {
@@ -119,8 +114,7 @@ void applyCommands(){
                         create(name, T_DIRECTORY);
                         break;
                     default:
-                        fprintf(stderr, "Error: invalid node type\n");
-                        exit(EXIT_FAILURE);
+                        errorParse("Error: invalid node type\n");
                 }
                 break;
             case 'l': 
@@ -135,44 +129,16 @@ void applyCommands(){
                 delete(name);
                 break;
             default: { /* error */
-                fprintf(stderr, "Error: command to apply\n");
-                exit(EXIT_FAILURE);
+                errorParse("Error: command to apply\n");
             }
         }
     }
 }
 
 void *fnThread(void* arg){
-
     applyCommands();
 
     return NULL;
-    
-}
-
-void poolThreads(char* numThreads){
-
-    numberThreads = *numThreads - '0';
-    pthread_t tid[numberThreads];
-    int i;
-
-
-    for (i=0; i<numberThreads; i++){
-        if (pthread_create(&tid[i], NULL, fnThread, NULL)!=0){
-            printf("Erro ao esperar por tarefa.\n");
-            exit(1);
-        }
-
-    }
-        
-    for (i=0; i<numberThreads; i++){
-        pthread_join(tid[i], NULL);
-    }
-
-
-    return;
-    
-
 }
 
 int main(int argc, char* argv[]) {
@@ -181,7 +147,7 @@ int main(int argc, char* argv[]) {
 
     /* process input and print tree */
     processInput(argv[1]);
-    poolThreads(argv[2]);
+    numberThreads = poolThreads(argv[2], fnThread);
     print_tecnicofs_tree(stdout);
 
     /* release allocated memory */
