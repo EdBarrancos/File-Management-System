@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../er/error.h"
+
 
 /* Given a path, fills pointers with strings for the parent path and child
  * file name
@@ -49,11 +51,8 @@ void init_fs() {
 	
 	int root = inode_create(T_DIRECTORY);
 	
-	if (root != FS_ROOT) {
-		printf("failed to create node for tecnicofs root\n");
-		exit(EXIT_FAILURE);
-	}
-	//
+	if (root != FS_ROOT)
+		errorParse("Error: failed to create node for tecnicofs root\n");
 }
 
 

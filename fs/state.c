@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "state.h"
+
+#include "../er/error.h"
 #include "../tecnicofs-api-constants.h"
 
 inode_t inode_table[INODE_TABLE_SIZE];

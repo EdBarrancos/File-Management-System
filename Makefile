@@ -15,10 +15,10 @@ all: tecnicofs
 tecnicofs: fs/state.o fs/operations.o main.o fh/fileHandling.o thr/threads.o er/error.o
 	$(LD) $(CFLAGS) $(LDFLAGS) -o tecnicofs fs/state.o fs/operations.o fh/fileHandling.o thr/threads.o er/error.o main.o
 
-fs/state.o: fs/state.c fs/state.h tecnicofs-api-constants.h
+fs/state.o: fs/state.c fs/state.h er/error.h tecnicofs-api-constants.h
 	$(CC) $(CFLAGS) -o fs/state.o -c fs/state.c
 
-fs/operations.o: fs/operations.c fs/operations.h fs/state.h tecnicofs-api-constants.h
+fs/operations.o: fs/operations.c fs/operations.h fs/state.h er/error.h tecnicofs-api-constants.h
 	$(CC) $(CFLAGS) -o fs/operations.o -c fs/operations.c
 
 fh/fileHandling.o: fh/fileHandling.h fh/fileHandling.c er/error.h
