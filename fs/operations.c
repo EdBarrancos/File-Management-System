@@ -55,6 +55,7 @@ void init_fs() {
 		printf("failed to create node for tecnicofs root\n");
 		exit(EXIT_FAILURE);
 	}
+	//
 }
 
 

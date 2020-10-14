@@ -29,10 +29,14 @@ int insertCommand(char* data) {
 }
 
 char* removeCommand() {
+    //i zona critica mutex
     if(numberCommands > 0){
         numberCommands--;
         return inputCommands[headQueue++];  
     }
+
+    //f zona critica mutex
+    
     return NULL;
 }
 
@@ -84,7 +88,6 @@ void processInput(char *filePath){
 }
 
 void applyCommands(){
-    //i zona critica: mutex  
     while (numberCommands > 0){
         const char* command = removeCommand();
         if (command == NULL){
@@ -96,7 +99,6 @@ void applyCommands(){
         int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
         if (numTokens < 2)
             errorParse("Error: invalid command in Queue\n");
-    //f zona critica: mutex
         int searchResult;
         switch (token) {
             case 'c':
