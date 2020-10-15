@@ -3,6 +3,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include <pthread.h>
 
 #include "fs/operations.h"
@@ -33,6 +34,7 @@ char* removeCommand() {
     
     if(numberCommands > 0){
         numberCommands--;
+        unlockSection(MUTEX);
         return inputCommands[headQueue++];  
     }
 
@@ -152,6 +154,8 @@ void setInitialValues(FILE **inputFile, FILE **outputFile, syncType *synchStrate
 }
 
 int main(int argc, char* argv[]) {
+
+    clock_t begin = clock();
     FILE *inputFile, *outputFile;
     syncType synchStrategy;
 
@@ -177,5 +181,7 @@ int main(int argc, char* argv[]) {
 
     /* release allocated memory */
     destroy_fs();
+    clock_t end = clock();
+    printf("TecnicoFS completed in %.4f seconds.\n",(double)(end - begin)/CLOCKS_PER_SEC);
     exit(EXIT_SUCCESS);
 }
