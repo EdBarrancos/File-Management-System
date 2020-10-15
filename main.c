@@ -30,11 +30,18 @@ int insertCommand(char* data) {
 }
 
 char* removeCommand() {
+
     lockWriteSection(MUTEX);
     
     if(numberCommands > 0){
         numberCommands--;
+<<<<<<< HEAD
         unlockSection(MUTEX);
+=======
+        
+        unlockSection(MUTEX);
+
+>>>>>>> 5451ab3ae3266026b5d78228a59fb49aac6a2f4a
         return inputCommands[headQueue++];  
     }
 
@@ -95,6 +102,8 @@ void applyCommands(){
         if (command == NULL){
             continue;
         }
+
+        printf("Solving comand %s\n", command);
 
         char token, type;
         char name[MAX_INPUT_SIZE];
