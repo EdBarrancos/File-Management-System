@@ -82,6 +82,9 @@ int inode_create(type nType) {
             else {
                 inode_table[inumber].data.fileContents = NULL;
             }
+            
+            unlockSection(UNKNOWN);
+
             return inumber;
         }
     }
@@ -105,7 +108,11 @@ int inode_delete(int inumber) {
     lockWriteSection(UNKNOWN);
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
+
         printf("inode_delete: invalid inumber\n");
+        
+        unlockSection(UNKNOWN);
+
         return FAIL;
     } 
 
@@ -138,6 +145,7 @@ int inode_get(int inumber, type *nType, union Data *data) {
 
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_get: invalid inumber %d\n", inumber);
+        unlockSection(UNKNOWN);
         return FAIL;
     }
 
