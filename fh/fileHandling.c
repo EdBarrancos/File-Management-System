@@ -6,7 +6,7 @@
 FILE *openFile(const char *pathname, const char *mode){
         FILE *opened = fopen(pathname, mode);
 
-        if(opened == NULL)
+        if(!opened)
             /* Error handling */
             errorParse("Error while opening file\n");
 
@@ -15,7 +15,7 @@ FILE *openFile(const char *pathname, const char *mode){
 
 /* Closes File */
 void closeFile(FILE *stream){
-    if(fclose(stream) != 0)
+    if(fclose(stream))
         /* Error Handling */
         errorParse("Error while closing file\n");
 }
