@@ -39,31 +39,31 @@ int getNumberThreads(char *numThreads){
 
 /* Locks And Unlocks for Mutex and Rwlock */
 void unlockMutex(){
-    if(!pthread_mutex_unlock(&mutexLock))
+    if(pthread_mutex_unlock(&mutexLock))
         /* Error Handling */
         errorParse("Error while Syncing threads with mutex\n");
 }
 
 void unlockRW(){
-    if(!pthread_rwlock_unlock(&rwlockLock))
+    if(pthread_rwlock_unlock(&rwlockLock))
         /* Error Handling */
         errorParse("Error while Syncing threads with rwlock\n");
 }
 
 void lockMutex(){
-    if(!pthread_mutex_lock(&mutexLock))
+    if(pthread_mutex_lock(&mutexLock))
         /* Error Handling */
         errorParse("Error while Syncing threads with mutex\n");
 }
 
 void lockRWRead(){
-    if(!pthread_rwlock_rdlock(&rwlockLock))
+    if(pthread_rwlock_rdlock(&rwlockLock))
         /* Error Handling */
         errorParse("Error while Syncing threads with rwlock\n");
 }
 
 void lockRWWrite(){
-    if(!pthread_rwlock_wrlock(&rwlockLock))
+    if(pthread_rwlock_wrlock(&rwlockLock))
         /* Error Handling */
         errorParse("Error while Syncing threads with rwlock\n");
 }
