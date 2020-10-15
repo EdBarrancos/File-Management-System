@@ -128,6 +128,7 @@ int create(char *name, type nodeType){
 
 	parent_inumber = lookup(parent_name);
 
+
 	if (parent_inumber == FAIL) {
 		printf("failed to create %s, invalid parent dir %s\n",
 		        name, parent_name);

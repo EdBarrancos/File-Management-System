@@ -120,14 +120,12 @@ void lockReadSection(syncType forceSync){
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
 
-    /* printf("Lock REad\n"); */
-
     switch(currentSync){
         case MUTEX:
             lockMutex();
             break;
         case RWLOCK:    
-            lockRWWrite();
+            lockRWRead();
             break;
         case NOSYNC:
             break;
@@ -135,6 +133,8 @@ void lockReadSection(syncType forceSync){
             errorParse("Error: Unkown Sync Strategy\n");
             break;
     }
+
+    /* printf("Lock Read\n"); */
 }
 
 /*  Locks Section of code
@@ -147,8 +147,6 @@ void lockWriteSection(syncType forceSync){
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
 
-    /* printf("Lock write\n"); */
-
     switch(currentSync){
         case MUTEX:
             lockMutex();
@@ -162,6 +160,8 @@ void lockWriteSection(syncType forceSync){
             errorParse("Error: Unkown Sync Strategy\n");
             break;
     }
+
+    /* printf("Lock write\n"); */
 }
 
 /*  unlocks Section of code
@@ -173,19 +173,21 @@ void unlockSection(syncType forceSync){
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
 
-    /* printf("unlock\n"); */
-
     switch(currentSync){
         case MUTEX:
             unlockMutex();
+            break;
         case RWLOCK:    
             unlockRW();
+            break;
         case NOSYNC:
             break;
         case UNKNOWN:
             errorParse("Error: Unkown Sync Strategy\n");
             break;
     }
+
+    /* printf("unlock\n"); */
 }
 
 
