@@ -29,10 +29,14 @@ int insertCommand(char* data) {
 }
 
 char* removeCommand() {
+
     lockWriteSection(MUTEX);
     
     if(numberCommands > 0){
         numberCommands--;
+        
+        unlockSection(MUTEX);
+
         return inputCommands[headQueue++];  
     }
 
@@ -93,6 +97,8 @@ void applyCommands(){
         if (command == NULL){
             continue;
         }
+
+        printf("Solving comand %s\n", command);
 
         char token, type;
         char name[MAX_INPUT_SIZE];

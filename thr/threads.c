@@ -120,6 +120,8 @@ void lockReadSection(syncType forceSync){
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
 
+    /* printf("Lock REad\n"); */
+
     switch(currentSync){
         case MUTEX:
             lockMutex();
@@ -145,6 +147,8 @@ void lockWriteSection(syncType forceSync){
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
 
+    /* printf("Lock write\n"); */
+
     switch(currentSync){
         case MUTEX:
             lockMutex();
@@ -168,6 +172,8 @@ void unlockSection(syncType forceSync){
     syncType currentSync = syncLock;
     if(forceSync != UNKNOWN)
         currentSync = forceSync;
+
+    /* printf("unlock\n"); */
 
     switch(currentSync){
         case MUTEX:
