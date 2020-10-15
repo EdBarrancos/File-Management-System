@@ -155,7 +155,6 @@ void lockWriteSection(syncType forceSync){
         case NOSYNC:
             break;
         case UNKNOWN:
-            printf("HERE");
             errorParse("Error: Unkown Sync Strategy\n");
             break;
     }

@@ -152,7 +152,6 @@ void setInitialValues(FILE **inputFile, FILE **outputFile, syncType *synchStrate
 }
 
 int main(int argc, char* argv[]) {
-
     FILE *inputFile, *outputFile;
     syncType synchStrategy;
 
@@ -164,8 +163,10 @@ int main(int argc, char* argv[]) {
         /* Error Handling */
         errorParse("Error: Incorrect number of threads for a nosync system\n");
 
+
     /* init filesystem */
     init_fs();
+
 
     /* process input and print tree */
     processInput(inputFile);
