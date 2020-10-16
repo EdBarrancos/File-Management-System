@@ -275,7 +275,5 @@ int lookup(char *name) {
  *  - fp: pointer to output file
  */
 void print_tecnicofs_tree(FILE *fp){
-	lockReadSection(UNKNOWN);
 	inode_print_tree(fp, FS_ROOT, "");
-	unlockSection(UNKNOWN);
 }

@@ -3,7 +3,7 @@
 #include <getopt.h>
 #include <string.h>
 #include <ctype.h>
-#include <time.h>
+#include <sys/time.h>
 #include <pthread.h>
 
 #include "fs/operations.h"
@@ -104,6 +104,7 @@ void applyCommands(){
         int searchResult;
         switch (token) {
             case 'c':
+                lockWriteSection(UNKNOWN);
                 switch (type) {
                     case 'f':
                         printf("Create file: %s\n", name);
@@ -116,17 +117,22 @@ void applyCommands(){
                     default:
                         errorParse("Error: invalid node type\n");
                 }
+                unlockSection(UNKNOWN);
                 break;
             case 'l': 
+                lockReadSection(UNKNOWN);
                 searchResult = lookup(name);
                 if (searchResult >= 0)
                     printf("Search: %s found\n", name);
                 else
                     printf("Search: %s not found\n", name);
+                unlockSection(UNKNOWN);
                 break;
             case 'd':
+                lockWriteSection(UNKNOWN);
                 printf("Delete: %s\n", name);
                 delete(name);
+                unlockSection(UNKNOWN);
                 break;
             default: { /* error */
                 errorParse("Error: command to apply\n");
@@ -155,7 +161,8 @@ void setInitialValues(FILE **inputFile, FILE **outputFile, syncType *synchStrate
 
 int main(int argc, char* argv[]) {
 
-    clock_t begin = clock();
+    struct timeval tvinicio;
+    struct timeval tvfinal;
     FILE *inputFile, *outputFile;
     syncType synchStrategy;
 
@@ -174,7 +181,13 @@ int main(int argc, char* argv[]) {
 
     /* process input and print tree */
     processInput(inputFile);
+
+    /*starts counting the time*/
+    gettimeofday(&tvinicio,NULL);
+
+    /*creates pool of threads*/
     poolThreads(numberThreads, fnThread);
+
     print_tecnicofs_tree(outputFile);
     
     closeFile(outputFile);
@@ -182,7 +195,7 @@ int main(int argc, char* argv[]) {
     /* release allocated memory */
     destroy_fs();
     destroyLock();
-    clock_t end = clock();
-    printf("TecnicoFS completed in %.4f seconds.\n",(double)(end - begin)/CLOCKS_PER_SEC);
+    gettimeofday(&tvfinal,NULL);
+    printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
     exit(EXIT_SUCCESS);
 }

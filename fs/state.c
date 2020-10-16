@@ -24,17 +24,11 @@ void insert_delay(int cycles) {
  */
 void inode_table_init() {
 
-    /* printf("inode_table_init\n"); */
-    lockWriteSection(UNKNOWN);
-
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         inode_table[i].nodeType = T_NONE;
         inode_table[i].data.dirEntries = NULL;
         inode_table[i].data.fileContents = NULL;
     }
-
-    unlockSection(UNKNOWN);
-    /* printf("inode_table_init\n"); */
 }
 
 /*
@@ -42,9 +36,7 @@ void inode_table_init() {
  */
 
 void inode_table_destroy() {
-    /* printf("inode_table_destroy\n"); */
-    lockWriteSection(UNKNOWN);
-
+    
     for (int i = 0; i < INODE_TABLE_SIZE; i++) {
         if (inode_table[i].nodeType != T_NONE) {
             /* as data is an union, the same pointer is used for both dirEntries and fileContents */
@@ -53,9 +45,6 @@ void inode_table_destroy() {
             free(inode_table[i].data.dirEntries);
         }
     }
-
-    unlockSection(UNKNOWN);
-    /* printf("inode_table_destroy\n"); */
 }
 
 /*
@@ -69,9 +58,6 @@ void inode_table_destroy() {
 int inode_create(type nType) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
-
-    /* printf("inode_create\n"); */
-    lockWriteSection(UNKNOWN);
 
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
         if (inode_table[inumber].nodeType == T_NONE) {
@@ -88,16 +74,10 @@ int inode_create(type nType) {
             else {
                 inode_table[inumber].data.fileContents = NULL;
             }
-            
-            unlockSection(UNKNOWN);
-            /* printf("inode_create\n"); */
 
             return inumber;
         }
     }
-
-    unlockSection(UNKNOWN);
-    /* printf("inode_create\n"); */
 
     return FAIL;
 
@@ -113,16 +93,10 @@ int inode_delete(int inumber) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    /* printf("inode_delete\n"); */
-    lockWriteSection(UNKNOWN);
-
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
 
         printf("inode_delete: invalid inumber\n");
         
-        unlockSection(UNKNOWN);
-        /* printf("inode_delete\n"); */
-
         return FAIL;
     } 
 
@@ -131,9 +105,6 @@ int inode_delete(int inumber) {
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
-    
-    unlockSection(UNKNOWN);
-    /* printf("inode_delete\n"); */
 
     return SUCCESS;
 
@@ -152,13 +123,8 @@ int inode_get(int inumber, type *nType, union Data *data) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    /* printf("inode_get\n"); */
-    lockWriteSection(UNKNOWN);
-
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_get: invalid inumber %d\n", inumber);
-        unlockSection(UNKNOWN);
-        /* printf("inode_get\n"); */
 
         return FAIL;
     }
@@ -168,9 +134,6 @@ int inode_get(int inumber, type *nType, union Data *data) {
 
     if (data)
         *data = inode_table[inumber].data;
-
-    unlockSection(UNKNOWN);
-    /* printf("inode_get\n"); */
 
     return SUCCESS;
 
@@ -189,14 +152,8 @@ int dir_reset_entry(int inumber, int sub_inumber) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    /* printf("dir_reset_entry\n"); */
-    lockWriteSection(UNKNOWN); 
-
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_reset_entry: invalid inumber\n");
-
-        unlockSection(UNKNOWN);
-        /* printf("dir_reset_entry\n"); */
 
         return FAIL;
     }
@@ -204,17 +161,11 @@ int dir_reset_entry(int inumber, int sub_inumber) {
     if (inode_table[inumber].nodeType != T_DIRECTORY) {
         printf("inode_reset_entry: can only reset entry to directories\n");
 
-        unlockSection(UNKNOWN);
-        /* printf("dir_reset_entry\n"); */
-
         return FAIL;
     }
 
     if ((sub_inumber < FREE_INODE) || (sub_inumber > INODE_TABLE_SIZE) || (inode_table[sub_inumber].nodeType == T_NONE)) {
         printf("inode_reset_entry: invalid entry inumber\n");
-
-        unlockSection(UNKNOWN);
-        /* printf("dir_reset_entry\n"); */
 
         return FAIL;
     }
@@ -225,15 +176,9 @@ int dir_reset_entry(int inumber, int sub_inumber) {
             inode_table[inumber].data.dirEntries[i].inumber = FREE_INODE;
             inode_table[inumber].data.dirEntries[i].name[0] = '\0';
             
-            unlockSection(UNKNOWN);
-            /* printf("dir_reset_entry\n"); */
-
             return SUCCESS;
         }
     }
-
-    unlockSection(UNKNOWN);
-    /* printf("dir_reset_entry\n"); */
 
     return FAIL;
 
@@ -252,14 +197,8 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
     /* Used for testing synchronization speedup */
     insert_delay(DELAY);
 
-    /* printf("dir_add_entry\n"); */
-    lockWriteSection(UNKNOWN);
-
     if ((inumber < 0) || (inumber > INODE_TABLE_SIZE) || (inode_table[inumber].nodeType == T_NONE)) {
         printf("inode_add_entry: invalid inumber\n");
-
-        unlockSection(UNKNOWN);
-        /* printf("dir_add_entry\n"); */
 
         return FAIL;
     }
@@ -267,17 +206,11 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
     if (inode_table[inumber].nodeType != T_DIRECTORY) {
         printf("inode_add_entry: can only add entry to directories\n");
 
-        unlockSection(UNKNOWN);
-        /* printf("dir_add_entry\n"); */
-
         return FAIL;
     }
 
     if ((sub_inumber < 0) || (sub_inumber > INODE_TABLE_SIZE) || (inode_table[sub_inumber].nodeType == T_NONE)) {
         printf("inode_add_entry: invalid entry inumber\n");
-
-        unlockSection(UNKNOWN);
-        /* printf("dir_add_entry\n"); */
 
         return FAIL;
     }
@@ -285,9 +218,6 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
     if (strlen(sub_name) == 0 ) {
         printf("inode_add_entry: \
                entry name must be non-empty\n");
-
-        unlockSection(UNKNOWN);
-        /* printf("dir_add_entry\n"); */
 
         return FAIL;
     }
@@ -297,14 +227,9 @@ int dir_add_entry(int inumber, int sub_inumber, char *sub_name) {
             inode_table[inumber].data.dirEntries[i].inumber = sub_inumber;
             strcpy(inode_table[inumber].data.dirEntries[i].name, sub_name);
 
-            unlockSection(UNKNOWN);
-            /* printf("dir_add_entry\n"); */
-
             return SUCCESS;
         }
     }
-    unlockSection(UNKNOWN);
-    /* printf("dir_add_entry\n"); */
 
     return FAIL;
 }
