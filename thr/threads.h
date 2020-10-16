@@ -14,6 +14,7 @@ int getNumberThreads(char *numThreads);
 
 syncType getSyncType(const char *syncTypeString);
 int initLock(syncType syncType);
+void destroyLock();
 void lockReadSection(syncType forceSync);
 void lockWriteSection(syncType forceSync);
 void unlockSection(syncType forceSync);

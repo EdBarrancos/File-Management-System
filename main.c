@@ -181,6 +181,7 @@ int main(int argc, char* argv[]) {
 
     /* release allocated memory */
     destroy_fs();
+    destroyLock();
     clock_t end = clock();
     printf("TecnicoFS completed in %.4f seconds.\n",(double)(end - begin)/CLOCKS_PER_SEC);
     exit(EXIT_SUCCESS);

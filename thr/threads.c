@@ -112,6 +112,16 @@ int initLock(syncType syncType){
     exit(EXIT_FAILURE); /* Compilador quer que eu devolva alguma cena */
 }
 
+void destroyLock(){
+    if(pthread_mutex_destroy(&mutexLock))
+        /* Error Handling */
+        errorParse("Error while destroying mutex lock\n");
+    
+    if(pthread_rwlock_destroy(&rwlockLock))
+        /* Error Handling */
+        errorParse("Error while destroying rwlock lock\n");
+}
+
 /*  Locks Section of code
     Input
         syncType forceSync
