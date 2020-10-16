@@ -93,12 +93,13 @@ syncType getSyncType(const char *syncTypeString){
 int initLock(syncType syncType){
     syncLock = syncType;
 
-    pthread_mutex_init(&mutexLock, NULL); /* Has to be initialized for the applyCommands */
+    /* If its necessary to force anything, all are initialized */
+    pthread_mutex_init(&mutexLock, NULL);
+    pthread_rwlock_init(&rwlockLock, NULL);
     switch(syncType){
         case MUTEX:
             return 0;
         case RWLOCK:    
-            pthread_rwlock_init(&rwlockLock, NULL);
             return 0;
         case NOSYNC:
             return 1;
@@ -117,7 +118,7 @@ int initLock(syncType syncType){
             pass UNKOWN unless required specific lock */
 void lockReadSection(syncType forceSync){
     syncType currentSync = syncLock;
-    if(forceSync != UNKNOWN)
+    if(forceSync != UNKNOWN && currentSync != NOSYNC)
         currentSync = forceSync;
 
     switch(currentSync){
@@ -144,7 +145,7 @@ void lockReadSection(syncType forceSync){
 void lockWriteSection(syncType forceSync){
     syncType currentSync = syncLock;
     
-    if(forceSync != UNKNOWN)
+    if(forceSync != UNKNOWN && currentSync != NOSYNC)
         currentSync = forceSync;
 
     switch(currentSync){
@@ -170,7 +171,7 @@ void lockWriteSection(syncType forceSync){
             pass UNKOWN unless required specific lock */
 void unlockSection(syncType forceSync){
     syncType currentSync = syncLock;
-    if(forceSync != UNKNOWN)
+    if(forceSync != UNKNOWN && currentSync != NOSYNC)
         currentSync = forceSync;
 
     switch(currentSync){
