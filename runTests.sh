@@ -7,7 +7,7 @@ make -f Makefile || exit
 
 if [ ! -d "$2" ]
 then
-    mkdir ./$2
+    mkdir -m 777 $2
 fi
 
 #for cicle to run each file in inputs directory. for cicle to run 0 - max multiple threads for each file.
@@ -17,6 +17,6 @@ FILES=$(ls inputs/*.txt)
 for filename in $FILES; do
     for ((i=0; i<=$3; i++)); do
         echo "InputFile=$filename NumThreads=$i"
-        ./tecnicofs "$filename" "$filename-$i" "$i" "mutex"
-    done 
+        ./tecnicofs "$filename" "$filename-$i.txt" "$i" "mutex"
+    done
 done 
