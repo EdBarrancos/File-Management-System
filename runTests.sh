@@ -6,7 +6,7 @@
 FILES=$(ls ${1})
 
 for filename in $FILES; do
-    for ((i=0; i<=${3}; i++)); do
+    for ((i=1; i<=${3}; i++)); do
         echo "InputFile=${filename} NumThreads=$i"
         timeoutput=$(./tecnicofs "${1}/${filename}" "${2}/${filename}-${i}.txt" "${i}" "mutex")
     done
