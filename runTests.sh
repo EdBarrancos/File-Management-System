@@ -1,8 +1,5 @@
 #!/bin/bash
 
-make -f Makefile || exit
-
-
 #make directory of outputs with given name. if already exists does nothing
 
 if [ ! -d "$2" ]
