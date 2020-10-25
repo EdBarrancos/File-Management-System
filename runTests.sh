@@ -20,7 +20,3 @@ for filename in $FILES; do
         ./tecnicofs "$filename" "$filename-$i" "$i" "mutex"
     done 
 done 
-
-mv 
-
-
