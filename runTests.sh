@@ -16,5 +16,6 @@ for filename in $FILES; do
         echo "InputFile=${filename} NumThreads=$i"
         file="${filename%.*}"
         timeoutput=$(./tecnicofs "${1}/${filename}" "${2}/$file-${i}.txt" "${i}" "mutex")
+        echo "${timeoutput##*$'\n'}"
     done
 done 
