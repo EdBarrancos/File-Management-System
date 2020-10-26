@@ -8,7 +8,8 @@ void poolThreads(int numberThreads, void *(*fnThread)());
 int getNumberThreads(char *numThreads);
 
 
-int initLock();
+void initLockMutex(pthread_mutex_t* lockMutex);
+void initLockRW(pthread_rwlock_t* lockRW);
 void destroyLock();
 void lockReadSection();
 void lockWriteSection();

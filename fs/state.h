@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <threads.h>
 #include "../tecnicofs-api-constants.h"
 
 
@@ -43,6 +44,8 @@ typedef struct inode_t {
 	union Data data;
     pthread_rwlock_t lock;
 } inode_t;
+
+thread_local inode_t *lockedNodes = NULL;
 
 
 void insert_delay(int cycles);

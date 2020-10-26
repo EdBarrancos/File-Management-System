@@ -70,34 +70,19 @@ void lockRWWrite(){
 /* Locks And Unlocks for Mutex and Rwlock */
 
 
-/*  Input
-        cont char *syncType -> defines the type of sync
-            mutex
-            rwlock
-            nosync
-    Output
-        0 if type is either  mutex or rwlock 
-        1 if type is nosync */
-int initLock(){
- 
-    // /* If its necessary to force anything, all are initialized */
-    // pthread_mutex_init(&mutexLock, NULL);
-    // pthread_rwlock_init(&rwlockLock, NULL);
-    // switch(syncType){
-    //     case MUTEX:
-    //         return 0;
-    //     case RWLOCK:    
-    //         return 0;
-    //     case NOSYNC:
-    //         return 1;
-    //     case UNKNOWN:
-    //         errorParse("Error: Unkown Sync Strategy\n");
-    //         break;
-    // }
 
-    // /* Supposed to have already returned */
-    // exit(EXIT_FAILURE); /* Compilador quer que eu devolva alguma cena */ 
+void initLockMutex(pthread_mutex_t* lockMutex){
+    if(pthread_mutex_init(lockMutex, NULL))
+        /* Error Handling */
+        errorParse("Error while Initing Mutex\n");
 }
+
+void initLockRW(pthread_rwlock_t* lockRW){
+    if(pthread_rwlock_init(lockRW, NULL))
+        /* Error Handling */
+        errorParse("Error while Initing RWlock\n");
+}
+
 
 void destroyLock(){
     // if(pthread_mutex_destroy(&mutexLock))
