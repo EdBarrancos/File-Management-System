@@ -69,18 +69,6 @@ void lockRWWrite(){
 }
 /* Locks And Unlocks for Mutex and Rwlock */
 
-syncType getSyncType(const char *syncTypeString){
-    if(!strcmp(syncTypeString, "mutex"))
-        return MUTEX;
-    else if(!strcmp(syncTypeString, "rwlock"))
-        return RWLOCK;
-    else if(!strcmp(syncTypeString, "nosync"))
-        return NOSYNC;
-
-    errorParse("Error: syncstrategy wrongly formatted\n");
-    return UNKNOWN;
-}
-
 
 /*  Input
         cont char *syncType -> defines the type of sync
@@ -90,115 +78,104 @@ syncType getSyncType(const char *syncTypeString){
     Output
         0 if type is either  mutex or rwlock 
         1 if type is nosync */
-int initLock(syncType syncType){
-    syncLock = syncType;
+int initLock(){
+ 
+    // /* If its necessary to force anything, all are initialized */
+    // pthread_mutex_init(&mutexLock, NULL);
+    // pthread_rwlock_init(&rwlockLock, NULL);
+    // switch(syncType){
+    //     case MUTEX:
+    //         return 0;
+    //     case RWLOCK:    
+    //         return 0;
+    //     case NOSYNC:
+    //         return 1;
+    //     case UNKNOWN:
+    //         errorParse("Error: Unkown Sync Strategy\n");
+    //         break;
+    // }
 
-    /* If its necessary to force anything, all are initialized */
-    pthread_mutex_init(&mutexLock, NULL);
-    pthread_rwlock_init(&rwlockLock, NULL);
-    switch(syncType){
-        case MUTEX:
-            return 0;
-        case RWLOCK:    
-            return 0;
-        case NOSYNC:
-            return 1;
-        case UNKNOWN:
-            errorParse("Error: Unkown Sync Strategy\n");
-            break;
-    }
-
-    /* Supposed to have already returned */
-    exit(EXIT_FAILURE); /* Compilador quer que eu devolva alguma cena */
+    // /* Supposed to have already returned */
+    // exit(EXIT_FAILURE); /* Compilador quer que eu devolva alguma cena */ 
 }
 
 void destroyLock(){
-    if(pthread_mutex_destroy(&mutexLock))
-        /* Error Handling */
-        errorParse("Error while destroying mutex lock\n");
+    // if(pthread_mutex_destroy(&mutexLock))
+    //     /* Error Handling */
+    //     errorParse("Error while destroying mutex lock\n");
     
-    if(pthread_rwlock_destroy(&rwlockLock))
-        /* Error Handling */
-        errorParse("Error while destroying rwlock lock\n");
+    // if(pthread_rwlock_destroy(&rwlockLock))
+    //     /* Error Handling */
+    //     errorParse("Error while destroying rwlock lock\n");
 }
 
 /*  Locks Section of code
     Input
         syncType forceSync
             pass UNKOWN unless required specific lock */
-void lockReadSection(syncType forceSync){
-    syncType currentSync = syncLock;
-    if(forceSync != UNKNOWN && currentSync != NOSYNC)
-        currentSync = forceSync;
+void lockReadSection(){
 
-    switch(currentSync){
-        case MUTEX:
-            lockMutex();
-            break;
-        case RWLOCK:    
-            lockRWRead();
-            break;
-        case NOSYNC:
-            break;
-        case UNKNOWN:
-            errorParse("Error: Unkown Sync Strategy\n");
-            break;
-    }
+    // switch(currentSync){
+    //     case MUTEX:
+    //         lockMutex();
+    //         break;
+    //     case RWLOCK:    
+    //         lockRWRead();
+    //         break;
+    //     case NOSYNC:
+    //         break;
+    //     case UNKNOWN:
+    //         errorParse("Error: Unkown Sync Strategy\n");
+    //         break;
+    // }
 
-    /* printf("Lock Read\n"); */
+    // /* printf("Lock Read\n"); */
 }
 
 /*  Locks Section of code
     Input
         syncType forceSync
             pass UNKOWN unless required specific lock */
-void lockWriteSection(syncType forceSync){
-    syncType currentSync = syncLock;
-    
-    if(forceSync != UNKNOWN && currentSync != NOSYNC)
-        currentSync = forceSync;
+void lockWriteSection(){
 
-    switch(currentSync){
-        case MUTEX:
-            lockMutex();
-            break;
-        case RWLOCK:    
-            lockRWWrite();
-            break;
-        case NOSYNC:
-            break;
-        case UNKNOWN:
-            errorParse("Error: Unkown Sync Strategy\n");
-            break;
-    }
+    // switch(currentSync){
+    //     case MUTEX:
+    //         lockMutex();
+    //         break;
+    //     case RWLOCK:    
+    //         lockRWWrite();
+    //         break;
+    //     case NOSYNC:
+    //         break;
+    //     case UNKNOWN:
+    //         errorParse("Error: Unkown Sync Strategy\n");
+    //         break;
+    // }
 
-    /* printf("Lock write\n"); */
+    // /* printf("Lock write\n"); */
 }
 
 /*  unlocks Section of code
     Input
         syncType forceSync
             pass UNKOWN unless required specific lock */
-void unlockSection(syncType forceSync){
-    syncType currentSync = syncLock;
-    if(forceSync != UNKNOWN && currentSync != NOSYNC)
-        currentSync = forceSync;
+void unlockSection(){
 
-    switch(currentSync){
-        case MUTEX:
-            unlockMutex();
-            break;
-        case RWLOCK:    
-            unlockRW();
-            break;
-        case NOSYNC:
-            break;
-        case UNKNOWN:
-            errorParse("Error: Unkown Sync Strategy\n");
-            break;
-    }
+    // switch(currentSync){
+    //     case MUTEX:
+    //         unlockMutex();
+    //         break;
+    //     case RWLOCK:    
+    //         unlockRW();
+    //         break;
+    //     case NOSYNC:
+    //         break;
+    //     case UNKNOWN:
+    //         errorParse("Error: Unkown Sync Strategy\n");
+    //         break;
+    // }
 
-    /* printf("unlock\n"); */
+    // /* printf("unlock\n"); */
 }
 
 

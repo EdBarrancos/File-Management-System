@@ -152,11 +152,10 @@ void *fnThread(void* arg){
         2 -> outputfile
         3 -> numThreads
         4 -> synchstrategy */
-void setInitialValues(FILE **inputFile, FILE **outputFile, syncType *synchStrategy, char *argv[]){
+void setInitialValues(FILE **inputFile, FILE **outputFile, char *argv[]){
     *inputFile = openFile(argv[1], "r");
     *outputFile = openFile(argv[2], "w");
     numberThreads = getNumberThreads(argv[3]);
-    *synchStrategy = getSyncType(argv[4]);
 }
 
 int main(int argc, char* argv[]) {
@@ -164,13 +163,12 @@ int main(int argc, char* argv[]) {
     struct timeval tvinicio;
     struct timeval tvfinal;
     FILE *inputFile, *outputFile;
-    syncType synchStrategy;
 
     /* Define Arguments */
-    setInitialValues(&inputFile, &outputFile, &synchStrategy, argv);
+    setInitialValues(&inputFile, &outputFile, argv);
 
     /* init synch system */
-    if(initLock(synchStrategy) && numberThreads != 1)
+    if(initLock() && numberThreads != 1)
         /* Error Handling */
         errorParse("Error: Incorrect number of threads for a nosync system\n");
 
