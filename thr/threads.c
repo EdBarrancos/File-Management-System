@@ -37,38 +37,10 @@ int getNumberThreads(char *numThreads){
     return numberThreads;
 }
 
-/* Locks And Unlocks for Mutex and Rwlock */
-void unlockMutex(){
-    if(pthread_mutex_unlock(&mutexLock))
-        /* Error Handling */
-        errorParse("Error while Syncing threads with mutex\n");
-}
 
-void unlockRW(){
-    if(pthread_rwlock_unlock(&rwlockLock))
-        /* Error Handling */
-        errorParse("Error while Syncing threads with rwlock\n");
-}
-
-void lockMutex(){
-    if(pthread_mutex_lock(&mutexLock))
-        /* Error Handling */
-        errorParse("Error while Syncing threads with mutex\n");
-}
-
-void lockRWRead(){
-    if(pthread_rwlock_rdlock(&rwlockLock))
-        /* Error Handling */
-        errorParse("Error while Syncing threads with rwlock\n");
-}
-
-void lockRWWrite(){
-    if(pthread_rwlock_wrlock(&rwlockLock))
-        /* Error Handling */
-        errorParse("Error while Syncing threads with rwlock\n");
-}
-/* Locks And Unlocks for Mutex and Rwlock */
-
+/* ************************
+******  MUTEX FUNCTIONS  **
+************************  */
 
 
 void initLockMutex(pthread_mutex_t* lockMutex){
@@ -77,91 +49,57 @@ void initLockMutex(pthread_mutex_t* lockMutex){
         errorParse("Error while Initing Mutex\n");
 }
 
+void lockMutex(pthread_mutex_t *lockMutex){
+    if(pthread_mutex_lock(lockMutex))
+        /* Error Handling */
+        errorParse("Error while locking mutex\n");
+}
+
+void unlockMutex(pthread_mutex_t *lockMutex){
+     if(pthread_mutex_lock(lockMutex))
+        /* Error Handling */
+        errorParse("Error while unlocking mutex\n");
+}
+
+void destroyMutex(pthread_mutex_t *lockMutex){
+    if(pthread_mutex_destroy(lockMutex))
+        /* Error Handling */
+        errorParse("Error while destroying mutex lock\n");
+}
+
+
+/* ************************
+******  RW FUNCTIONS  **
+************************  */
+
+
+
 void initLockRW(pthread_rwlock_t* lockRW){
     if(pthread_rwlock_init(lockRW, NULL))
         /* Error Handling */
         errorParse("Error while Initing RWlock\n");
 }
 
-
-void destroyLock(){
-    // if(pthread_mutex_destroy(&mutexLock))
-    //     /* Error Handling */
-    //     errorParse("Error while destroying mutex lock\n");
-    
-    // if(pthread_rwlock_destroy(&rwlockLock))
-    //     /* Error Handling */
-    //     errorParse("Error while destroying rwlock lock\n");
+void lockReadRW(pthread_rwlock_t *lockRW){
+    if (pthread_rwlock_rdlock(lockRW))
+        /* Error Handling */
+        errorParse("Error while locking read rwlock\n");
 }
 
-/*  Locks Section of code
-    Input
-        syncType forceSync
-            pass UNKOWN unless required specific lock */
-void lockReadSection(){
-
-    // switch(currentSync){
-    //     case MUTEX:
-    //         lockMutex();
-    //         break;
-    //     case RWLOCK:    
-    //         lockRWRead();
-    //         break;
-    //     case NOSYNC:
-    //         break;
-    //     case UNKNOWN:
-    //         errorParse("Error: Unkown Sync Strategy\n");
-    //         break;
-    // }
-
-    // /* printf("Lock Read\n"); */
+void lockWriteRW(pthread_rwlock_t *lockRW){
+    if (pthread_rwlock_wrlock(lockRW))
+        /* Error handling */
+        errorParse("Error while locking write rwlock\n");
 }
 
-/*  Locks Section of code
-    Input
-        syncType forceSync
-            pass UNKOWN unless required specific lock */
-void lockWriteSection(){
-
-    // switch(currentSync){
-    //     case MUTEX:
-    //         lockMutex();
-    //         break;
-    //     case RWLOCK:    
-    //         lockRWWrite();
-    //         break;
-    //     case NOSYNC:
-    //         break;
-    //     case UNKNOWN:
-    //         errorParse("Error: Unkown Sync Strategy\n");
-    //         break;
-    // }
-
-    // /* printf("Lock write\n"); */
+void unlockRW(pthread_rwlock_t *lockRW){
+    if (pthread_rwlock_unlock(lockRW))
+        /* Error Handling */
+        errorParse("Error while unlocking rwlock\n");
 }
 
-/*  unlocks Section of code
-    Input
-        syncType forceSync
-            pass UNKOWN unless required specific lock */
-void unlockSection(){
-
-    // switch(currentSync){
-    //     case MUTEX:
-    //         unlockMutex();
-    //         break;
-    //     case RWLOCK:    
-    //         unlockRW();
-    //         break;
-    //     case NOSYNC:
-    //         break;
-    //     case UNKNOWN:
-    //         errorParse("Error: Unkown Sync Strategy\n");
-    //         break;
-    // }
-
-    // /* printf("unlock\n"); */
+void destroyRW(pthread_rwlock_t *lockRW){
+    if(pthread_rwlock_destroy(lockRW))
+        /* Error Handling */
+        errorParse("Error while destroying rwlock lock\n");
 }
-
-
-
