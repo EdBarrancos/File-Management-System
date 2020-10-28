@@ -41,8 +41,9 @@ void inode_table_destroy() {
         if (inode_table[i].nodeType != T_NONE) {
             /* as data is an union, the same pointer is used for both dirEntries and fileContents */
             /* just release one of them */
-	  if (inode_table[i].data.dirEntries)
-            free(inode_table[i].data.dirEntries);
+            if (inode_table[i].data.dirEntries)
+                free(inode_table[i].data.dirEntries);
+            destroyRW(&inode_table[i].lock);
         }
     }
 }
@@ -62,6 +63,8 @@ int inode_create(type nType) {
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
         if (inode_table[inumber].nodeType == T_NONE) {
             inode_table[inumber].nodeType = nType;
+            /* Inits Lock */
+            initLockRW(&inode_table[inumber].lock); 
 
             if (nType == T_DIRECTORY) {
                 /* Initializes entry table */
@@ -105,6 +108,7 @@ int inode_delete(int inumber) {
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
+    destroyRW(&inode_table[inumber].lock);
 
     return SUCCESS;
 
