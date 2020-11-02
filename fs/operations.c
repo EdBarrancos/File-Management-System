@@ -122,6 +122,7 @@ int create(char *name, type nodeType){
 	/* use for copy */
 	type pType;
 	union Data pdata;
+	
 	/*list of inodes*/
 	list* inodeList;
 	inodeList=createList();
@@ -258,6 +259,10 @@ int lookup(char *name) {
 	type nType;
 	union Data data;
 
+	/* Lock Root */
+	lockReadRW(&inode_table[current_inumber].lock);
+	/* TODO -> ADD TO LIST HERE */
+
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);
 
@@ -265,6 +270,10 @@ int lookup(char *name) {
 
 	/* search for all sub nodes */
 	while (path != NULL && (current_inumber = lookup_sub_node(path, data.dirEntries)) != FAIL) {
+		/* Lock node */
+		lockReadRW(&inode_table[current_inumber].lock);
+		/* TODO -> ADD TO LIST HERE */
+		
 		inode_get(current_inumber, &nType, &data);
 		path = strtok(NULL, delim);
 	}
