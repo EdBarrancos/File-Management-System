@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "list.h"
 
 #include "../er/error.h"
 #include "../thr/threads.h"
