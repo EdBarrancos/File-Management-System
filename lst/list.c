@@ -79,8 +79,7 @@ void freeItemsList(list* List, void (*unlockItem)(Item)){
 
         for(current=List->head,prox=List->head->next; prox!=NULL; current = prox, prox = prox->next){
             unlockItem(current->item);
-            if(current!=(List->head)){
-                free(current);
+            free(current);
             }
         }
 

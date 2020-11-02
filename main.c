@@ -137,7 +137,6 @@ void applyCommands(){
 
 void *fnThread(void* arg){
     applyCommands();
-    
 
     return NULL;
 }
