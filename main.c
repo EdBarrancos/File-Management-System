@@ -30,15 +30,15 @@ int insertCommand(char* data) {
 }
 
 char* removeCommand() {
-    lockWriteSection(MUTEX);
+    lockMutex();
     
     if(numberCommands > 0){
         numberCommands--;
-        unlockSection(MUTEX);
+        unlockMutex;
         return inputCommands[headQueue++];  
     }
 
-    unlockSection(MUTEX);
+    unlockMutex();
     
     return NULL;
 }
@@ -104,7 +104,6 @@ void applyCommands(){
         int searchResult;
         switch (token) {
             case 'c':
-                lockWriteSection(UNKNOWN);
                 switch (type) {
                     case 'f':
                         printf("Create file: %s\n", name);
@@ -117,22 +116,17 @@ void applyCommands(){
                     default:
                         errorParse("Error: invalid node type\n");
                 }
-                unlockSection(UNKNOWN);
                 break;
             case 'l': 
-                lockReadSection(UNKNOWN);
                 searchResult = lookup(name);
                 if (searchResult >= 0)
                     printf("Search: %s found\n", name);
                 else
                     printf("Search: %s not found\n", name);
-                unlockSection(UNKNOWN);
                 break;
             case 'd':
-                lockWriteSection(UNKNOWN);
                 printf("Delete: %s\n", name);
                 delete(name);
-                unlockSection(UNKNOWN);
                 break;
             default: { /* error */
                 errorParse("Error: command to apply\n");
@@ -150,8 +144,7 @@ void *fnThread(void* arg){
 /*  Argv:
         1 -> inputfile
         2 -> outputfile
-        3 -> numThreads
-        4 -> synchstrategy */
+        3 -> numThreads */
 void setInitialValues(FILE **inputFile, FILE **outputFile, char *argv[]){
     *inputFile = openFile(argv[1], "r");
     *outputFile = openFile(argv[2], "w");

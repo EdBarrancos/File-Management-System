@@ -70,18 +70,19 @@ void deleteList(list *List, Item _item){
 
 }
 
-void freeList(list* List){
+void unlockFreeList(list* List, void (*unlockItem)(Item)){
 
     link current;
     link prox;
 
-    if (!List_vazia(List)){
+    if (!emptyList(List)){
 
         for(current=List->head,prox=List->head->next; prox!=NULL; current = prox, prox = prox->next){
-
+            unlockItem(current->item);
             free(current);
         }
-        
+
+        unlockItem(current->item);
         free(current);
     }
 

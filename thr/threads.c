@@ -103,3 +103,13 @@ void destroyRW(pthread_rwlock_t *lockRW){
         /* Error Handling */
         errorParse("Error while destroying rwlock lock\n");
 }
+
+/*
+* unlock each inode of list*/
+
+void unlockItem (Item _item){
+    /*transformar Item em ptr_jogo, para aceder a nome_jogo*/
+    inode_t* inode;
+    inode = (inode_t*)_item;
+    unlockRW(&(inode->lock));
+}

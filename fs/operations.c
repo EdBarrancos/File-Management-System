@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "list.h"
 
 #include "../er/error.h"
 #include "../thr/threads.h"
@@ -123,6 +122,10 @@ int create(char *name, type nodeType){
 	/* use for copy */
 	type pType;
 	union Data pdata;
+	/*list of inodes*/
+	list* inodeList;
+
+	inodeList=createList();
 
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
@@ -131,6 +134,7 @@ int create(char *name, type nodeType){
 
 
 	if (parent_inumber == FAIL) {
+		unlockFreeList(inodeList);
 		printf("failed to create %s, invalid parent dir %s\n",
 		        name, parent_name);
 		return FAIL;

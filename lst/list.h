@@ -48,7 +48,7 @@ int emptyList(list* List);
 
 /*
 * free List */
-void freeList(list* List);
+void unlockFreeList(list* List, void (*unlockItem)(Item));
 
 /*
 * pointer to head of list*/
