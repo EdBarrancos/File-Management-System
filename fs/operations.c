@@ -124,7 +124,6 @@ int create(char *name, type nodeType){
 	union Data pdata;
 	/*list of inodes*/
 	list* inodeList;
-
 	inodeList=createList();
 
 	strcpy(name_copy, name);
@@ -134,7 +133,7 @@ int create(char *name, type nodeType){
 
 
 	if (parent_inumber == FAIL) {
-		unlockFreeList(inodeList);
+		unlockFreeList(inodeList, unlockItem);
 		printf("failed to create %s, invalid parent dir %s\n",
 		        name, parent_name);
 		return FAIL;

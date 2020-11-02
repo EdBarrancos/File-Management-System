@@ -23,4 +23,6 @@ void lockWriteRW(pthread_rwlock_t *lockRW);
 void unlockRW(pthread_rwlock_t *lockRW);
 void destroyRW(pthread_rwlock_t *lockRW);
 
+void unlockItem (Item _item);
+
 #endif
