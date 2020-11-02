@@ -109,10 +109,12 @@ void applyCommands(list* List){
                     case 'f':
                         printf("Create file: %s\n", name);
                         create(name, T_FILE);
+                        freeItemsList(List, unlockItem);
                         break;
                     case 'd':
                         printf("Create directory: %s\n", name);
                         create(name, T_DIRECTORY);
+                        freeItemsList(List, unlockItem);
                         break;
                     default:
                         errorParse("Error: invalid node type\n");
@@ -120,6 +122,7 @@ void applyCommands(list* List){
                 break;
             case 'l': 
                 searchResult = lookup(name);
+                freeItemsList(List, unlockItem);
                 if (searchResult >= 0)
                     printf("Search: %s found\n", name);
                 else
@@ -128,6 +131,7 @@ void applyCommands(list* List){
             case 'd':
                 printf("Delete: %s\n", name);
                 delete(name);
+                freeItemsList(List, unlockItem);
                 break;
             default: { /* error */
                 errorParse("Error: command to apply\n");

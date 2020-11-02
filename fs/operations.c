@@ -134,7 +134,6 @@ int create(char *name, type nodeType, list *List){
 
 
 	if (parent_inumber == FAIL) {
-		unlockFreeList(List, unlockItem);
 
 		/* Free everything */
 		printf("failed to create %s, invalid parent dir %s\n",
@@ -145,7 +144,6 @@ int create(char *name, type nodeType, list *List){
 	inode_get(parent_inumber, &pType, &pdata);
 
 	if(pType != T_DIRECTORY) {
-		unlockFreeList(List, unlockItem);
 
 		printf("failed to create %s, parent %s is not a dir\n",
 		        name, parent_name);
@@ -153,7 +151,6 @@ int create(char *name, type nodeType, list *List){
 	}
 
 	if (lookup_sub_node(child_name, pdata.dirEntries) != FAIL) {
-		unlockFreeList(List, unlockItem);
 
 		printf("failed to create %s, already exists in dir %s\n",
 		       child_name, parent_name);
@@ -163,7 +160,6 @@ int create(char *name, type nodeType, list *List){
 	/* create node and add entry to folder that contains new node */
 	child_inumber = inode_create(nodeType);
 	if (child_inumber == FAIL) {
-		unlockFreeList(List, unlockItem);
 
 		printf("failed to create %s in  %s, couldn't allocate inode\n",
 		        child_name, parent_name);
@@ -171,14 +167,11 @@ int create(char *name, type nodeType, list *List){
 	}
 
 	if (dir_add_entry(parent_inumber, child_inumber, child_name) == FAIL) {
-		unlockFreeList(List, unlockItem);
 
 		printf("could not add entry %s in dir %s\n",
 		       child_name, parent_name);
 		return FAIL;
 	}
-
-	unlockFreeList(List, unlockItem);
 	
 	return SUCCESS;
 }
