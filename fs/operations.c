@@ -183,7 +183,7 @@ int create(char *name, type nodeType, list *List){
  *  - name: path of node
  * Returns: SUCCESS or FAIL
  */
-int delete(char *name){
+int delete(char *name, list *List){
 
 	int parent_inumber, child_inumber;
 	char *parent_name, *child_name, name_copy[MAX_FILE_NAME];
