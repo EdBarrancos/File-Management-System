@@ -109,7 +109,7 @@ void destroyRW(pthread_rwlock_t *lockRW){
 
 void unlockItem (Item _item){
     /*transformar Item em ptr_jogo, para aceder a nome_jogo*/
-    inode_t* inode;
-    inode = (inode_t*)_item;
-    unlockRW(&(inode->lock));
+    pthread_rwlock_t* lockINode;
+    lockINode = (pthread_rwlock_t*)_item;
+    unlockRW(lockINode);
 }
