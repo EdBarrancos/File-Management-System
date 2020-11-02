@@ -47,8 +47,13 @@ void deleteList(list *List, Item _item);
 int emptyList(list* List);
 
 /*
-* free List */
-void unlockFreeList(list* List, void (*unlockItem)(Item));
+* free items of List */
+void freeItemsList(list* List, void (*unlockItem)(Item));
+
+/*
+* free list*/
+void freeList();
+
 
 /*
 * pointer to head of list*/

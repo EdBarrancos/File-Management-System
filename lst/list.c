@@ -70,7 +70,7 @@ void deleteList(list *List, Item _item){
 
 }
 
-void unlockFreeList(list* List, void (*unlockItem)(Item)){
+void freeItemsList(list* List, void (*unlockItem)(Item)){
 
     link current;
     link prox;
@@ -79,15 +79,20 @@ void unlockFreeList(list* List, void (*unlockItem)(Item)){
 
         for(current=List->head,prox=List->head->next; prox!=NULL; current = prox, prox = prox->next){
             unlockItem(current->item);
-            free(current);
+            if(current!=(List->head)){
+                free(current);
+            }
         }
 
         unlockItem(current->item);
         free(current);
     }
 
-    free(List);
     return;
+}
+
+void freeList(list* List){
+    free(List);
 }
 
 int emptyList(list* List){
