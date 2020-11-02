@@ -108,12 +108,12 @@ void applyCommands(list* List){
                 switch (type) {
                     case 'f':
                         printf("Create file: %s\n", name);
-                        create(name, T_FILE);
+                        create(name, T_FILE, List);
                         freeItemsList(List, unlockItem);
                         break;
                     case 'd':
                         printf("Create directory: %s\n", name);
-                        create(name, T_DIRECTORY);
+                        create(name, T_DIRECTORY, List);
                         freeItemsList(List, unlockItem);
                         break;
                     default:
@@ -121,7 +121,7 @@ void applyCommands(list* List){
                 }
                 break;
             case 'l': 
-                searchResult = lookup(name);
+                searchResult = lookup(name, List);
                 freeItemsList(List, unlockItem);
                 if (searchResult >= 0)
                     printf("Search: %s found\n", name);
@@ -130,7 +130,7 @@ void applyCommands(list* List){
                 break;
             case 'd':
                 printf("Delete: %s\n", name);
-                delete(name);
+                delete(name, List);
                 freeItemsList(List, unlockItem);
                 break;
             default: { /* error */
