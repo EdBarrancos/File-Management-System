@@ -12,13 +12,13 @@ LDFLAGS=-lm
 
 all: tecnicofs
 
-tecnicofs: fs/state.o fs/operations.o main.o fh/fileHandling.o thr/threads.o er/error.o
-	$(LD) $(CFLAGS) $(LDFLAGS) -o tecnicofs fs/state.o fs/operations.o fh/fileHandling.o thr/threads.o er/error.o main.o
+tecnicofs: fs/state.o fs/operations.o main.o fh/fileHandling.o thr/threads.o lst/list.o er/error.o
+	$(LD) $(CFLAGS) $(LDFLAGS) -o tecnicofs fs/state.o fs/operations.o fh/fileHandling.o thr/threads.o lst/list.o er/error.o main.o
 
-fs/state.o: fs/state.c fs/state.h er/error.h thr/threads.h tecnicofs-api-constants.h
+fs/state.o: fs/state.c fs/state.h er/error.h thr/threads.h lst/list.o tecnicofs-api-constants.h
 	$(CC) $(CFLAGS) -o fs/state.o -c fs/state.c
 
-fs/operations.o: fs/operations.c fs/operations.h fs/state.h er/error.h thr/threads.h tecnicofs-api-constants.h
+fs/operations.o: fs/operations.c fs/operations.h fs/state.h er/error.h thr/threads.h lst/list.o tecnicofs-api-constants.h
 	$(CC) $(CFLAGS) -o fs/operations.o -c fs/operations.c
 
 fh/fileHandling.o: fh/fileHandling.h fh/fileHandling.c er/error.h
@@ -29,7 +29,11 @@ thr/threads.o: thr/threads.h thr/threads.c er/error.h
 
 er/error.o: er/error.h er/error.c
 	$(CC) $(CFLAGS) -o er/error.o -c er/error.c
-main.o: main.c fs/operations.h fs/state.h fh/fileHandling.h thr/threads.h er/error.h tecnicofs-api-constants.h 
+
+lst/list.o: lst/list.h lst/list.c er/error.h
+	$(CC) $(CFLAGS) -o lst/list.o -c lst/list.c
+
+main.o: main.c fs/operations.h fs/state.h fh/fileHandling.h thr/threads.h lst/list.o er/error.h tecnicofs-api-constants.h 
 	$(CC) $(CFLAGS) -o main.o -c main.c
 
 clean:

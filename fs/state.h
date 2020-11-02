@@ -45,9 +45,6 @@ typedef struct inode_t {
     pthread_rwlock_t lock;
 } inode_t;
 
-thread_local inode_t *lockedNodes = NULL;
-
-
 void insert_delay(int cycles);
 void inode_table_init();
 void inode_table_destroy();
