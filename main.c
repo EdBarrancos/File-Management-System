@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+#include "lst/list.h"
 #include "fs/operations.h"
 #include "fh/fileHandling.h"
 #include "thr/threads.h"
@@ -89,7 +90,7 @@ void processInput(FILE *inputFile){
     closeFile(inputFile);
 }
 
-void applyCommands(){
+void applyCommands(list* List){
     while (numberCommands > 0){
         const char* command = removeCommand();
         if (command == NULL){
@@ -136,7 +137,9 @@ void applyCommands(){
 }
 
 void *fnThread(void* arg){
-    applyCommands();
+    list* inodeList;
+    inodeList = createList();
+    applyCommands(inodeList);
 
     return NULL;
 }
