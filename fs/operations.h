@@ -4,6 +4,7 @@
 #include "threads.h"
 #include <pthread.h>
 
+extern inode_t *inode_table;
 
 void init_fs();
 void destroy_fs();
