@@ -83,12 +83,13 @@ void freeItemsList(list* List, void (*unlockItem)(Item)){
             }
         }
 
-        unlockItem(current->item);
-        free(current);
-    }
+    unlockItem(current->item);
+    free(current);
 
     return;
+
 }
+
 
 void freeList(list* List){
     free(List);
