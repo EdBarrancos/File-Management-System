@@ -246,7 +246,7 @@ int delete(char *name){
  *  inumber: identifier of the i-node, if found
  *     FAIL: otherwise
  */
-int lookup(char *name) {
+int lookup(char *name, list* List) {
 	char full_path[MAX_FILE_NAME];
 	char delim[] = "/";
 
@@ -260,8 +260,8 @@ int lookup(char *name) {
 	union Data data;
 
 	/* Lock Root */
-	lockReadRW(&inode_table[current_inumber].lock);
-	/* TODO -> ADD TO LIST HERE */
+	lockReadRW(inode_table[current_inumber].lockP);
+	addList(List, (Item) inode_table[current_inumber].lockP);
 
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);
@@ -271,9 +271,9 @@ int lookup(char *name) {
 	/* search for all sub nodes */
 	while (path != NULL && (current_inumber = lookup_sub_node(path, data.dirEntries)) != FAIL) {
 		/* Lock node */
-		lockReadRW(&inode_table[current_inumber].lock);
-		/* TODO -> ADD TO LIST HERE */
-		
+		lockReadRW(inode_table[current_inumber].lockP);
+		addList(List, (Item) inode_table[current_inumber].lockP);
+
 		inode_get(current_inumber, &nType, &data);
 		path = strtok(NULL, delim);
 	}

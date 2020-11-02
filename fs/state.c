@@ -64,7 +64,7 @@ int inode_create(type nType) {
         if (inode_table[inumber].nodeType == T_NONE) {
             inode_table[inumber].nodeType = nType;
             /* Inits Lock */
-            initLockRW(&inode_table[inumber].lock); 
+            initLockRW(inode_table[inumber].lockP); 
 
             if (nType == T_DIRECTORY) {
                 /* Initializes entry table */
@@ -140,8 +140,6 @@ int inode_get(int inumber, type *nType, union Data *data) {
         *data = inode_table[inumber].data;
 
     return SUCCESS;
-
-
 }
 
 

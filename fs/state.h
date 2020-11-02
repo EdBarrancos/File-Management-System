@@ -42,7 +42,7 @@ union Data {
 typedef struct inode_t {    
 	type nodeType;
 	union Data data;
-    pthread_rwlock_t lock;
+    pthread_rwlock_t *lockP;
 } inode_t;
 
 void insert_delay(int cycles);
