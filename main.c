@@ -12,7 +12,7 @@
 #include "thr/threads.h"
 #include "er/error.h"
 
-#define MAX_COMMANDS 150000
+#define MAX_COMMANDS 150000 /* Passa a 10 */
 #define MAX_INPUT_SIZE 100
 
 int numberThreads = 0;
@@ -43,6 +43,24 @@ char* removeCommand() {
     if(numberThreads > 1)
         unlockMutex();
     
+    return NULL;
+}
+
+void *fnThreadProcessInput(void* arg){
+    /*
+    char line[MAX_INPUT_SIZE];
+    lockMutex();
+    while(fgets(line, sizeof(line)/sizeof(char), inputFile)){
+        while(inputCommands is full)
+            wait(varCond, mutex);
+        cena, char token, type....
+        -...
+        switch
+        ...
+        insertCommand....
+        signal(varCond)
+    } */
+
     return NULL;
 }
 
