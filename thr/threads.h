@@ -9,10 +9,11 @@ void poolThreads(int numberThreads, void *(*fnThread)());
 int getNumberThreads(char *numThreads);
 
 /* Mutex */
-void initLockMutex(pthread_mutex_t* lockMutex);
-void lockMutex(pthread_mutex_t *lockMutex);
-void unlockMutex(pthread_mutex_t *lockMutex);
-void destroyMutex(pthread_mutex_t *lockMutex);
+pthread_mutex_t* lockM;
+void initLockMutex();
+void lockMutex();
+void unlockMutex();
+void destroyMutex();
 
 /* RW */
 void initLockRW(pthread_rwlock_t* lockRW);

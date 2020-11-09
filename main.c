@@ -31,15 +31,17 @@ int insertCommand(char* data) {
 }
 
 char* removeCommand() {
-    lockMutex();
+    if(numberThreads > 1)
+        lockMutex();
     
     if(numberCommands > 0){
         numberCommands--;
-        unlockMutex;
+        if(numberThreads > 1)
+            unlockMutex();
         return inputCommands[headQueue++];  
     }
-
-    unlockMutex();
+    if(numberThreads > 1)
+        unlockMutex();
     
     return NULL;
 }
@@ -168,14 +170,14 @@ int main(int argc, char* argv[]) {
     setInitialValues(&inputFile, &outputFile, argv);
 
     /* init synch system */
-    if(initLock() && numberThreads != 1)
+    if( numberThreads > 1)
+        initMutexLock();
+    else if (numberThreads <= 0)
         /* Error Handling */
-        errorParse("Error: Incorrect number of threads for a nosync system\n");
-
+        errorParse("Error: Wrong number of threads");
 
     /* init filesystem */
     init_fs();
-
 
     /* process input and print tree */
     processInput(inputFile);
