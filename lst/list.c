@@ -1,13 +1,13 @@
 #include "list.h"
 
 struct _list {
-    link head;
-    link tail;
+    nodeptr head;
+    nodeptr tail;
 };
 
 struct _node{
     Item item;
-    link next;
+    nodeptr next;
 };
 
 list* createList(){
@@ -19,8 +19,8 @@ list* createList(){
 
 void addList(list *List, Item _item){
 
-    link new_node;  
-    new_node = (link)malloc(sizeof(node));
+    nodeptr new_node;  
+    new_node = (nodeptr)malloc(sizeof(node));
     new_node->item = _item;
     new_node->next = NULL;
 
@@ -41,8 +41,8 @@ void addList(list *List, Item _item){
 
 void deleteList(list *List, Item _item){
     
-    link current;
-    link prev;
+    nodeptr current;
+    nodeptr prev;
 
     for(current=List->head,prev=NULL; current != NULL; prev = current, current = current->next){
 
@@ -72,8 +72,8 @@ void deleteList(list *List, Item _item){
 
 void freeItemsList(list* List, void (*unlockItem)(Item)){
 
-    link current;
-    link prox;
+    nodeptr current;
+    nodeptr prox;
 
     if (!emptyList(List)){
 
@@ -101,14 +101,14 @@ int emptyList(list* List){
 
 }
 
-link headList(list* List){
+nodeptr headList(list* List){
     return List->head;
 }
 
-Item getNode(link _nextNode){
+Item getNode(nodeptr _nextNode){
     return _nextNode->item;
 }
 
-link nextNode(link _nextNode){
+nodeptr nextNode(nodeptr _nextNode){
     return _nextNode->next;
 }

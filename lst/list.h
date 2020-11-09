@@ -24,7 +24,7 @@ typedef struct _node node;
 /*
 * pointer to node*/
 
-typedef node* link;
+typedef node* nodeptr;
 
 /*
 * initializes list, head e tail point to NULL                       
@@ -57,15 +57,15 @@ void freeList();
 
 /*
 * pointer to head of list*/
-link headList(list* List);
+nodeptr headList(list* List);
 
 /*
 * pointer to item of list*/
-Item getNode(link node);
+Item getNode(nodeptr node);
 
 /*
 * returns pointer to next item*/
 
-link nextNode(link _nextNode);
+nodeptr nextNode(nodeptr _nextNode);
 
 #endif
