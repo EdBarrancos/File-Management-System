@@ -122,11 +122,11 @@ void applyCommands(list* List){
                 break;
             case 'l': 
                 searchResult = lookup(name, List);
-                freeItemsList(List, unlockItem);
                 if (searchResult >= 0)
                     printf("Search: %s found\n", name);
                 else
                     printf("Search: %s not found\n", name);
+                freeItemsList(List, unlockItem);
                 break;
             case 'd':
                 printf("Delete: %s\n", name);
