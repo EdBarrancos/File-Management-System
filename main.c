@@ -21,55 +21,47 @@ char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
 int numberCommands = 0;
 int headQueue = 0;
 
+pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
+
 
 int insertCommand(char* data) {
+    /* FIXME -> use new functions */
+    /* Lock functions */
     if(numberCommands != MAX_COMMANDS) {
         strcpy(inputCommands[numberCommands++], data);
+        signal(waitToNotBeEmpty);
         return 1;
     }
     return 0;
 }
 
 char* removeCommand() {
-    if(numberThreads > 1)
-        lockMutex();
+    /* FIXME -> use new functions */
+    lockMutex();
     
     if(numberCommands > 0){
         numberCommands--;
-        if(numberThreads > 1)
-            unlockMutex();
+        signal(waitToNotBeFull);
+        unlockMutex();
         return inputCommands[headQueue++];  
     }
-    if(numberThreads > 1)
-        unlockMutex();
+    unlockMutex();
     
     return NULL;
 }
 
 void *fnThreadProcessInput(void* arg){
-    /*
     char line[MAX_INPUT_SIZE];
+    FILE *inputFile = (FILE*) arg;
     lockMutex();
-    while(fgets(line, sizeof(line)/sizeof(char), inputFile)){
-        while(inputCommands is full)
-            wait(varCond, mutex);
-        cena, char token, type....
-        -...
-        switch
-        ...
-        insertCommand....
-        signal(varCond)
-    } */
-
-    return NULL;
-}
-
-void processInput(FILE *inputFile){
-    char line[MAX_INPUT_SIZE];
     /* break loop with ^Z or ^D */
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
+        /* FIXME */
+        while(/* inputCommand is full */){
+            wait(waitToNotBeFull);
+        }
 
         int numTokens = sscanf(line, "%c %s %c", &token, name, &type);
 
@@ -83,21 +75,18 @@ void processInput(FILE *inputFile){
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
-                return;
             
             case 'l':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
-                return;
             
             case 'd':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
-                return;
             
             case '#':
                 break;
@@ -108,10 +97,17 @@ void processInput(FILE *inputFile){
         }
     }
     closeFile(inputFile);
+    unlockMutex();
+
+    return NULL;
 }
 
 void applyCommands(list* List){
     while (numberCommands > 0){
+        /* FIXME */
+        while(/* inputCommand is Empty */)
+            wait(waitToNotBeEmpty);
+
         const char* command = removeCommand();
         if (command == NULL){
             continue;
@@ -187,24 +183,22 @@ int main(int argc, char* argv[]) {
     /* Define Arguments */
     setInitialValues(&inputFile, &outputFile, argv);
 
-    /* init synch system */
-    if( numberThreads > 1)
-        initMutexLock();
-    else if (numberThreads <= 0)
+    if (numberThreads <= 0)
         /* Error Handling */
         errorParse("Error: Wrong number of threads");
+
+    /* init synch system */
+    initMutexLock();
+    
 
     /* init filesystem */
     init_fs();
 
-    /* process input and print tree */
-    processInput(inputFile);
-
     /*starts counting the time*/
     gettimeofday(&tvinicio,NULL);
 
-    /*creates pool of threads*/
-    poolThreads(numberThreads, fnThread);
+    /*creates pool of threads and process input and print tree */
+    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile);
 
     print_tecnicofs_tree(outputFile);
     
