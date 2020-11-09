@@ -43,26 +43,26 @@ int getNumberThreads(char *numThreads){
 ************************  */
 
 
-void initLockMutex(pthread_mutex_t* lockMutex){
-    if(pthread_mutex_init(lockMutex, NULL))
+void initLockMutex(){
+    if(pthread_mutex_init(lockM, NULL))
         /* Error Handling */
         errorParse("Error while Initing Mutex\n");
 }
 
-void lockMutex(pthread_mutex_t *lockMutex){
-    if(pthread_mutex_lock(lockMutex))
+void lockMutex(){
+    if(pthread_mutex_lock(lockM))
         /* Error Handling */
         errorParse("Error while locking mutex\n");
 }
 
-void unlockMutex(pthread_mutex_t *lockMutex){
-     if(pthread_mutex_lock(lockMutex))
+void unlockMutex(){
+     if(pthread_mutex_lock(lockM))
         /* Error Handling */
         errorParse("Error while unlocking mutex\n");
 }
 
-void destroyMutex(pthread_mutex_t *lockMutex){
-    if(pthread_mutex_destroy(lockMutex))
+void destroyMutex(){
+    if(pthread_mutex_destroy(lockM))
         /* Error Handling */
         errorParse("Error while destroying mutex lock\n");
 }
