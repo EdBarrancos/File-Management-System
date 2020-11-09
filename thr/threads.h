@@ -2,9 +2,7 @@
 #define THR_H
 
 #include <pthread.h>
-#include "list.h"
-#include "state.h"
-
+#include "../lst/list.h"
 
 
 void poolThreads(int numberThreads, void *(*fnThread)());

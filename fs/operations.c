@@ -194,7 +194,11 @@ int delete(char *name, list *List){
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
-	parent_inumber = lookup(parent_name);
+	parent_inumber = lookup(parent_name, List);
+
+	/* Lock Write Node */
+	lockWriteRW(inode_table[parent_inumber].lockP);
+	addList(List, inode_table[parent_inumber].lockP);
 
 	if (parent_inumber == FAIL) {
 		printf("failed to delete %s, invalid parent dir %s\n",

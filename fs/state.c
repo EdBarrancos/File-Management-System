@@ -108,7 +108,7 @@ int inode_delete(int inumber) {
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
-    destroyRW(&inode_table[inumber].lock);
+    destroyRW(&inode_table[inumber].lockP);
 
     return SUCCESS;
 
