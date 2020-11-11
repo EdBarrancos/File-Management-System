@@ -26,36 +26,18 @@ int tailQueue = -1;
 pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
 
 
-<<<<<<< HEAD
 int insertCommand(char* data, queue* Queue) {
-    if(numberCommands != MAX_COMMANDS) {
-        insert(Queue, data);
-=======
-int insertCommand(char* data) {
     /* FIXME -> use new functions */
     /* Lock functions */
     if(numberCommands != MAX_COMMANDS) {
-        strcpy(inputCommands[numberCommands++], data);
+        insertQueue(Queue, data);
         signal(waitToNotBeEmpty);
->>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
         return 1;
     }
     return 0;
 }
 
-<<<<<<< HEAD
 char* removeCommand(queue* Queue) {
-    if(numberThreads > 1)
-        lockMutex();
-    
-    if(numberCommands > 0){
-        numberCommands--;
-        if(numberThreads > 1)
-            unlockMutex();
-        return removeQueue(Queue);
-//        return inputCommands[headQueue++];  
-=======
-char* removeCommand() {
     /* FIXME -> use new functions */
     lockMutex();
     
@@ -63,19 +45,14 @@ char* removeCommand() {
         numberCommands--;
         signal(waitToNotBeFull);
         unlockMutex();
-        return inputCommands[headQueue++];  
->>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
+        return removeQueue(Queue);  
     }
     unlockMutex();
     
     return NULL;
 }
 
-<<<<<<< HEAD
-void processInput(FILE *inputFile, queue* Queue){
-=======
-void *fnThreadProcessInput(void* arg){
->>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
+void *fnThreadProcessInput(void* arg, queue* Queue){
     char line[MAX_INPUT_SIZE];
     FILE *inputFile = (FILE*) arg;
     lockMutex();
@@ -129,15 +106,12 @@ void *fnThreadProcessInput(void* arg){
 
 void applyCommands(list* List, queue* Queue){
     while (numberCommands > 0){
-<<<<<<< HEAD
-        const char* command = removeCommand(Queue);
-=======
         /* FIXME */
         while(/* inputCommand is Empty */)
             wait(waitToNotBeEmpty);
 
-        const char* command = removeCommand();
->>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
+        /*FIX ME: if empty queue, remove Queue returns NULL*/
+        const char* command = removeQueue(Queue);
         if (command == NULL){
             continue;
         }
@@ -227,22 +201,11 @@ int main(int argc, char* argv[]) {
     /* init filesystem */
     init_fs();
 
-<<<<<<< HEAD
-    /* process input and print tree */
-    processInput(inputFile, Queue);
-
-    /*starts counting the time*/
-    gettimeofday(&tvinicio,NULL);
-
-    /*creates pool of threads*/
-    poolThreads(numberThreads, fnThread, Queue);
-=======
     /*starts counting the time*/
     gettimeofday(&tvinicio,NULL);
 
     /*creates pool of threads and process input and print tree */
-    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile);
->>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
+    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile, Queue);
 
     print_tecnicofs_tree(outputFile);
     
