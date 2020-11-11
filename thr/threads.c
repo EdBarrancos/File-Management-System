@@ -10,16 +10,29 @@
     Input
         char* numThreads -> Number of threads to be created
         void *(*fnThread)() -> Pointer to the functions to be executed */
+<<<<<<< HEAD
 void poolThreads(int numberThreads, void *(*fnThread)(), queue* Queue){
+=======
+void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)(), FILE* inputFile){
+>>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
     
     pthread_t tid[numberThreads];
+    pthread_t inputProcessor;
     int i;
+
+    if(pthread_create(&inputProcessor, NULL, fnThreadProcessInput, (void *) inputFile))
+        /* Error Handling */
+        errorParse("Error while creating task.\n");
 
     for (i=0; i<numberThreads; i++){
         if (pthread_create(&tid[i], NULL, fnThread(Queue), NULL)!=0)
             /* Error Handling */
-            errorParse("Error while waiting for task.\n");
+            errorParse("Error while creating task.\n");
     }
+
+    if(pthread_join(inputProcessor, NULL))
+        /* Error Handling */
+        errorParse("Error while joining threads.\n");
 
     for (i=0; i<numberThreads; i++){
         if(pthread_join(tid[i], NULL))
@@ -66,6 +79,18 @@ void destroyMutex(){
     if(pthread_mutex_destroy(lockM))
         /* Error Handling */
         errorParse("Error while destroying mutex lock\n");
+}
+
+void wait(pthread_cond_t *varCond){
+    if(pthread_cond_wait(varCond, lockM))
+        /* Error Handling */
+        errorParse("Error while waiting");
+}
+
+void signal(pthread_cond_t *varCond){
+    if(pthread_cond_signal(varCond))
+        /* Error handling */
+        errorParse("Error while signaling");
 }
 
 

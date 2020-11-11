@@ -13,7 +13,7 @@
 #include "thr/threads.h"
 #include "er/error.h"
 
-#define MAX_COMMANDS 150000
+#define MAX_COMMANDS 150000 /* Passa a 10 */
 #define MAX_INPUT_SIZE 100
 
 int numberThreads = 0;
@@ -23,15 +23,27 @@ int numberCommands = 0;
 int headQueue = -1;
 int tailQueue = -1;
 
+pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
 
+
+<<<<<<< HEAD
 int insertCommand(char* data, queue* Queue) {
     if(numberCommands != MAX_COMMANDS) {
         insert(Queue, data);
+=======
+int insertCommand(char* data) {
+    /* FIXME -> use new functions */
+    /* Lock functions */
+    if(numberCommands != MAX_COMMANDS) {
+        strcpy(inputCommands[numberCommands++], data);
+        signal(waitToNotBeEmpty);
+>>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
         return 1;
     }
     return 0;
 }
 
+<<<<<<< HEAD
 char* removeCommand(queue* Queue) {
     if(numberThreads > 1)
         lockMutex();
@@ -42,19 +54,39 @@ char* removeCommand(queue* Queue) {
             unlockMutex();
         return removeQueue(Queue);
 //        return inputCommands[headQueue++];  
-    }
-    if(numberThreads > 1)
+=======
+char* removeCommand() {
+    /* FIXME -> use new functions */
+    lockMutex();
+    
+    if(numberCommands > 0){
+        numberCommands--;
+        signal(waitToNotBeFull);
         unlockMutex();
+        return inputCommands[headQueue++];  
+>>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
+    }
+    unlockMutex();
     
     return NULL;
 }
 
+<<<<<<< HEAD
 void processInput(FILE *inputFile, queue* Queue){
+=======
+void *fnThreadProcessInput(void* arg){
+>>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
     char line[MAX_INPUT_SIZE];
+    FILE *inputFile = (FILE*) arg;
+    lockMutex();
     /* break loop with ^Z or ^D */
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
+        /* FIXME */
+        while(/* inputCommand is full */){
+            wait(waitToNotBeFull);
+        }
 
         int numTokens = sscanf(line, "%c %s %c", &token, name, &type);
 
@@ -68,21 +100,18 @@ void processInput(FILE *inputFile, queue* Queue){
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line, Queue))
                     break;
-                return;
             
             case 'l':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line,Queue))
                     break;
-                return;
             
             case 'd':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line, Queue))
                     break;
-                return;
             
             case '#':
                 break;
@@ -93,11 +122,22 @@ void processInput(FILE *inputFile, queue* Queue){
         }
     }
     closeFile(inputFile);
+    unlockMutex();
+
+    return NULL;
 }
 
 void applyCommands(list* List, queue* Queue){
     while (numberCommands > 0){
+<<<<<<< HEAD
         const char* command = removeCommand(Queue);
+=======
+        /* FIXME */
+        while(/* inputCommand is Empty */)
+            wait(waitToNotBeEmpty);
+
+        const char* command = removeCommand();
+>>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
         if (command == NULL){
             continue;
         }
@@ -176,16 +216,18 @@ int main(int argc, char* argv[]) {
     /* Define Arguments */
     setInitialValues(&inputFile, &outputFile, argv);
 
-    /* init synch system */
-    if( numberThreads > 1)
-        initMutexLock();
-    else if (numberThreads <= 0)
+    if (numberThreads <= 0)
         /* Error Handling */
         errorParse("Error: Wrong number of threads");
+
+    /* init synch system */
+    initMutexLock();
+    
 
     /* init filesystem */
     init_fs();
 
+<<<<<<< HEAD
     /* process input and print tree */
     processInput(inputFile, Queue);
 
@@ -194,6 +236,13 @@ int main(int argc, char* argv[]) {
 
     /*creates pool of threads*/
     poolThreads(numberThreads, fnThread, Queue);
+=======
+    /*starts counting the time*/
+    gettimeofday(&tvinicio,NULL);
+
+    /*creates pool of threads and process input and print tree */
+    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile);
+>>>>>>> 38d05502546d0780407693f1bff4bdc9c20f464c
 
     print_tecnicofs_tree(outputFile);
     

@@ -5,7 +5,7 @@
 #include "../lst/list.h"
 
 
-void poolThreads(int numberThreads, void *(*fnThread)());
+void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)(), FILE* inputFile);
 int getNumberThreads(char *numThreads);
 
 /* Mutex */
@@ -14,6 +14,8 @@ void initLockMutex();
 void lockMutex();
 void unlockMutex();
 void destroyMutex();
+void wait(pthread_cond_t *varCond);
+void signal(pthread_cond_t *varCond);
 
 /* RW */
 void initLockRW(pthread_rwlock_t* lockRW);
