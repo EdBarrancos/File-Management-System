@@ -4,18 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../er/error.h"
+#include "../cq/circularqueue.h"
 
 /*  Creates threads and associates tasks
     Input
         char* numThreads -> Number of threads to be created
         void *(*fnThread)() -> Pointer to the functions to be executed */
-void poolThreads(int numberThreads, void *(*fnThread)()){
+void poolThreads(int numberThreads, void *(*fnThread)(), queue* Queue){
     
     pthread_t tid[numberThreads];
     int i;
 
     for (i=0; i<numberThreads; i++){
-        if (pthread_create(&tid[i], NULL, fnThread, NULL)!=0)
+        if (pthread_create(&tid[i], NULL, fnThread(Queue), NULL)!=0)
             /* Error Handling */
             errorParse("Error while waiting for task.\n");
     }

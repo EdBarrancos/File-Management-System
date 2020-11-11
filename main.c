@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 
+#include "cq/circularqueue.h"
 #include "lst/list.h"
 #include "fs/operations.h"
 #include "fh/fileHandling.h"
@@ -17,20 +18,21 @@
 
 int numberThreads = 0;
 
-char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
+//char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
 int numberCommands = 0;
-int headQueue = 0;
+int headQueue = -1;
+int tailQueue = -1;
 
 
-int insertCommand(char* data) {
+int insertCommand(char* data, queue* Queue) {
     if(numberCommands != MAX_COMMANDS) {
-        strcpy(inputCommands[numberCommands++], data);
+        insert(Queue, data);
         return 1;
     }
     return 0;
 }
 
-char* removeCommand() {
+char* removeCommand(queue* Queue) {
     if(numberThreads > 1)
         lockMutex();
     
@@ -38,7 +40,8 @@ char* removeCommand() {
         numberCommands--;
         if(numberThreads > 1)
             unlockMutex();
-        return inputCommands[headQueue++];  
+        return removeQueue(Queue);
+//        return inputCommands[headQueue++];  
     }
     if(numberThreads > 1)
         unlockMutex();
@@ -46,7 +49,7 @@ char* removeCommand() {
     return NULL;
 }
 
-void processInput(FILE *inputFile){
+void processInput(FILE *inputFile, queue* Queue){
     char line[MAX_INPUT_SIZE];
     /* break loop with ^Z or ^D */
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
@@ -63,21 +66,21 @@ void processInput(FILE *inputFile){
             case 'c':
                 if(numTokens != 3)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(insertCommand(line, Queue))
                     break;
                 return;
             
             case 'l':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(insertCommand(line,Queue))
                     break;
                 return;
             
             case 'd':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(insertCommand(line, Queue))
                     break;
                 return;
             
@@ -92,9 +95,9 @@ void processInput(FILE *inputFile){
     closeFile(inputFile);
 }
 
-void applyCommands(list* List){
+void applyCommands(list* List, queue* Queue){
     while (numberCommands > 0){
-        const char* command = removeCommand();
+        const char* command = removeCommand(Queue);
         if (command == NULL){
             continue;
         }
@@ -142,10 +145,10 @@ void applyCommands(list* List){
     }
 }
 
-void *fnThread(void* arg){
+void *fnThread(void* arg, queue* Queue){
     list* inodeList;
     inodeList = createList();
-    applyCommands(inodeList);
+    applyCommands(inodeList, Queue);
 
     return NULL;
 }
@@ -165,6 +168,10 @@ int main(int argc, char* argv[]) {
     struct timeval tvinicio;
     struct timeval tvfinal;
     FILE *inputFile, *outputFile;
+    queue* Queue;
+
+    /* Initialize queue */
+    Queue = createQueue();
 
     /* Define Arguments */
     setInitialValues(&inputFile, &outputFile, argv);
@@ -180,13 +187,13 @@ int main(int argc, char* argv[]) {
     init_fs();
 
     /* process input and print tree */
-    processInput(inputFile);
+    processInput(inputFile, Queue);
 
     /*starts counting the time*/
     gettimeofday(&tvinicio,NULL);
 
     /*creates pool of threads*/
-    poolThreads(numberThreads, fnThread);
+    poolThreads(numberThreads, fnThread, Queue);
 
     print_tecnicofs_tree(outputFile);
     
