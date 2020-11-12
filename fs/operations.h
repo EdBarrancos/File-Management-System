@@ -2,6 +2,7 @@
 #define FS_H
 #include "state.h"
 #include "threads.h"
+#include "../lst/list.h"
 #include <pthread.h>
 
 extern inode_t *inode_table;

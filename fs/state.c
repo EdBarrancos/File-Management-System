@@ -43,7 +43,7 @@ void inode_table_destroy() {
             /* just release one of them */
             if (inode_table[i].data.dirEntries)
                 free(inode_table[i].data.dirEntries);
-            destroyRW(&inode_table[i].lock);
+            destroyRW(inode_table[i].lockP);
         }
     }
 }
@@ -108,7 +108,7 @@ int inode_delete(int inumber) {
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
-    destroyRW(&inode_table[inumber].lockP);
+    destroyRW(inode_table[inumber].lockP);
 
     return SUCCESS;
 

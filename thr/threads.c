@@ -10,18 +10,18 @@
     Input
         char* numThreads -> Number of threads to be created
         void *(*fnThread)() -> Pointer to the functions to be executed */
-void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)(), FILE* inputFile, queue* Queue){
+void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)(), FILE* inputFile){
     
     pthread_t tid[numberThreads];
     pthread_t inputProcessor;
     int i;
 
-    if(pthread_create(&inputProcessor, NULL, fnThreadProcessInput(Queue), (void *) inputFile))
+    if(pthread_create(&inputProcessor, NULL, fnThreadProcessInput(), (void *) inputFile))
         /* Error Handling */
         errorParse("Error while creating task.\n");
 
     for (i=0; i<numberThreads; i++){
-        if (pthread_create(&tid[i], NULL, fnThread(Queue), NULL)!=0)
+        if (pthread_create(&tid[i], NULL, fnThread(), NULL)!=0)
             /* Error Handling */
             errorParse("Error while creating task.\n");
     }

@@ -17,6 +17,7 @@
 #define MAX_INPUT_SIZE 100
 
 int numberThreads = 0;
+queue* Queue;
 
 //char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
 int numberCommands = 0;
@@ -26,7 +27,7 @@ int tailQueue = -1;
 pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
 
 
-int insertCommand(char* data, queue* Queue) {
+int insertCommand(char* data) {
     /* FIXME -> use new functions */
     /* Lock functions */
     lockMutex();
@@ -42,7 +43,7 @@ int insertCommand(char* data, queue* Queue) {
     return 1;        
 }
 
-char* removeCommand(queue* Queue) {
+char* removeCommand() {
     /* FIXME -> use new functions */
     lockMutex();
     char **removedCommand;
@@ -51,6 +52,8 @@ char* removeCommand(queue* Queue) {
         wait(waitToNotBeEmpty);
     }
 
+    /* FIXME esta parte nao ta bem, mas nao podemos logo returnar o removeQueue que depois de fazermos removeQueue temos
+        de dar signal e unlock */
     *(removedCommand) = removeQueue(Queue);
     numberCommands--;
     signal(waitToNotBeFull);
@@ -59,7 +62,7 @@ char* removeCommand(queue* Queue) {
     return *(removedCommand);
 }
 
-void *fnThreadProcessInput(void* arg, queue* Queue){
+void *fnThreadProcessInput(void* arg){
     char line[MAX_INPUT_SIZE];
     FILE *inputFile = (FILE*) arg;
     lockMutex();
@@ -82,19 +85,19 @@ void *fnThreadProcessInput(void* arg, queue* Queue){
             case 'c':
                 if(numTokens != 3)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line, Queue))
+                if(insertCommand(line))
                     break;
             
             case 'l':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line,Queue))
+                if(insertCommand(line))
                     break;
             
             case 'd':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line, Queue))
+                if(insertCommand(line))
                     break;
             
             case '#':
@@ -111,13 +114,8 @@ void *fnThreadProcessInput(void* arg, queue* Queue){
     return NULL;
 }
 
-void applyCommands(list* List, queue* Queue){
+void applyCommands(list* List){
     while (numberCommands > 0){
-        /* FIXME */
-        while(/* inputCommand is Empty */)
-            wait(waitToNotBeEmpty);
-
-        /*FIX ME: if empty queue, remove Queue returns NULL*/
         const char* command = removeQueue(Queue);
         if (command == NULL){
             continue;
@@ -166,10 +164,10 @@ void applyCommands(list* List, queue* Queue){
     }
 }
 
-void *fnThread(void* arg, queue* Queue){
+void *fnThread(void* arg){
     list* inodeList;
     inodeList = createList();
-    applyCommands(inodeList, Queue);
+    applyCommands(inodeList);
 
     return NULL;
 }
@@ -189,7 +187,6 @@ int main(int argc, char* argv[]) {
     struct timeval tvinicio;
     struct timeval tvfinal;
     FILE *inputFile, *outputFile;
-    queue* Queue;
 
     /* Initialize queue */
     Queue = createQueue();
@@ -202,7 +199,7 @@ int main(int argc, char* argv[]) {
         errorParse("Error: Wrong number of threads");
 
     /* init synch system */
-    initMutexLock();
+    initLockMutex();
     
 
     /* init filesystem */
@@ -212,7 +209,7 @@ int main(int argc, char* argv[]) {
     gettimeofday(&tvinicio,NULL);
 
     /*creates pool of threads and process input and print tree */
-    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile, Queue);
+    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile);
 
     print_tecnicofs_tree(outputFile);
     
@@ -220,7 +217,7 @@ int main(int argc, char* argv[]) {
 
     /* release allocated memory */
     destroy_fs();
-    destroyLock();
+    destroyMutex();
     gettimeofday(&tvfinal,NULL);
     printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
     exit(EXIT_SUCCESS);
