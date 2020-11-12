@@ -29,48 +29,34 @@ pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
 int insertCommand(char* data, queue* Queue) {
     /* FIXME -> use new functions */
     /* Lock functions */
-//    if(numberCommands != MAX_COMMANDS) {
+    lockMutex();
 
-    if(fullQueue(Queue)){
-
-        signal(waitToNotBeFull);
-
-        insertQueue(Queue, data);
-
-        return 1;
+    while(fullQueue(Queue)){
+        wait(waitToNotBeFull);
     }
-
-    if(!fullQueue(Queue)){
-
-        insertQueue(Queue, data);
-
-        return 1;
-    }        
-    
-    return 0;
+        
+    insertQueue(Queue, data);
+    numberCommands++;
+    signal(waitToNotBeEmpty);
+    unlockMutex();
+    return 1;        
 }
 
 char* removeCommand(queue* Queue) {
     /* FIXME -> use new functions */
-    //lockMutex();
+    lockMutex();
+    char **removedCommand;
     
-    if(numberCommands > 0){
-        numberCommands--;
-        if (emptyQueue(Queue)){
-            signal(waitToNotBeEmpty);
-            //unlockMutex();
-            return removeQueue(Queue); 
-        }
-
-        if (!emptyQueue(Queue)){
-            //unlockMutex();
-            return removeQueue(Queue);
-        }
-         
+    while(emptyQueue(Queue)){
+        wait(waitToNotBeEmpty);
     }
-    //unlockMutex();
-    
-    return NULL;
+
+    *(removedCommand) = removeQueue(Queue);
+    numberCommands--;
+    signal(waitToNotBeFull);
+    unlockMutex();
+
+    return *(removedCommand);
 }
 
 void *fnThreadProcessInput(void* arg, queue* Queue){
@@ -81,8 +67,8 @@ void *fnThreadProcessInput(void* arg, queue* Queue){
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
-        /* FIXME */
-        while(/* inputCommand is full */){
+        
+        while(fullQueue(Queue)){
             wait(waitToNotBeFull);
         }
 
