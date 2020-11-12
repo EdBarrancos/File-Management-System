@@ -16,6 +16,8 @@ typedef struct _queue queue;
  * returns queue*/
 queue* createQueue();
 
+void switchFinishedState(queue *Queue);
+int getFinishedState(queue *Queue);
 /*
  * checks if queue is empty*/
 int emptyQueue(queue* Queue);

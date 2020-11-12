@@ -3,6 +3,7 @@
 struct _queue {
     int head;
     int tail;
+    int finishedState;
     char inputCommands[MAX][MAX_INPUT_SIZE];
 };
 
@@ -12,8 +13,20 @@ struct _queue {
 queue* createQueue(){
     queue *new;
     new = (queue*)malloc(sizeof(queue));
+    new->finishedState = 0;
     new->head = new->tail = -1;
     return new;
+}
+
+void switchFinishedState(queue *Queue){
+    if(Queue->finishedState == 0)
+        Queue->finishedState = 1;
+    else
+        Queue->finishedState = 0;
+}
+
+int getFinishedState(queue *Queue){
+    return Queue->finishedState;
 }
 
 /*

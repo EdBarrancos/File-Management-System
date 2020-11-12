@@ -107,13 +107,14 @@ void *fnThreadProcessInput(void* arg){
     }
     closeFile(inputFile);
     broadcast(waitToNotBeEmpty);
+    switchFinishedState(Queue);
     unlockMutex();
 
     return NULL;
 }
 
 void applyCommands(list* List){
-    while (){
+    while (!getFinishedState(Queue)){
         const char* command = removeQueue(Queue);
         if (command == NULL){
             continue;
