@@ -68,4 +68,8 @@ Item getNode(nodeptr node);
 
 nodeptr nextNode(nodeptr _nextNode);
 
+/*
+ *returns last item*/
+void getLastItem(list *List)
+
 #endif
