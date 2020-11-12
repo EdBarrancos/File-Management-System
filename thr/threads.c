@@ -120,6 +120,10 @@ void lockWriteRW(pthread_rwlock_t *lockRW){
         errorParse("Error while locking write rwlock\n");
 }
 
+int tryLockRW(pthread_rwlock_t *lockRW){
+    return pthread_rwlock_rdlock(lockRW);       //fails if rwlock already acquired
+}
+
 void unlockRW(pthread_rwlock_t *lockRW){
     if (pthread_rwlock_unlock(lockRW))
         /* Error Handling */

@@ -22,6 +22,7 @@ void broadcast(pthread_cond_t *varCond);
 void initLockRW(pthread_rwlock_t* lockRW);
 void lockReadRW(pthread_rwlock_t *lockRW);
 void lockWriteRW(pthread_rwlock_t *lockRW);
+int tryLockRW(pthread_rwlock_t *lockRW)
 void unlockRW(pthread_rwlock_t *lockRW);
 void destroyRW(pthread_rwlock_t *lockRW);
 
