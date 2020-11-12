@@ -43,7 +43,7 @@ int insertCommand(char* data) {
 char* removeCommand() {
     /* FIXME -> use new functions */
     lockMutex();
-    char **removedCommand;
+    char *removedCommand;
     
     while(emptyQueue(Queue)){
         wait(waitToNotBeEmpty);
@@ -51,12 +51,12 @@ char* removeCommand() {
 
     /* FIXME esta parte nao ta bem, mas nao podemos logo returnar o removeQueue que depois de fazermos removeQueue temos
         de dar signal e unlock */
-    *(removedCommand) = removeQueue(Queue);
+    removedCommand = removeQueue(Queue);
     numberCommands--;
     signal(waitToNotBeFull);
     unlockMutex();
 
-    return *(removedCommand);
+    return removedCommand;
 }
 
 void *fnThreadProcessInput(void* arg){
