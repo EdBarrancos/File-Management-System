@@ -70,7 +70,7 @@ void deleteList(list *List, Item _item){
 
 }
 
-void getLastItem(list *List){
+Item getLastItem(list *List){
     Item lastItem;
     lastItem = List->tail->item;
      
