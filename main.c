@@ -29,25 +29,46 @@ pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
 int insertCommand(char* data, queue* Queue) {
     /* FIXME -> use new functions */
     /* Lock functions */
-    if(numberCommands != MAX_COMMANDS) {
+//    if(numberCommands != MAX_COMMANDS) {
+
+    if(fullQueue(Queue)){
+
+        signal(waitToNotBeFull);
+
         insertQueue(Queue, data);
-        signal(waitToNotBeEmpty);
+
         return 1;
     }
+
+    if(!fullQueue(Queue)){
+
+        insertQueue(Queue, data);
+
+        return 1;
+    }        
+    
     return 0;
 }
 
 char* removeCommand(queue* Queue) {
     /* FIXME -> use new functions */
-    lockMutex();
+    //lockMutex();
     
     if(numberCommands > 0){
         numberCommands--;
-        signal(waitToNotBeFull);
-        unlockMutex();
-        return removeQueue(Queue);  
+        if (emptyQueue(Queue)){
+            signal(waitToNotBeEmpty);
+            //unlockMutex();
+            return removeQueue(Queue); 
+        }
+
+        if (!emptyQueue(Queue)){
+            //unlockMutex();
+            return removeQueue(Queue);
+        }
+         
     }
-    unlockMutex();
+    //unlockMutex();
     
     return NULL;
 }
