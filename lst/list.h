@@ -70,6 +70,6 @@ nodeptr nextNode(nodeptr _nextNode);
 
 /*
  *returns last item*/
-Item getLastItem(list *List)
+Item getLastItem(list *List);
 
 #endif
