@@ -89,6 +89,12 @@ void signal(pthread_cond_t *varCond){
         errorParse("Error while signaling");
 }
 
+void broadcast(pthread_cond_t *varCond){
+    if(pthread_cond_broadcast(varCond))
+        /* Error handling */
+        errorParse("Error while broadcasting");
+}
+
 
 /* ************************
 ******  RW FUNCTIONS  **

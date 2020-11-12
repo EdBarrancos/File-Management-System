@@ -13,9 +13,6 @@
 #include "thr/threads.h"
 #include "er/error.h"
 
-#define MAX_COMMANDS 150000 /* Passa a 10 */
-#define MAX_INPUT_SIZE 100
-
 int numberThreads = 0;
 queue* Queue;
 
@@ -109,13 +106,14 @@ void *fnThreadProcessInput(void* arg){
         }
     }
     closeFile(inputFile);
+    broadcast(waitToNotBeEmpty);
     unlockMutex();
 
     return NULL;
 }
 
 void applyCommands(list* List){
-    while (numberCommands > 0){
+    while (){
         const char* command = removeQueue(Queue);
         if (command == NULL){
             continue;

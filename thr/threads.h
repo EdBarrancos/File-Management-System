@@ -16,6 +16,7 @@ void unlockMutex();
 void destroyMutex();
 void wait(pthread_cond_t *varCond);
 void signal(pthread_cond_t *varCond);
+void broadcast(pthread_cond_t *varCond);
 
 /* RW */
 void initLockRW(pthread_rwlock_t* lockRW);
