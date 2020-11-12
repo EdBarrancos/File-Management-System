@@ -123,12 +123,17 @@ int create(char *name, type nodeType, list *List){
 	type pType;
 	union Data pdata;
 
+	pthread_rwlock_t lock_aux;
+
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
 	parent_inumber = lookup(parent_name, List);
 
 	/* Lock Write Node */
+	lock_aux = getLastItem(List);
+	deleteList(List, lock_aux);
+	unlockRW(lock_aux);
 	lockWriteRW(inode_table[parent_inumber].lockP);
 	addList(List, inode_table[parent_inumber].lockP);
 
@@ -191,12 +196,17 @@ int delete(char *name, list *List){
 	type pType, cType;
 	union Data pdata, cdata;
 
+	pthread_rwlock_t lock_aux;
+
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
 	parent_inumber = lookup(parent_name, List);
 
 	/* Lock Write Node */
+	lock_aux = getLastItem(List);
+	deleteList(List, lock_aux);
+	unlockRW(lock_aux);
 	lockWriteRW(inode_table[parent_inumber].lockP);
 	addList(List, inode_table[parent_inumber].lockP);
 
