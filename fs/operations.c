@@ -6,7 +6,7 @@
 #include "../er/error.h"
 #include "../thr/threads.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 
 /* Given a path, fills pointers with strings for the parent path and child
@@ -139,6 +139,10 @@ int create(char *name, type nodeType, list *List){
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
+	if(DEBUG){
+		printf("%s\n", parent_name);
+		printf("%s\n", child_name);
+	}
 	parent_inumber = lookup(parent_name, List);
 
 	/* Lock Write Node */

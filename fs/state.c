@@ -28,6 +28,7 @@ void inode_table_init() {
         inode_table[i].nodeType = T_NONE;
         inode_table[i].data.dirEntries = NULL;
         inode_table[i].data.fileContents = NULL;
+        initLockRW(&inode_table[i].lockP);
     }
 }
 
@@ -62,9 +63,15 @@ int inode_create(type nType) {
 
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
     
-    if(tryLockRW(&inode_table[inumber].lockP)!=0){
-        continue;
-    }
+        if(tryLockRW(&inode_table[inumber].lockP)!=0){
+            continue;
+        }
+
+        /* / -> a 
+          / -> a -> b
+          lock /
+          lockWrite a
+           */
 
         if (inode_table[inumber].nodeType == T_NONE) {
 
@@ -73,8 +80,6 @@ int inode_create(type nType) {
             
             if (inode_table[inumber].nodeType == T_NONE){
                 inode_table[inumber].nodeType = nType;
-                /* Inits Lock */
-                initLockRW(&inode_table[inumber].lockP); 
 
                 if (nType == T_DIRECTORY) {
                     /* Initializes entry table */
@@ -91,11 +96,12 @@ int inode_create(type nType) {
                 return inumber;                
             } 
 
-            else{
+            /* else{
                 unlockRW(&inode_table[inumber].lockP);
-            }
+            } */
 
         }
+         unlockRW(&inode_table[inumber].lockP);
     }
 
     return FAIL;
