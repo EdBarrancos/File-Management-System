@@ -27,7 +27,7 @@ else
                 for i in $(seq 1 ${3}); do
                     echo "InputFile=${filename} NumThreads=$i"
                     file=${filename%.*}
-                    timeoutput=$(./tecnicofs ${1}/${filename} ${2}/$file-${i}.txt ${i} mutex)
+                    timeoutput=$(./tecnicofs ${1}/${filename} ${2}/$file-${i}.txt ${i})
                     echo ${timeoutput##*$'\n'}
                 done
             done

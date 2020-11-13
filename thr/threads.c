@@ -6,17 +6,20 @@
 #include "../er/error.h"
 #include "../cq/circularqueue.h"
 
+#define DEBUG 1
+pthread_mutex_t lockM;
+
 /*  Creates threads and associates tasks
     Input
         char* numThreads -> Number of threads to be created
         void *(*fnThread)() -> Pointer to the functions to be executed */
-void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)(), FILE* inputFile){
+void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)()){
     
     pthread_t tid[numberThreads];
     pthread_t inputProcessor;
     int i;
 
-    if(pthread_create(&inputProcessor, NULL, fnThreadProcessInput(), (void *) inputFile))
+    if(pthread_create(&inputProcessor, NULL, fnThreadProcessInput(), NULL))
         /* Error Handling */
         errorParse("Error while creating task.\n");
 
@@ -54,31 +57,40 @@ int getNumberThreads(char *numThreads){
 
 
 void initLockMutex(){
-    if(pthread_mutex_init(lockM, NULL))
+    if(DEBUG)
+        printf("Lets Init Mutex Shall We\n");
+
+    if(pthread_mutex_init(&lockM, NULL)){
         /* Error Handling */
+        if(DEBUG)
+            printf("We got an error\n");
         errorParse("Error while Initing Mutex\n");
+    }
+    
+    if(DEBUG)
+        printf("Inited Mutex\n");
 }
 
 void lockMutex(){
-    if(pthread_mutex_lock(lockM))
+    if(pthread_mutex_lock(&lockM))
         /* Error Handling */
         errorParse("Error while locking mutex\n");
 }
 
 void unlockMutex(){
-     if(pthread_mutex_lock(lockM))
+     if(pthread_mutex_unlock(&lockM))
         /* Error Handling */
         errorParse("Error while unlocking mutex\n");
 }
 
 void destroyMutex(){
-    if(pthread_mutex_destroy(lockM))
+    if(pthread_mutex_destroy(&lockM))
         /* Error Handling */
         errorParse("Error while destroying mutex lock\n");
 }
 
 void wait(pthread_cond_t *varCond){
-    if(pthread_cond_wait(varCond, lockM))
+    if(pthread_cond_wait(varCond, &lockM))
         /* Error Handling */
         errorParse("Error while waiting");
 }
@@ -102,7 +114,7 @@ void broadcast(pthread_cond_t *varCond){
 
 
 
-void initLockRW(pthread_rwlock_t* lockRW){
+void initLockRW(pthread_rwlock_t *lockRW){
     if(pthread_rwlock_init(lockRW, NULL))
         /* Error Handling */
         errorParse("Error while Initing RWlock\n");

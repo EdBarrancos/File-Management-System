@@ -6,6 +6,8 @@
 #include "../er/error.h"
 #include "../thr/threads.h"
 
+#define DEBUG 1
+
 
 /* Given a path, fills pointers with strings for the parent path and child
  * file name
@@ -48,10 +50,19 @@ void split_parent_child_from_path(char * path, char ** parent, char ** child) {
  * Initializes tecnicofs and creates root node.
  */
 void init_fs() {
+	if(DEBUG)
+		printf("Init Table Node\n");
+
 	inode_table_init();
 	
+	if(DEBUG)
+		printf("Create root\n");
+
 	int root = inode_create(T_DIRECTORY);
 	
+	if(DEBUG)
+		printf("Check stuff for root\n");
+
 	if (root != FS_ROOT)
 		errorParse("Error: failed to create node for tecnicofs root\n");
 }
@@ -133,8 +144,8 @@ int create(char *name, type nodeType, list *List){
 	/* Lock Write Node */
 	lock_aux = getLastItem(List);
 	unlockRW(lock_aux);
-	lockWriteRW(inode_table[parent_inumber].lockP);
-	addList(List, inode_table[parent_inumber].lockP);
+	lockWriteRW(&inode_table[parent_inumber].lockP);
+	addList(List, &inode_table[parent_inumber].lockP);
 
 
 	if (parent_inumber == FAIL) {
@@ -205,8 +216,8 @@ int delete(char *name, list *List){
 	/* Lock Write Node */
 	lock_aux = getLastItem(List);
 	unlockRW(lock_aux);
-	lockWriteRW(inode_table[parent_inumber].lockP);
-	addList(List, inode_table[parent_inumber].lockP);
+	lockWriteRW(&inode_table[parent_inumber].lockP);
+	addList(List, &inode_table[parent_inumber].lockP);
 
 	if (parent_inumber == FAIL) {
 		printf("failed to delete %s, invalid parent dir %s\n",
@@ -277,8 +288,8 @@ int lookup(char *name, list* List) {
 	union Data data;
 
 	/* Lock Root */
-	lockReadRW(inode_table[current_inumber].lockP);
-	addList(List, (Item) inode_table[current_inumber].lockP);
+	lockReadRW(&inode_table[current_inumber].lockP);
+	addList(List, &inode_table[current_inumber].lockP);
 
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);
@@ -288,8 +299,8 @@ int lookup(char *name, list* List) {
 	/* search for all sub nodes */
 	while (path != NULL && (current_inumber = lookup_sub_node(path, data.dirEntries)) != FAIL) {
 		/* Lock node */
-		lockReadRW(inode_table[current_inumber].lockP);
-		addList(List, (Item) inode_table[current_inumber].lockP);
+		lockReadRW(&inode_table[current_inumber].lockP);
+		addList(List, &inode_table[current_inumber].lockP);
 
 		inode_get(current_inumber, &nType, &data);
 		path = strtok(NULL, delim);

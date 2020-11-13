@@ -43,7 +43,7 @@ void inode_table_destroy() {
             /* just release one of them */
             if (inode_table[i].data.dirEntries)
                 free(inode_table[i].data.dirEntries);
-            destroyRW(inode_table[i].lockP);
+            destroyRW(&inode_table[i].lockP);
         }
     }
 }
@@ -62,19 +62,19 @@ int inode_create(type nType) {
 
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
     
-    if(tryLockRW(inode_table[inumber].lockP)!=0){
+    if(tryLockRW(&inode_table[inumber].lockP)!=0){
         continue;
     }
 
         if (inode_table[inumber].nodeType == T_NONE) {
 
-            unlockRW(inode_table[inumber].lockP);
-            lockWriteRW(inode_table[inumber].lockP);
+            unlockRW(&inode_table[inumber].lockP);
+            lockWriteRW(&inode_table[inumber].lockP);
             
             if (inode_table[inumber].nodeType == T_NONE){
                 inode_table[inumber].nodeType = nType;
                 /* Inits Lock */
-                initLockRW(inode_table[inumber].lockP); 
+                initLockRW(&inode_table[inumber].lockP); 
 
                 if (nType == T_DIRECTORY) {
                     /* Initializes entry table */
@@ -92,7 +92,7 @@ int inode_create(type nType) {
             } 
 
             else{
-                unlockRW(inode_table[inumber].lockP);
+                unlockRW(&inode_table[inumber].lockP);
             }
 
         }
@@ -124,7 +124,7 @@ int inode_delete(int inumber) {
     /* see inode_table_destroy function */
     if (inode_table[inumber].data.dirEntries)
         free(inode_table[inumber].data.dirEntries);
-    destroyRW(inode_table[inumber].lockP);
+    destroyRW(&inode_table[inumber].lockP);
 
     return SUCCESS;
 

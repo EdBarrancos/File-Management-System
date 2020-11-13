@@ -18,10 +18,13 @@ queue* Queue;
 
 //char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
 int numberCommands = 0;
-int headQueue = -1;
-int tailQueue = -1;
 
-pthread_cond_t *waitToNotBeEmpty, *waitToNotBeFull;
+FILE *inputFile;
+FILE *outputFile;
+
+#define DEBUG 1
+
+pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
 
 
 int insertCommand(char* data) {
@@ -29,14 +32,27 @@ int insertCommand(char* data) {
     /* Lock functions */
     lockMutex();
 
+    if(DEBUG)
+        printf("Lets Insert Command\n");
+
     while(fullQueue(Queue)){
-        wait(waitToNotBeFull);
+        wait(&waitToNotBeFull);
     }
-        
+    
+    if(DEBUG)
+        printf("Stopped Waiting\n");
+
     insertQueue(Queue, data);
     numberCommands++;
-    signal(waitToNotBeEmpty);
+    signal(&waitToNotBeEmpty);
+
+    if(DEBUG)
+        printf("Just Signalled\n");
+        
     unlockMutex();
+
+    if(DEBUG)
+        printf("Inserted Command\n");
     return 1;        
 }
 
@@ -46,14 +62,14 @@ char* removeCommand() {
     char *removedCommand;
     
     while(emptyQueue(Queue)){
-        wait(waitToNotBeEmpty);
+        wait(&waitToNotBeEmpty);
     }
 
     /* FIXME esta parte nao ta bem, mas nao podemos logo returnar o removeQueue que depois de fazermos removeQueue temos
         de dar signal e unlock */
     removedCommand = removeQueue(Queue);
     numberCommands--;
-    signal(waitToNotBeFull);
+    signal(&waitToNotBeFull);
     unlockMutex();
 
     return removedCommand;
@@ -61,18 +77,29 @@ char* removeCommand() {
 
 void *fnThreadProcessInput(void* arg){
     char line[MAX_INPUT_SIZE];
-    FILE *inputFile = (FILE*) arg;
-    lockMutex();
+
+    if(DEBUG)
+        printf("Lets close file\n");
+
+    if(DEBUG)
+        printf("ProcessInput\n");
+
     /* break loop with ^Z or ^D */
+
+    if(DEBUG)
+        printf("Start While\n");
+
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
         
-        while(fullQueue(Queue)){
-            wait(waitToNotBeFull);
-        }
+        if(DEBUG)
+            printf("Read a Line\n");
 
         int numTokens = sscanf(line, "%c %s %c", &token, name, &type);
+
+        if(DEBUG)
+            printf("Just Scanned\n");
 
         /* perform minimal validation */
         if (numTokens < 1) {
@@ -104,16 +131,21 @@ void *fnThreadProcessInput(void* arg){
                 errorParse("Error: command invalid\n");
             }
         }
+
+        if(DEBUG)
+            printf("Just read a Line\n");
     }
     closeFile(inputFile);
-    broadcast(waitToNotBeEmpty);
+    broadcast(&waitToNotBeEmpty);
     switchFinishedState(Queue);
-    unlockMutex();
 
     return NULL;
 }
 
 void applyCommands(list* List){
+    if(DEBUG)
+        printf("Lets Start Applying Commands\n");
+        
     while (!getFinishedState(Queue)){
         const char* command = removeQueue(Queue);
         if (command == NULL){
@@ -165,7 +197,15 @@ void applyCommands(list* List){
 
 void *fnThread(void* arg){
     list* inodeList;
+
+    if(DEBUG)
+        printf("Create List\n");
+
     inodeList = createList();
+
+    if(DEBUG)
+        printf("Created List\n");
+
     applyCommands(inodeList);
 
     return NULL;
@@ -175,9 +215,9 @@ void *fnThread(void* arg){
         1 -> inputfile
         2 -> outputfile
         3 -> numThreads */
-void setInitialValues(FILE **inputFile, FILE **outputFile, char *argv[]){
-    *inputFile = openFile(argv[1], "r");
-    *outputFile = openFile(argv[2], "w");
+void setInitialValues(char *argv[]){
+    inputFile = openFile(argv[1], "r");
+    outputFile = openFile(argv[2], "w");
     numberThreads = getNumberThreads(argv[3]);
 }
 
@@ -185,21 +225,31 @@ int main(int argc, char* argv[]) {
 
     struct timeval tvinicio;
     struct timeval tvfinal;
-    FILE *inputFile, *outputFile;
+
+    if(DEBUG)
+        printf("Lets Init Queue\n");
 
     /* Initialize queue */
     Queue = createQueue();
 
+    if(DEBUG)
+        printf("Initialize values\n");
+
     /* Define Arguments */
-    setInitialValues(&inputFile, &outputFile, argv);
+    setInitialValues( argv);
 
     if (numberThreads <= 0)
         /* Error Handling */
         errorParse("Error: Wrong number of threads");
 
+    if(DEBUG)
+        printf("Init Mutex\n");
+
     /* init synch system */
     initLockMutex();
     
+    if(DEBUG)
+        printf("Init FileSystem\n");
 
     /* init filesystem */
     init_fs();
@@ -207,8 +257,14 @@ int main(int argc, char* argv[]) {
     /*starts counting the time*/
     gettimeofday(&tvinicio,NULL);
 
+    if(DEBUG)
+        printf("Going to create threads now\n");
+
     /*creates pool of threads and process input and print tree */
-    poolThreads(numberThreads, fnThread, fnThreadProcessInput, inputFile);
+    poolThreads(numberThreads, fnThread, fnThreadProcessInput);
+
+    if(DEBUG)
+        printf("Lets Print Tree\n");
 
     print_tecnicofs_tree(outputFile);
     

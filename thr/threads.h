@@ -5,11 +5,10 @@
 #include "../lst/list.h"
 
 
-void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)(), FILE* inputFile);
+void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)());
 int getNumberThreads(char *numThreads);
 
 /* Mutex */
-pthread_mutex_t* lockM;
 void initLockMutex();
 void lockMutex();
 void unlockMutex();
