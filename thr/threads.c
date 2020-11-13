@@ -23,10 +23,19 @@ void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcess
         /* Error Handling */
         errorParse("Error while creating task.\n");
 
+    if(DEBUG)
+        printf("Going into the for\n");
+
     for (i=0; i<numberThreads; i++){
-        if (pthread_create(&tid[i], NULL, fnThread(), NULL)!=0)
+        if(DEBUG)
+            printf("Creating threads\n");
+
+        if (pthread_create(&tid[i], NULL, fnThread(), NULL)!=0){
             /* Error Handling */
+            if(DEBUG)
+                printf("Got a error\n");
             errorParse("Error while creating task.\n");
+        }
     }
 
     if(pthread_join(inputProcessor, NULL))

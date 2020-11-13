@@ -39,16 +39,11 @@ int insertCommand(char* data) {
         unlockMutex();
         wait(&waitToNotBeFull);
     }
-    
-    if(DEBUG)
-        printf("Stopped Waiting\n");
 
     insertQueue(Queue, data);
     numberCommands++;
     signal(&waitToNotBeEmpty);
 
-    if(DEBUG)
-        printf("Just Signalled\n");
         
     unlockMutex();
 
@@ -80,22 +75,13 @@ void *fnThreadProcessInput(void* arg){
     char line[MAX_INPUT_SIZE];
 
     if(DEBUG)
-        printf("Lets close file\n");
-
-    if(DEBUG)
         printf("ProcessInput\n");
 
     /* break loop with ^Z or ^D */
 
-    if(DEBUG)
-        printf("Start While\n");
-
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
         char token, type;
         char name[MAX_INPUT_SIZE];
-        
-        if(DEBUG)
-            printf("Read a Line\n");
 
         int numTokens = sscanf(line, "%c %s %c", &token, name, &type);
 
@@ -132,9 +118,6 @@ void *fnThreadProcessInput(void* arg){
                 errorParse("Error: command invalid\n");
             }
         }
-
-        if(DEBUG)
-            printf("Just read a Line\n");
     }
     closeFile(inputFile);
     broadcast(&waitToNotBeEmpty);
@@ -149,6 +132,10 @@ void applyCommands(list* List){
         
     while (!getFinishedState(Queue)){
         const char* command = removeQueue(Queue);
+
+        if(DEBUG)
+            printf("Got Command\n");
+
         if (command == NULL){
             continue;
         }
@@ -159,6 +146,10 @@ void applyCommands(list* List){
         if (numTokens < 2)
             errorParse("Error: invalid command in Queue\n");
         int searchResult;
+
+        if(DEBUG)
+            printf("Lets Start Switch\n");
+
         switch (token) {
             case 'c':
                 switch (type) {
@@ -274,6 +265,10 @@ int main(int argc, char* argv[]) {
     print_tecnicofs_tree(outputFile);
     
     closeFile(outputFile);
+
+    pthread_cond_destroy(&waitToNotBeEmpty);
+    
+    pthread_cond_destroy(&waitToNotBeFull);
 
     /* release allocated memory */
     destroy_fs();
