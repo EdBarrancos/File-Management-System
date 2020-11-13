@@ -67,12 +67,6 @@ int inode_create(type nType) {
             continue;
         }
 
-        /* / -> a 
-          / -> a -> b
-          lock /
-          lockWrite a
-           */
-
         if (inode_table[inumber].nodeType == T_NONE) {
 
             unlockRW(&inode_table[inumber].lockP);
@@ -93,6 +87,8 @@ int inode_create(type nType) {
                     inode_table[inumber].data.fileContents = NULL;
                 }
 
+                unlockRW(&inode_table[inumber].lockP);
+
                 return inumber;                
             } 
 
@@ -101,7 +97,7 @@ int inode_create(type nType) {
             } */
 
         }
-         unlockRW(&inode_table[inumber].lockP);
+        unlockRW(&inode_table[inumber].lockP);
     }
 
     return FAIL;
