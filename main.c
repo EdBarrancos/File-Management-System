@@ -133,9 +133,6 @@ void applyCommands(list* List){
     while (!getFinishedState(Queue)){
         const char* command = removeQueue(Queue);
 
-        if(DEBUG)
-            printf("Got Command\n");
-
         if (command == NULL){
             continue;
         }
@@ -145,6 +142,7 @@ void applyCommands(list* List){
         int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
         if (numTokens < 2)
             errorParse("Error: invalid command in Queue\n");
+            
         int searchResult;
 
         if(DEBUG)

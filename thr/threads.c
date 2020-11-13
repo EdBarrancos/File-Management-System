@@ -16,12 +16,7 @@ pthread_mutex_t lockM;
 void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)()){
     
     pthread_t tid[numberThreads];
-    pthread_t inputProcessor;
     int i;
-
-    if(pthread_create(&inputProcessor, NULL, fnThreadProcessInput(), NULL))
-        /* Error Handling */
-        errorParse("Error while creating task.\n");
 
     if(DEBUG)
         printf("Going into the for\n");
@@ -30,17 +25,13 @@ void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcess
         if(DEBUG)
             printf("Creating threads\n");
 
-        if (pthread_create(&tid[i], NULL, fnThread(), NULL)!=0){
+        if (pthread_create(&tid[i], NULL, fnThread, NULL)!=0){
             /* Error Handling */
-            if(DEBUG)
-                printf("Got a error\n");
             errorParse("Error while creating task.\n");
         }
     }
 
-    if(pthread_join(inputProcessor, NULL))
-        /* Error Handling */
-        errorParse("Error while joining threads.\n");
+    fnThreadProcessInput();
 
     for (i=0; i<numberThreads; i++){
         if(pthread_join(tid[i], NULL))
