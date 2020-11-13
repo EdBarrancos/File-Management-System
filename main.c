@@ -36,6 +36,7 @@ int insertCommand(char* data) {
         printf("Lets Insert Command\n");
 
     while(fullQueue(Queue)){
+        unlockMutex();
         wait(&waitToNotBeFull);
     }
     
@@ -225,6 +226,10 @@ int main(int argc, char* argv[]) {
 
     struct timeval tvinicio;
     struct timeval tvfinal;
+
+    pthread_cond_init(&waitToNotBeEmpty,NULL);
+    
+    pthread_cond_init(&waitToNotBeFull,NULL);
 
     if(DEBUG)
         printf("Lets Init Queue\n");
