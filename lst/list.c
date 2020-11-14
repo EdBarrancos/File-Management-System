@@ -1,5 +1,7 @@
 #include "list.h"
 
+#define DEBUG 1
+
 struct _list {
     nodeptr head;
     nodeptr tail;
@@ -24,19 +26,34 @@ void addList(list *List, pthread_rwlock_t* _item){
     new_node->item = _item;
     new_node->next = NULL;
 
+    if(DEBUG)
+        printf("check if list is empty\n");
+
     if(emptyList(List)){
         
+        if(DEBUG)
+            printf("List seems to be empty\n");
+
         List->head = new_node;
         List->tail = new_node;
 
+        if(DEBUG)
+            printf("List was empty\n");
+
         return;
     }
+    else{
+        if(DEBUG)
+            printf("Lets continue \n");
 
-    List->tail->next = new_node;
-    List->tail = new_node;
+        (List->tail)->next = new_node;
+        List->tail = new_node;
+
+        if(DEBUG)
+            printf("Did it die?\n");
+    }
 
     return;
-
 }
 
 void deleteList(list *List, pthread_rwlock_t* _item){
@@ -79,7 +96,7 @@ pthread_rwlock_t* getLastItem(list *List){
     return lastItem;
 }
 
-void freeItemsList(list* List, void (*unlockItem)(pthread_rwlock_t*)){
+list* freeItemsList(list* List, void (*unlockItem)(pthread_rwlock_t*)){
 
     nodeptr current;
     nodeptr prox;
@@ -95,7 +112,8 @@ void freeItemsList(list* List, void (*unlockItem)(pthread_rwlock_t*)){
     unlockItem(current->item);
     free(current);
 
-    return;
+    List->head = List->tail = NULL;
+    return List;
 
 }
 

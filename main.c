@@ -152,7 +152,7 @@ void applyCommands(list* List){
                     case 'f':
                         printf("Create file: %s\n", name);
                         create(name, T_FILE, List);
-                        freeItemsList(List, unlockItem);
+                        List = freeItemsList(List, unlockItem);
                         break;
                     case 'd':
                         printf("Create directory: %s\n", name);
@@ -186,15 +186,11 @@ void applyCommands(list* List){
 void *fnThread(void* arg){
     list* inodeList;
 
-    if(DEBUG)
-        printf("Create List\n");
-
     inodeList = createList();
 
-    if(DEBUG)
-        printf("Created List\n");
-
     applyCommands(inodeList);
+
+    freeList(inodeList);
 
     return NULL;
 }
@@ -218,14 +214,8 @@ int main(int argc, char* argv[]) {
     
     pthread_cond_init(&waitToNotBeFull,NULL);
 
-    if(DEBUG)
-        printf("Lets Init Queue\n");
-
     /* Initialize queue */
     Queue = createQueue();
-
-    if(DEBUG)
-        printf("Initialize values\n");
 
     /* Define Arguments */
     setInitialValues( argv);
@@ -234,15 +224,9 @@ int main(int argc, char* argv[]) {
         /* Error Handling */
         errorParse("Error: Wrong number of threads");
 
-    if(DEBUG)
-        printf("Init Mutex\n");
-
     /* init synch system */
     initLockMutex();
     
-    if(DEBUG)
-        printf("Init FileSystem\n");
-
     /* init filesystem */
     init_fs();
 
@@ -258,6 +242,7 @@ int main(int argc, char* argv[]) {
     if(DEBUG)
         printf("Lets Print Tree\n");
 
+    freeQueue(Queue);
     print_tecnicofs_tree(outputFile);
     
     closeFile(outputFile);

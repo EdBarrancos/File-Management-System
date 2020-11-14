@@ -45,7 +45,7 @@ int emptyList(list* List);
 
 /*
 * free items of List */
-void freeItemsList(list* List, void (*unlockItem)(pthread_rwlock_t*));
+list* freeItemsList(list* List, void (*unlockItem)(pthread_rwlock_t*));
 
 /*
 * free list*/
