@@ -36,14 +36,12 @@ int insertCommand(char* data) {
         printf("Lets Insert Command\n");
 
     while(fullQueue(Queue)){
-        unlockMutex();
         wait(&waitToNotBeFull);
     }
 
     insertQueue(Queue, data);
     numberCommands++;
     signal(&waitToNotBeEmpty);
-
         
     unlockMutex();
 
