@@ -6,7 +6,7 @@
 #include "../er/error.h"
 #include "../cq/circularqueue.h"
 
-#define DEBUG 1
+#define DEBUG 0
 pthread_mutex_t lockM;
 
 /*  Creates threads and associates tasks

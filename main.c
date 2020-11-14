@@ -22,7 +22,7 @@ int numberCommands = 0;
 FILE *inputFile;
 FILE *outputFile;
 
-#define DEBUG 1
+#define DEBUG 0
 
 pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
 
@@ -41,27 +41,26 @@ int insertCommand(char* data) {
     unlockMutex();
 
     if(DEBUG)
-        printf("inserted Command %s\n", data);
+        printf("inserted Command %s", data);
     
     return 1;        
 }
 
 char* removeCommand() {
-    if(DEBUG)
-        printf("Lock in remove\n");
-
     lockMutex();
     char *removedCommand;
     
-    while(emptyQueue(Queue)){
-        if(DEBUG)
-            printf("Queue empty\n");
+    while(emptyQueue(Queue) && !getFinishedState(Queue)){
         wait(&waitToNotBeEmpty);
     }
 
     /* FIXME esta parte nao ta bem, mas nao podemos logo returnar o removeQueue que depois de fazermos removeQueue temos
         de dar signal e unlock */
     removedCommand = removeQueue(Queue);
+
+    if(DEBUG)
+        printf("Run Command %s", removedCommand);
+
     numberCommands--;
     signal(&waitToNotBeFull);
     unlockMutex();
@@ -115,11 +114,11 @@ void *fnThreadProcessInput(void* arg){
         }
     }
     closeFile(inputFile);
-    broadcast(&waitToNotBeEmpty);
     switchFinishedState(Queue);
+    broadcast(&waitToNotBeEmpty);
 
     if(DEBUG)
-        printf("Finished with commands");
+        printf("Finished with commands\n");
     return NULL;
 }
 
@@ -149,11 +148,19 @@ void applyCommands(list* List){
                         printf("Create file: %s\n", name);
                         create(name, T_FILE, List);
                         List = freeItemsList(List, unlockItem);
+
+                        if(DEBUG)
+                            printf("Created the cool file: %s\n", name);
+
                         break;
                     case 'd':
                         printf("Create directory: %s\n", name);
                         create(name, T_DIRECTORY, List);
                         List = freeItemsList(List, unlockItem);
+
+                        if(DEBUG)
+                            printf("Created the cool directory: %s\n", name);
+
                         break;
                     default:
                         errorParse("Error: invalid node type\n");
@@ -173,6 +180,9 @@ void applyCommands(list* List){
                 printf("Delete: %s\n", name);
                 delete(name, List);
                 List = freeItemsList(List, unlockItem);
+
+                if(DEBUG)
+                    printf("Deleted the cool: %s\n", name);
                 break;
             default: { /* error */
                 errorParse("Error: command to apply\n");

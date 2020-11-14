@@ -99,6 +99,8 @@ int is_dir_empty(DirEntry *dirEntries) {
  */
 int lookup_sub_node(char *name, DirEntry *entries) {
 	if (entries == NULL) {
+		if(DEBUG)
+			printf("FAILED\n");
 		return FAIL;
 	}
 	for (int i = 0; i < MAX_DIR_ENTRIES; i++) {
@@ -127,33 +129,27 @@ int create(char *name, type nodeType, list *List){
 
 	pthread_rwlock_t *lock_aux;
 
-	if(DEBUG)
-		printf("Started Create\n");
-
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
 	if(DEBUG){
-		printf("%s\n", parent_name);
-		printf("%s\n", child_name);
+		printf("Lets Create: %s/%s\n", parent_name, child_name);
 	}
 
 	parent_inumber = lookup(parent_name, List);
+
+
+	if (parent_inumber == FAIL) {
+		printf("failed to create %s, invalid parent dir %s\n",
+		        name, parent_name);
+		return FAIL;
+	}
 
 	/* Lock Write Node */
 	lock_aux = getLastItem(List);
 	unlockRW(lock_aux);
 	lockInumberWrite(parent_inumber);
 	addList(List, getLockInumber(parent_inumber));
-
-
-	if (parent_inumber == FAIL) {
-
-		/* Free everything */
-		printf("failed to create %s, invalid parent dir %s\n",
-		        name, parent_name);
-		return FAIL;
-	}
 
 	inode_get(parent_inumber, &pType, &pdata);
 
@@ -165,7 +161,6 @@ int create(char *name, type nodeType, list *List){
 	}
 
 	if (lookup_sub_node(child_name, pdata.dirEntries) != FAIL) {
-
 		printf("failed to create %s, already exists in dir %s\n",
 		       child_name, parent_name);
 		return FAIL;
@@ -174,21 +169,19 @@ int create(char *name, type nodeType, list *List){
 	/* create node and add entry to folder that contains new node */
 	child_inumber = inode_create(nodeType);
 	if (child_inumber == FAIL) {
-
 		printf("failed to create %s in  %s, couldn't allocate inode\n",
 		        child_name, parent_name);
 		return FAIL;
 	}
 
 	if (dir_add_entry(parent_inumber, child_inumber, child_name) == FAIL) {
-
 		printf("could not add entry %s in dir %s\n",
 		       child_name, parent_name);
 		return FAIL;
 	}
 
 	if(DEBUG)
-		printf("Finished Create\n");
+		printf("Finished Create %s/%s\n", parent_name, child_name);
 	
 	return SUCCESS;
 }
@@ -213,19 +206,23 @@ int delete(char *name, list *List){
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
-	parent_inumber = lookup(parent_name, List);
+	if(DEBUG){
+		printf("Lets Delete: %s/%s\n", parent_name, child_name);
+	}
 
-	/* Lock Write Node */
-	lock_aux = getLastItem(List);
-	unlockRW(lock_aux);
-	lockInumberWrite(parent_inumber);
-	addList(List, getLockInumber(parent_inumber));
+	parent_inumber = lookup(parent_name, List);
 
 	if (parent_inumber == FAIL) {
 		printf("failed to delete %s, invalid parent dir %s\n",
 		        child_name, parent_name);
 		return FAIL;
 	}
+
+	/* Lock Write Node */
+	lock_aux = getLastItem(List);
+	unlockRW(lock_aux);
+	lockInumberWrite(parent_inumber);
+	addList(List, getLockInumber(parent_inumber));
 
 	inode_get(parent_inumber, &pType, &pdata);
 
@@ -264,6 +261,9 @@ int delete(char *name, list *List){
 		return FAIL;
 	}
 
+	if(DEBUG)
+		printf("Finished Delete %s/%s\n", parent_name, child_name);
+
 	return SUCCESS;
 }
 
@@ -280,10 +280,10 @@ int lookup(char *name, list* List) {
 	char full_path[MAX_FILE_NAME];
 	char delim[] = "/";
 
-	if(DEBUG)
-		printf("LookUp Strated\n");
-
 	strcpy(full_path, name);
+
+	if(DEBUG)
+		printf("LookUp Strated %s\n", full_path);
 
 	/* start at root node */
 	int current_inumber = FS_ROOT;
@@ -310,6 +310,9 @@ int lookup(char *name, list* List) {
 		inode_get(current_inumber, &nType, &data);
 		path = strtok(NULL, delim);
 	}
+
+	if(DEBUG)
+		printf("LookUp Finished and The Number Found: %d\n", current_inumber);
 
 	return current_inumber;
 }
