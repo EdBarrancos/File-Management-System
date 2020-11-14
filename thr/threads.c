@@ -18,9 +18,6 @@ void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcess
     pthread_t tid[numberThreads];
     int i;
 
-    if(DEBUG)
-        printf("Going into the for\n");
-
     for (i=0; i<numberThreads; i++){
         if(DEBUG)
             printf("Creating threads\n");
@@ -59,8 +56,6 @@ int getNumberThreads(char *numThreads){
 void initLockMutex(){
     if(pthread_mutex_init(&lockM, NULL)){
         /* Error Handling */
-        if(DEBUG)
-            printf("We got an error\n");
         errorParse("Error while Initing Mutex\n");
     }
 }

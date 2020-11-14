@@ -10,7 +10,7 @@
 
 inode_t inode_table[INODE_TABLE_SIZE];
 
-#define DEBUG 1
+#define DEBUG 0
 
 void lockInumberRead(int inumber){
     lockReadRW(&inode_table[inumber].lockP);
@@ -80,8 +80,6 @@ int inode_create(type nType) {
             printf("%d\n", inumber);
 
         if(tryLockRW(&inode_table[inumber].lockP)!=0){
-            if(DEBUG)
-                printf("Failed to lock\n");
             continue;
         }
 

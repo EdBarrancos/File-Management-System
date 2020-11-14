@@ -26,31 +26,15 @@ void addList(list *List, pthread_rwlock_t* _item){
     new_node->item = _item;
     new_node->next = NULL;
 
-    if(DEBUG)
-        printf("check if list is empty\n");
-
     if(emptyList(List)){
-        
-        if(DEBUG)
-            printf("List seems to be empty\n");
-
         List->head = new_node;
         List->tail = new_node;
-
-        if(DEBUG)
-            printf("List was empty\n");
 
         return;
     }
     else{
-        if(DEBUG)
-            printf("Lets continue \n");
-
         (List->tail)->next = new_node;
         List->tail = new_node;
-
-        if(DEBUG)
-            printf("Did it die?\n");
     }
 
     return;

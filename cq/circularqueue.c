@@ -97,11 +97,8 @@ char* removeQueue(queue* Queue){
         }
         return element;
     }
-
     else{
-
         return NULL;
-
     }
 }
 

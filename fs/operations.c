@@ -6,7 +6,7 @@
 #include "../er/error.h"
 #include "../thr/threads.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 /* Given a path, fills pointers with strings for the parent path and child
@@ -50,18 +50,9 @@ void split_parent_child_from_path(char * path, char ** parent, char ** child) {
  * Initializes tecnicofs and creates root node.
  */
 void init_fs() {
-	if(DEBUG)
-		printf("Init Table Node\n");
-
 	inode_table_init();
-	
-	if(DEBUG)
-		printf("Create root\n");
 
 	int root = inode_create(T_DIRECTORY);
-	
-	if(DEBUG)
-		printf("Check stuff for root\n");
 
 	if (root != FS_ROOT)
 		errorParse("Error: failed to create node for tecnicofs root\n");
@@ -136,6 +127,9 @@ int create(char *name, type nodeType, list *List){
 
 	pthread_rwlock_t *lock_aux;
 
+	if(DEBUG)
+		printf("Started Create\n");
+
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
@@ -143,6 +137,7 @@ int create(char *name, type nodeType, list *List){
 		printf("%s\n", parent_name);
 		printf("%s\n", child_name);
 	}
+
 	parent_inumber = lookup(parent_name, List);
 
 	/* Lock Write Node */
@@ -191,6 +186,9 @@ int create(char *name, type nodeType, list *List){
 		       child_name, parent_name);
 		return FAIL;
 	}
+
+	if(DEBUG)
+		printf("Finished Create\n");
 	
 	return SUCCESS;
 }
@@ -281,6 +279,9 @@ int delete(char *name, list *List){
 int lookup(char *name, list* List) {
 	char full_path[MAX_FILE_NAME];
 	char delim[] = "/";
+
+	if(DEBUG)
+		printf("LookUp Strated\n");
 
 	strcpy(full_path, name);
 

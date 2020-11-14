@@ -28,12 +28,7 @@ pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
 
 
 int insertCommand(char* data) {
-    /* FIXME -> use new functions */
-    /* Lock functions */
     lockMutex();
-
-    if(DEBUG)
-        printf("Lets Insert Command\n");
 
     while(fullQueue(Queue)){
         wait(&waitToNotBeFull);
@@ -46,16 +41,21 @@ int insertCommand(char* data) {
     unlockMutex();
 
     if(DEBUG)
-        printf("Inserted Command\n");
+        printf("inserted Command %s\n", data);
+    
     return 1;        
 }
 
 char* removeCommand() {
-    /* FIXME -> use new functions */
+    if(DEBUG)
+        printf("Lock in remove\n");
+
     lockMutex();
     char *removedCommand;
     
     while(emptyQueue(Queue)){
+        if(DEBUG)
+            printf("Queue empty\n");
         wait(&waitToNotBeEmpty);
     }
 
@@ -82,9 +82,6 @@ void *fnThreadProcessInput(void* arg){
         char name[MAX_INPUT_SIZE];
 
         int numTokens = sscanf(line, "%c %s %c", &token, name, &type);
-
-        if(DEBUG)
-            printf("Just Scanned\n");
 
         /* perform minimal validation */
         if (numTokens < 1) {
@@ -121,6 +118,8 @@ void *fnThreadProcessInput(void* arg){
     broadcast(&waitToNotBeEmpty);
     switchFinishedState(Queue);
 
+    if(DEBUG)
+        printf("Finished with commands");
     return NULL;
 }
 
@@ -129,7 +128,7 @@ void applyCommands(list* List){
         printf("Lets Start Applying Commands\n");
         
     while (!getFinishedState(Queue) || !emptyQueue(Queue)){
-        const char* command = removeQueue(Queue);
+        const char* command = removeCommand();
 
         if (command == NULL){
             continue;
@@ -143,9 +142,6 @@ void applyCommands(list* List){
 
         int searchResult;
 
-        if(DEBUG)
-            printf("Lets Start Switch\n");
-
         switch (token) {
             case 'c':
                 switch (type) {
@@ -157,7 +153,7 @@ void applyCommands(list* List){
                     case 'd':
                         printf("Create directory: %s\n", name);
                         create(name, T_DIRECTORY, List);
-                        freeItemsList(List, unlockItem);
+                        List = freeItemsList(List, unlockItem);
                         break;
                     default:
                         errorParse("Error: invalid node type\n");
@@ -169,12 +165,14 @@ void applyCommands(list* List){
                     printf("Search: %s found\n", name);
                 else
                     printf("Search: %s not found\n", name);
-                freeItemsList(List, unlockItem);
+                List = freeItemsList(List, unlockItem);
+                if(DEBUG)
+                    printf("Finished a search\n");
                 break;
             case 'd':
                 printf("Delete: %s\n", name);
                 delete(name, List);
-                freeItemsList(List, unlockItem);
+                List = freeItemsList(List, unlockItem);
                 break;
             default: { /* error */
                 errorParse("Error: command to apply\n");
@@ -190,7 +188,14 @@ void *fnThread(void* arg){
 
     applyCommands(inodeList);
 
+    if(DEBUG)
+        printf("Free List\n");
+
+    /* Free List */
     freeList(inodeList);
+
+    if(DEBUG)
+        printf("Completed Thread\n");
 
     return NULL;
 }
@@ -233,16 +238,12 @@ int main(int argc, char* argv[]) {
     /*starts counting the time*/
     gettimeofday(&tvinicio,NULL);
 
-    if(DEBUG)
-        printf("Going to create threads now\n");
-
     /*creates pool of threads and process input and print tree */
     poolThreads(numberThreads, fnThread, fnThreadProcessInput);
 
-    if(DEBUG)
-        printf("Lets Print Tree\n");
-
+    /* Free Queue */
     freeQueue(Queue);
+
     print_tecnicofs_tree(outputFile);
     
     closeFile(outputFile);
