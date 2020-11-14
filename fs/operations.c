@@ -293,7 +293,7 @@ int lookup(char *name, list* List) {
 
 	/* Lock Root */
 	lockInumberRead(current_inumber);
-	addList(List, (Item) getLockInumber(current_inumber));
+	addList(List, getLockInumber(current_inumber));
 
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);

@@ -25,6 +25,6 @@ int tryLockRW(pthread_rwlock_t *lockRW);
 void unlockRW(pthread_rwlock_t *lockRW);
 void destroyRW(pthread_rwlock_t *lockRW);
 
-void unlockItem (Item _item);
+void unlockItem (pthread_rwlock_t* _item);
 
 #endif

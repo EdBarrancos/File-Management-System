@@ -6,7 +6,7 @@ struct _list {
 };
 
 struct _node{
-    Item item;
+    pthread_rwlock_t* item;
     nodeptr next;
 };
 
@@ -17,7 +17,7 @@ list* createList(){
     return new;
 }
 
-void addList(list *List, Item _item){
+void addList(list *List, pthread_rwlock_t* _item){
 
     nodeptr new_node;  
     new_node = (nodeptr)malloc(sizeof(node));
@@ -39,7 +39,7 @@ void addList(list *List, Item _item){
 
 }
 
-void deleteList(list *List, Item _item){
+void deleteList(list *List, pthread_rwlock_t* _item){
     
     nodeptr current;
     nodeptr prev;
@@ -70,8 +70,8 @@ void deleteList(list *List, Item _item){
 
 }
 
-Item getLastItem(list *List){
-    Item lastItem;
+pthread_rwlock_t* getLastItem(list *List){
+    pthread_rwlock_t* lastItem;
     lastItem = List->tail->item;
      
     deleteList(List, lastItem);
@@ -79,7 +79,7 @@ Item getLastItem(list *List){
     return lastItem;
 }
 
-void freeItemsList(list* List, void (*unlockItem)(Item)){
+void freeItemsList(list* List, void (*unlockItem)(pthread_rwlock_t*)){
 
     nodeptr current;
     nodeptr prox;
@@ -110,14 +110,14 @@ int emptyList(list* List){
 
 }
 
-nodeptr headList(list* List){
-    return List->head;
-}
+//nodeptr headList(list* List){
+//   return List->head;
+//}
 
-Item getNode(nodeptr _nextNode){
-    return _nextNode->item;
-}
+//void* getNode(nodeptr _nextNode){
+//    return _nextNode->item;
+//}
 
-nodeptr nextNode(nodeptr _nextNode){
-    return _nextNode->next;
-}
+//nodeptr nextNode(nodeptr _nextNode){
+//    return _nextNode->next;
+//}

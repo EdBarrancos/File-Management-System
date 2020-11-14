@@ -145,9 +145,9 @@ void destroyRW(pthread_rwlock_t *lockRW){
 /*
 * unlock each inode of list*/
 
-void unlockItem (Item _item){
+void unlockItem (pthread_rwlock_t* _item){
     /*transformar Item em ptr_jogo, para aceder a nome_jogo*/
-    pthread_rwlock_t* lockINode;
-    lockINode = (pthread_rwlock_t*)_item;
-    unlockRW(lockINode);
+//    pthread_rwlock_t* lockINode;
+//    lockINode = (pthread_rwlock_t*)_item;
+    unlockRW(_item);
 }
