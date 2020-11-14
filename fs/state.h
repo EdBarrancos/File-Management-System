@@ -56,5 +56,8 @@ int dir_reset_entry(int inumber, int sub_inumber);
 int dir_add_entry(int inumber, int sub_inumber, char *sub_name);
 void inode_print_tree(FILE *fp, int inumber, char *name);
 
-
+void lockInumberRead(int inumber);
+void lockInumberWrite(int inumber);
+void unlockInumberRW(int inumber);
+pthread_rwlock_t* getLockInumber(int inumber);
 #endif /* INODES_H */

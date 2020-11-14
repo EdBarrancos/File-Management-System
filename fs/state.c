@@ -10,6 +10,20 @@
 
 inode_t inode_table[INODE_TABLE_SIZE];
 
+#define DEBUG 1
+
+void lockInumberRead(int inumber){
+    lockReadRW(&inode_table[inumber].lockP);
+}
+void lockInumberWrite(int inumber){
+    lockWriteRW(&inode_table[inumber].lockP);
+}
+void unlockInumberRW(int inumber){
+    unlockRW(&inode_table[inumber].lockP);
+}
+pthread_rwlock_t* getLockInumber(int inumber){
+    return &inode_table[inumber].lockP;
+}
 
 /*
  * Sleeps for synchronization testing.
@@ -62,8 +76,12 @@ int inode_create(type nType) {
     insert_delay(DELAY);
 
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
-    
+        if(DEBUG)
+            printf("%d\n", inumber);
+
         if(tryLockRW(&inode_table[inumber].lockP)!=0){
+            if(DEBUG)
+                printf("Failed to lock\n");
             continue;
         }
 
@@ -74,6 +92,9 @@ int inode_create(type nType) {
             
             if (inode_table[inumber].nodeType == T_NONE){
                 inode_table[inumber].nodeType = nType;
+
+                if(DEBUG)
+                    printf("Inode is NONE\n");
 
                 if (nType == T_DIRECTORY) {
                     /* Initializes entry table */

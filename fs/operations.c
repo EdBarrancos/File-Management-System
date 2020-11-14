@@ -148,8 +148,8 @@ int create(char *name, type nodeType, list *List){
 	/* Lock Write Node */
 	lock_aux = getLastItem(List);
 	unlockRW(lock_aux);
-	lockWriteRW(&inode_table[parent_inumber].lockP);
-	addList(List, &inode_table[parent_inumber].lockP);
+	lockInumberWrite(parent_inumber);
+	addList(List, getLockInumber(parent_inumber));
 
 
 	if (parent_inumber == FAIL) {
@@ -220,8 +220,8 @@ int delete(char *name, list *List){
 	/* Lock Write Node */
 	lock_aux = getLastItem(List);
 	unlockRW(lock_aux);
-	lockWriteRW(&inode_table[parent_inumber].lockP);
-	addList(List, &inode_table[parent_inumber].lockP);
+	lockInumberWrite(parent_inumber);
+	addList(List, getLockInumber(parent_inumber));
 
 	if (parent_inumber == FAIL) {
 		printf("failed to delete %s, invalid parent dir %s\n",
@@ -292,8 +292,8 @@ int lookup(char *name, list* List) {
 	union Data data;
 
 	/* Lock Root */
-	lockReadRW(&inode_table[current_inumber].lockP);
-	addList(List, &inode_table[current_inumber].lockP);
+	lockInumberRead(current_inumber);
+	addList(List, (Item) getLockInumber(current_inumber));
 
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);
@@ -303,8 +303,8 @@ int lookup(char *name, list* List) {
 	/* search for all sub nodes */
 	while (path != NULL && (current_inumber = lookup_sub_node(path, data.dirEntries)) != FAIL) {
 		/* Lock node */
-		lockReadRW(&inode_table[current_inumber].lockP);
-		addList(List, &inode_table[current_inumber].lockP);
+		lockInumberRead(current_inumber);
+		addList(List, getLockInumber(current_inumber));
 
 		inode_get(current_inumber, &nType, &data);
 		path = strtok(NULL, delim);

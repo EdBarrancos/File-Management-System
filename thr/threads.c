@@ -57,18 +57,12 @@ int getNumberThreads(char *numThreads){
 
 
 void initLockMutex(){
-    if(DEBUG)
-        printf("Lets Init Mutex Shall We\n");
-
     if(pthread_mutex_init(&lockM, NULL)){
         /* Error Handling */
         if(DEBUG)
             printf("We got an error\n");
         errorParse("Error while Initing Mutex\n");
     }
-    
-    if(DEBUG)
-        printf("Inited Mutex\n");
 }
 
 void lockMutex(){
@@ -133,7 +127,7 @@ void lockWriteRW(pthread_rwlock_t *lockRW){
 }
 
 int tryLockRW(pthread_rwlock_t *lockRW){
-    return pthread_rwlock_rdlock(lockRW);       //fails if rwlock already acquired
+    return pthread_rwlock_tryrdlock(lockRW);       //fails if rwlock already acquired
 }
 
 void unlockRW(pthread_rwlock_t *lockRW){
