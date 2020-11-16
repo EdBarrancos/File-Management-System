@@ -6,7 +6,7 @@
 #include "../er/error.h"
 #include "../thr/threads.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 
 /* Given a path, fills pointers with strings for the parent path and child

@@ -13,6 +13,7 @@
 #include "thr/threads.h"
 #include "er/error.h"
 
+int TRUE = 1;
 int numberThreads = 0;
 queue* Queue;
 
@@ -25,6 +26,7 @@ FILE *outputFile;
 #define DEBUG 0
 
 pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
+pthread_rwlock_t  lockR;
 
 
 int insertCommand(char* data) {
@@ -125,68 +127,82 @@ void *fnThreadProcessInput(void* arg){
 void applyCommands(list* List){
     if(DEBUG)
         printf("Lets Start Applying Commands\n");
-        
-    while (!getFinishedState(Queue) || !emptyQueue(Queue)){
-        const char* command = removeCommand();
+    
+    while(TRUE){
 
-        if (command == NULL){
-            continue;
+        lockReadRW(&lockR);
+        
+        if (!getFinishedState(Queue) || !emptyQueue(Queue)){
+            const char* command = removeCommand();
+
+            unlockRW(&lockR);
+
+            if (command == NULL){
+                continue;
+            }
+
+            char token, type;
+            char name[MAX_INPUT_SIZE];
+            int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
+            if (numTokens < 2)
+                errorParse("Error: invalid command in Queue\n");
+
+            int searchResult;
+
+            printf("command: %s name: %s type: %c\n",command,name,type);
+
+            switch (token) {
+                case 'c':
+                    switch (type) {
+                        case 'f':
+                            printf("Create file: %s\n", name);
+                            create(name, T_FILE, List);
+                            List = freeItemsList(List, unlockItem);
+
+                            if(DEBUG)
+                                printf("Created the cool file: %s\n", name);
+
+                            break;
+                        case 'd':
+                            printf("Create directory: %s\n", name);
+                            create(name, T_DIRECTORY, List);
+                            List = freeItemsList(List, unlockItem);
+
+                            if(DEBUG)
+                                printf("Created the cool directory: %s\n", name);
+
+                            break;
+                        default:
+                            errorParse("Error: invalid node type\n");
+                    }
+                    break;
+                case 'l': 
+                    searchResult = lookup(name, List);
+                    if (searchResult >= 0)
+                        printf("Search: %s found\n", name);
+                    else
+                        printf("Search: %s not found\n", name);
+                    List = freeItemsList(List, unlockItem);
+                    if(DEBUG)
+                        printf("Finished a search\n");
+                    break;
+                case 'd':
+                    printf("Delete: %s\n", name);
+                    delete(name, List);
+                    List = freeItemsList(List, unlockItem);
+
+                    if(DEBUG)
+                        printf("Deleted the cool: %s\n", name);
+                    break;
+                default: { /* error */
+                    errorParse("Error: command to apply\n");
+                }
+            }
         }
 
-        char token, type;
-        char name[MAX_INPUT_SIZE];
-        int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
-        if (numTokens < 2)
-            errorParse("Error: invalid command in Queue\n");
-
-        int searchResult;
-
-        switch (token) {
-            case 'c':
-                switch (type) {
-                    case 'f':
-                        printf("Create file: %s\n", name);
-                        create(name, T_FILE, List);
-                        List = freeItemsList(List, unlockItem);
-
-                        if(DEBUG)
-                            printf("Created the cool file: %s\n", name);
-
-                        break;
-                    case 'd':
-                        printf("Create directory: %s\n", name);
-                        create(name, T_DIRECTORY, List);
-                        List = freeItemsList(List, unlockItem);
-
-                        if(DEBUG)
-                            printf("Created the cool directory: %s\n", name);
-
-                        break;
-                    default:
-                        errorParse("Error: invalid node type\n");
-                }
-                break;
-            case 'l': 
-                searchResult = lookup(name, List);
-                if (searchResult >= 0)
-                    printf("Search: %s found\n", name);
-                else
-                    printf("Search: %s not found\n", name);
-                List = freeItemsList(List, unlockItem);
-                if(DEBUG)
-                    printf("Finished a search\n");
-                break;
-            case 'd':
-                printf("Delete: %s\n", name);
-                delete(name, List);
-                List = freeItemsList(List, unlockItem);
-
-                if(DEBUG)
-                    printf("Deleted the cool: %s\n", name);
-                break;
-            default: { /* error */
-                errorParse("Error: command to apply\n");
-            }
+        else{
+            TRUE = 0;
+            unlockRW(&lockR);
         }
     }
 }
@@ -229,6 +245,8 @@ int main(int argc, char* argv[]) {
     
     pthread_cond_init(&waitToNotBeFull,NULL);
 
+    initLockRW(&lockR);
+
     /* Initialize queue */
     Queue = createQueue();
 
@@ -265,6 +283,7 @@ int main(int argc, char* argv[]) {
     /* release allocated memory */
     destroy_fs();
     destroyMutex();
+    destroyRW(&lockR);
     gettimeofday(&tvfinal,NULL);
     printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
     exit(EXIT_SUCCESS);
