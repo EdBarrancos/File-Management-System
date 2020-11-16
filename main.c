@@ -206,7 +206,10 @@ void applyCommands(list* List){
 
                 case 'm':
                     printf("Move: %s to %s\n", name, typeAndName);
+                    move(name, typeAndName, List);
+                    List = freeItemsList(List, unlockItem);
                     break;
+                    
                 default: { /* error */
                     errorParse("Error: command to apply\n");
                 }
