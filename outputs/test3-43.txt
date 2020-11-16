@@ -1,18 +1,16 @@
 
-/drapery
-/dalle
-/Paulinist
-/cypseline
 /ergal
-/telfer
+/Paulinist
+/grapelet
 /reluctantly
-/hydrant
-/coheritage
-/Ceramium
 /mesiogingival
+/coheritage
+/telfer
+/Ceramium
+/unwaggable
+/dalle
+/drapery
 /saccharimetrical
 /Lif
 /s1
-/Dungan
-/grapelet
-/therology
+/cypseline

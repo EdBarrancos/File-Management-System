@@ -1,6 +1,6 @@
 
-/drapery
 /ergal
+/drapery
 /cypseline
 /telfer
 /saccharimetrical

@@ -79,10 +79,11 @@ void *fnThreadProcessInput(void* arg){
     /* break loop with ^Z or ^D */
 
     while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
-        char token, type;
-        char name[MAX_INPUT_SIZE];
+        char token;
+        char typeAndName[MAX_FILE_NAME];
+        char name[MAX_FILE_NAME];
 
-        int numTokens = sscanf(line, "%c %s %c", &token, name, &type);
+        int numTokens = sscanf(line, "%c %s %s", &token, name, typeAndName);
 
         /* perform minimal validation */
         if (numTokens < 1) {
@@ -103,6 +104,12 @@ void *fnThreadProcessInput(void* arg){
             
             case 'd':
                 if(numTokens != 2)
+                    errorParse("Error: command invalid\n");
+                if(insertCommand(line))
+                    break;
+
+            case 'm':
+                if(numTokens != 3)
                     errorParse("Error: command invalid\n");
                 if(insertCommand(line))
                     break;
@@ -141,20 +148,21 @@ void applyCommands(list* List){
                 continue;
             }
 
-            char token, type;
-            char name[MAX_INPUT_SIZE];
-            int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
+            char token;
+            char typeAndName[MAX_FILE_NAME];
+            char name[MAX_FILE_NAME];
+            int numTokens = sscanf(command, "%c %s %s", &token, name, typeAndName);
             free(command);
             if (numTokens < 2)
                 errorParse("Error: invalid command in Queue\n");
 
             int searchResult;
 
-            printf("command: %s name: %s type: %c\n",command,name,type);
+            printf("command: %s name: %s type: %s\n",command,name,typeAndName);
 
             switch (token) {
                 case 'c':
-                    switch (type) {
+                    switch (typeAndName[0]) {
                         case 'f':
                             printf("Create file: %s\n", name);
                             create(name, T_FILE, List);
@@ -194,6 +202,10 @@ void applyCommands(list* List){
 
                     if(DEBUG)
                         printf("Deleted the cool: %s\n", name);
+                    break;
+
+                case 'm':
+                    printf("Move: %s to %s\n", name, typeAndName);
                     break;
                 default: { /* error */
                     errorParse("Error: command to apply\n");
