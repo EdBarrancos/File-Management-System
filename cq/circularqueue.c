@@ -82,11 +82,12 @@ int insertQueue(queue* Queue, char* element){
 char* removeQueue(queue* Queue){
 	
     char* element;
+    char *copied = (char*)malloc(sizeof(char) * MAX_INPUT_SIZE);
 
     if(!emptyQueue(Queue)){
 
         element = Queue->inputCommands[Queue->head];
-
+        strcpy(copied, element);
         if(Queue->head == Queue->tail){
             Queue->head = -1;
             Queue->tail = -1;
@@ -95,7 +96,7 @@ char* removeQueue(queue* Queue){
         else{
             Queue->head = (Queue->head + 1) % MAX;
         }
-        return element;
+        return copied;
     }
     else{
         return NULL;

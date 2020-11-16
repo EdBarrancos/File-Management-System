@@ -133,7 +133,7 @@ void applyCommands(list* List){
         lockReadRW(&lockR);
         
         if (!getFinishedState(Queue) || !emptyQueue(Queue)){
-            const char* command = removeCommand();
+            char* command = removeCommand();
 
             unlockRW(&lockR);
 
@@ -144,6 +144,7 @@ void applyCommands(list* List){
             char token, type;
             char name[MAX_INPUT_SIZE];
             int numTokens = sscanf(command, "%c %s %c", &token, name, &type);
+            free(command);
             if (numTokens < 2)
                 errorParse("Error: invalid command in Queue\n");
 
