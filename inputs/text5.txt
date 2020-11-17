@@ -1,0 +1,8 @@
+c a d
+c b d
+c a/c f
+mv a/c b/c
+l a
+l b
+l a/c
+l a/b
