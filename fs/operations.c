@@ -278,6 +278,8 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
+	return SUCCESS; /* Just to test */
+
 
 	//check locks in list
 	//sort out how to index nodes

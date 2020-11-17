@@ -1,8 +1,21 @@
 c a d
 c b d
 c a/c f
-mv a/c b/c
+c j f
+c g f
+m a/c b/c
+m b/c a/c
 l a
 l b
+l g
+l j
+l a/j
+l b/g
 l a/c
 l a/b
+m j a/j
+m g b/g
+l j
+l g
+l a/j
+l b/g
