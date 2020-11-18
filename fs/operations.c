@@ -200,8 +200,8 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	char *parent_name_orig, *child_name_orig, name_copy_orig[MAX_FILE_NAME];
 	char *parent_name_dest, *child_name_dest, name_copy_dest[MAX_FILE_NAME];
 	
-	//pthread_rwlock_t *lock_aux_orig;
-	//pthread_rwlock_t *lock_aux_dest;
+	pthread_rwlock_t *lock_aux_orig;
+	pthread_rwlock_t *lock_aux_dest;
 
 	type pType_orig, cType_orig;
 	union Data pdata_orig, cdata_orig;
@@ -210,7 +210,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	type pType_dest, cType_dest;
 	union Data pdata_dest, cdata_dest;
 
- 	/* //char full_path[MAX_FILE_NAME];
+ 	//char full_path[MAX_FILE_NAME];
 	char delim[] = "/";
 
 	// Split child from path 
@@ -218,7 +218,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	split_parent_child_from_path(name_copy_orig, &parent_name_orig, &child_name_orig);
 
 	// start at root node 
-	parent_inumber_orig = FS_ROOT;
+	/* parent_inumber_orig = FS_ROOT;
 
 	// Lock Root 
 	lockInumberRead(parent_inumber_orig);
@@ -329,8 +329,37 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 
 	return SUCCESS;  */
 
+	parent_inumber_orig = lookup(parent_name_orig, List);
 
-	/* // Splits Child From Path 
+	// Verify if parent is directory 
+	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
+
+	if(pType_orig != T_DIRECTORY) {
+		printf("failed to move %s, parent %s is not a dir\n",
+		        child_name_orig, parent_name_orig);
+		return FAIL;
+	}
+
+	// Verify if child origin exists 
+	child_inumber_orig = lookup_sub_node(child_name_orig, pdata_orig.dirEntries);
+
+	if (child_inumber_orig == FAIL) {
+		printf("could not move %s, does not exist in dir %s\n",
+		       child_name_orig, parent_name_orig);
+		return FAIL;
+	}
+
+	//Verify is the one to move if its a dir is empty
+	inode_get(child_inumber_orig, &cType_orig, &cdata_orig);
+
+	if (cType_orig == T_DIRECTORY && is_dir_empty(cdata_orig.dirEntries) == FAIL) {
+		printf("could not move %s: is a directory and not empty\n",
+		       name_copy_orig);
+		return FAIL;
+	}
+
+
+	// Splits Child From Path 
 	strcpy(name_copy_dest, nodeDestination);
 	split_parent_child_from_path(name_copy_dest, &parent_name_dest, &child_name_dest);
 
@@ -368,25 +397,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		addList(List, getLockInumber(parent_inumber_orig));
 	}
 
-	// Verify if parent is directory 
-	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
-
-	if(pType_orig != T_DIRECTORY) {
-		printf("failed to move %s, parent %s is not a dir\n",
-		        child_name_orig, parent_name_orig);
-		return FAIL;
-	}
-
-	// Verify if child origin exists 
-	child_inumber_orig = lookup_sub_node(child_name_orig, pdata_orig.dirEntries);
-
-	if (child_inumber_orig == FAIL) {
-		printf("could not move %s, does not exist in dir %s\n",
-		       child_name_orig, parent_name_orig);
-		return FAIL;
-	}
-
-	return SUCCESS; */
+	return SUCCESS;
 
 	//check locks in list
 	//sort out how to index nodes
@@ -500,8 +511,10 @@ int lookup(char *name, list* List) {
 	union Data data;
 
 	/* Lock Root */
-	lockInumberRead(current_inumber);
-	addList(List, getLockInumber(current_inumber));
+	if(!searchList(getLockInumber(current_inumber), List)){
+		lockInumberRead(current_inumber);
+		addList(List, getLockInumber(current_inumber));
+	}
 
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);
@@ -511,8 +524,10 @@ int lookup(char *name, list* List) {
 	/* search for all sub nodes */
 	while (path != NULL && (current_inumber = lookup_sub_node(path, data.dirEntries)) != FAIL) {
 		/* Lock node */
-		lockInumberRead(current_inumber);
-		addList(List, getLockInumber(current_inumber));
+		if(!searchList(getLockInumber(current_inumber), List)){
+			lockInumberRead(current_inumber);
+			addList(List, getLockInumber(current_inumber));
+		}
 
 		inode_get(current_inumber, &nType, &data);
 		path = strtok(NULL, delim);
