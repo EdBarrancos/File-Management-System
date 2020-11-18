@@ -71,6 +71,26 @@ void deleteList(list *List, pthread_rwlock_t* _item){
 
 }
 
+int searchList(pthread_rwlock_t* itemSearch, list* List){
+    nodeptr currentINode;
+    //pthread_rwlock_t* itemFound;
+
+    currentINode = List->head;
+    //itemFound = NULL;
+
+    // Iterate till last element until key is not found
+    while(currentINode != NULL && currentINode->item != itemSearch){
+        currentINode = currentINode->next;
+    }
+
+    if(currentINode == NULL){
+        return 0;
+    }
+
+
+    return 1;
+}
+
 pthread_rwlock_t* getLastItem(list *List){
     pthread_rwlock_t* lastItem;
     lastItem = List->tail->item;
