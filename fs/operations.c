@@ -210,26 +210,26 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	type pType_dest, cType_dest;
 	union Data pdata_dest, cdata_dest;
 
-	//char full_path[MAX_FILE_NAME];
+ 	/* //char full_path[MAX_FILE_NAME];
 	char delim[] = "/";
 
-	/* Split child from path */
+	// Split child from path 
 	strcpy(name_copy_orig, nodeOrigin);
 	split_parent_child_from_path(name_copy_orig, &parent_name_orig, &child_name_orig);
 
-	/* start at root node */
+	// start at root node 
 	parent_inumber_orig = FS_ROOT;
 
-	/* Lock Root */
+	// Lock Root 
 	lockInumberRead(parent_inumber_orig);
 	addList(List, getLockInumber(parent_inumber_orig));
 
-	/* get root inode data */
+	// get root inode data 
 	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
 
 	parent_name_orig = strtok(name_copy_orig, delim);
 
-	/* search for all sub nodes */
+	// search for all sub nodes 
 	while (parent_name_orig != NULL && (parent_inumber_orig = lookup_sub_node(parent_name_orig, pdata_orig.dirEntries)) != FAIL) {
 		lockInumberRead(parent_inumber_orig);
 		addList(List, getLockInumber(parent_inumber_orig));
@@ -260,21 +260,21 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 
 	//DESTINATION
 	
-	/* Split child from path */
+	// Split child from path 
 	strcpy(name_copy_dest, nodeDestination);
 	split_parent_child_from_path(name_copy_dest, &parent_name_dest, &child_name_dest);
 
-	/* start at root node */
+	// start at root node 
 	parent_inumber_dest = FS_ROOT;
 
-	/* get root inode data */
+	// get root inode data 
 	inode_get(parent_inumber_dest, &pType_dest, &pdata_dest);
 	inode_get(child_inumber_dest, &cType_dest, &cdata_dest);
 
 
 	parent_name_dest = strtok(name_copy_dest, delim);
 
-	/* search for all sub nodes */
+	// search for all sub nodes 
 	while (parent_name_dest != NULL && (parent_inumber_dest = lookup_sub_node(parent_name_dest, pdata_dest.dirEntries)) != FAIL) {
 		if(searchList(getLockInumber(parent_inumber_dest), List)==0){
 			lockInumberRead(parent_inumber_dest);
@@ -327,7 +327,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 
 	dir_add_entry(parent_inumber_dest,child_inumber_dest,child_name_dest);
 
-	return SUCCESS;
+	return SUCCESS;  */
 
 
 	/* // Splits Child From Path 
