@@ -120,10 +120,6 @@ int inode_create(type nType) {
                 return inumber;                
             } 
 
-            /* else{
-                unlockRW(&inode_table[inumber].lockP);
-            } */
-
         }
         unlockRW(&inode_table[inumber].lockP);
     }
