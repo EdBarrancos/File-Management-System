@@ -4,7 +4,6 @@ c a/c f
 c j f
 c g f
 m a/c b/c
-m b/c a/c
 l a
 l b
 l g
@@ -12,7 +11,7 @@ l j
 l a/j
 l b/g
 l a/c
-l a/b
+l b/c
 m j a/j
 m g b/g
 l j

@@ -159,8 +159,6 @@ void applyCommands(list* List){
 
             int searchResult;
 
-            printf("command: %s name: %s type: %s\n",command,name,typeAndName);
-
             switch (token) {
                 case 'c':
                     switch (typeAndName[0]) {
