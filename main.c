@@ -149,7 +149,6 @@ void applyCommands(list* List){
             char typeAndName[MAX_FILE_NAME];
             char name[MAX_FILE_NAME];
             int numTokens = sscanf(command, "%c %s %s", &token, name, typeAndName);
-            printf("freed %s", command);
             free(command);
             if (numTokens < 2)
                 errorParse("Error: invalid command in Queue\n");
@@ -160,20 +159,18 @@ void applyCommands(list* List){
                 case 'c':
                     switch (typeAndName[0]) {
                         case 'f':
-                            
+                            printf("Create file: %s\n", name);
                             create(name, T_FILE, List);
                             List = freeItemsList(List, unlockItem);
-                            printf("Create file: %s\n", name);
 
                             if(DEBUG)
                                 printf("Created the cool file: %s\n", name);
 
                             break;
                         case 'd':
-                            
+                            printf("Create directory: %s\n", name);
                             create(name, T_DIRECTORY, List);
                             List = freeItemsList(List, unlockItem);
-                            printf("Create directory: %s\n", name);
 
                             if(DEBUG)
                                 printf("Created the cool directory: %s\n", name);
@@ -194,20 +191,18 @@ void applyCommands(list* List){
                         printf("Finished a search\n");
                     break;
                 case 'd':
-                    
+                    printf("Delete: %s\n", name);
                     delete(name, List);
                     List = freeItemsList(List, unlockItem);
-                    printf("Delete: %s\n", name);
 
                     if(DEBUG)
                         printf("Deleted the cool: %s\n", name);
                     break;
 
                 case 'm':
-                    
+                    printf("Move: %s to %s\n", name, typeAndName);
                     move(name, typeAndName, List);
                     List = freeItemsList(List, unlockItem);
-                    printf("Move: %s to %s\n", name, typeAndName);
 
                     break;
                     

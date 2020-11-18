@@ -83,7 +83,6 @@ char* removeQueue(queue* Queue){
 	
     char* element;
     char *copied = (char*)malloc(sizeof(char) * MAX_INPUT_SIZE);
-    printf("malloc \n");
 
     if(!emptyQueue(Queue)){
 
