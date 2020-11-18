@@ -6,7 +6,7 @@
 #include "../er/error.h"
 #include "../thr/threads.h"
 
-#define DEBUG 1
+#define DEBUG 0
 
 
 /* Given a path, fills pointers with strings for the parent path and child
@@ -199,19 +199,17 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	int parent_inumber_dest, child_inumber_dest;
 	char *parent_name_orig, *child_name_orig, name_copy_orig[MAX_FILE_NAME];
 	char *parent_name_dest, *child_name_dest, name_copy_dest[MAX_FILE_NAME];
-	
-	pthread_rwlock_t *lock_aux_orig;
-	pthread_rwlock_t *lock_aux_dest;
 
 	type pType_orig, cType_orig;
 	union Data pdata_orig, cdata_orig;
 
 
-	type pType_dest, cType_dest;
-	union Data pdata_dest, cdata_dest;
+	type pType_dest;;
+	union Data pdata_dest;
+
 
  	//char full_path[MAX_FILE_NAME];
-	char delim[] = "/";
+	char delim = '/';
 
 	// Split child from path 
 	strcpy(name_copy_orig, nodeOrigin);
@@ -377,11 +375,11 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	inode_get(parent_inumber_dest, &pType_dest, &pdata_dest;
+	inode_get(parent_inumber_dest, &pType_dest, &pdata_dest);
 
-	if (lookup_sub_node(child_inumber_dest, pdata_dest.dirEntries) != FAIL) {
+	if (lookup_sub_node(child_name_dest, pdata_dest.dirEntries) != FAIL) {
 		printf("failed to move %s, already exists in dir %s\n",
-		       child_inumber_orig, parent_inumber_dest);
+		       child_name_orig, parent_name_dest);
 		return FAIL;
 	}
 
@@ -390,31 +388,58 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	// Lock Write In order
 	if(parent_inumber_orig < parent_inumber_dest){
 		deleteList(List, getLockInumber(parent_inumber_orig));
-		unlockRW(parent_inumber_orig);
+		unlockRW(getLockInumber(parent_inumber_orig));
 		lockInumberWrite(parent_inumber_orig);
 		addList(List, getLockInumber(parent_inumber_orig));
 
 		deleteList(List, getLockInumber(parent_inumber_dest));
-		unlockRW(parent_inumber_dest);
+		unlockRW(getLockInumber(parent_inumber_dest));
 		lockInumberWrite(parent_inumber_dest);
 		addList(List, getLockInumber(parent_inumber_dest));
 	}
 	else{
 		deleteList(List, getLockInumber(parent_inumber_dest));
-		unlockRW(parent_inumber_dest);
+		unlockRW(getLockInumber(parent_inumber_dest));
 		lockInumberWrite(parent_inumber_dest);
 		addList(List, getLockInumber(parent_inumber_dest));
 
 		deleteList(List, getLockInumber(parent_inumber_orig));
-		unlockRW(parent_inumber_orig);
+		unlockRW(getLockInumber(parent_inumber_orig));
 		lockInumberWrite(parent_inumber_orig);
 		addList(List, getLockInumber(parent_inumber_orig));
 	}
 
+	/* Delete Node */
+	/* remove entry from folder that contained deleted node */
+	if (dir_reset_entry(parent_inumber_orig, child_inumber_orig) == FAIL) {
+		printf("failed to delete %s from dir %s\n",
+		       child_name_orig, parent_name_orig);
+		return FAIL;
+	}
+
+	if (inode_delete(child_inumber_orig) == FAIL) {
+		printf("could not delete inode number %d from dir %s\n",
+		       child_inumber_orig, parent_name_orig);
+		return FAIL;
+	}
+
+	child_inumber_dest = inode_create(pType_orig);
+	if (child_inumber_dest == FAIL) {
+		printf("failed to create %s in  %s, couldn't allocate inode\n",
+		        child_name_dest, parent_name_dest);
+		return FAIL;
+	}
+
+	/* FIXME: new inode needs to have the same inumber, e assim acho que pode nao ter */
+
+	if (dir_add_entry(parent_inumber_dest, child_inumber_dest, child_name_dest) == FAIL) {
+		printf("could not add entry %s in dir %s\n",
+		       child_name_dest, parent_name_dest);
+		return FAIL;
+	}
+
 	return SUCCESS;
 
-	//check locks in list
-	//sort out how to index nodes
 }
 
 
