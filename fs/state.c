@@ -21,6 +21,15 @@ void lockInumberWrite(int inumber){
 void unlockInumberRW(int inumber){
     unlockRW(&inode_table[inumber].lockP);
 }
+
+void tryInumberRead(int inumber){
+    tryLockRead(&inode_table[inumber].lockP);
+}
+
+void tryInumberWrite(int inumber){
+    tryLockWrite(&inode_table[inumber].lockP);
+}
+
 pthread_rwlock_t* getLockInumber(int inumber){
     return &inode_table[inumber].lockP;
 }
@@ -79,7 +88,7 @@ int inode_create(type nType) {
         if(DEBUG)
             printf("%d\n", inumber);
 
-        if(tryLockRW(&inode_table[inumber].lockP)!=0){
+        if(tryLockRead(&inode_table[inumber].lockP)!=0){
             continue;
         }
 

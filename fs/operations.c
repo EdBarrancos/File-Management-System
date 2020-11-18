@@ -200,17 +200,43 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	char *parent_name_orig, *child_name_orig, name_copy_orig[MAX_FILE_NAME];
 	char *parent_name_dest, *child_name_dest, name_copy_dest[MAX_FILE_NAME];
 	
-	pthread_rwlock_t *lock_aux_orig;
-	pthread_rwlock_t *lock_aux_dest;
+	//pthread_rwlock_t *lock_aux_orig;
+	//pthread_rwlock_t *lock_aux_dest;
 
 	type pType_orig, cType_orig;
 	union Data pdata_orig, cdata_orig;
+
+
+	type pType_dest, cType_dest;
+	union Data pdata_dest, cdata_dest;
+
+	//char full_path[MAX_FILE_NAME];
+	char delim[] = "/";
 
 	/* Split child from path */
 	strcpy(name_copy_orig, nodeOrigin);
 	split_parent_child_from_path(name_copy_orig, &parent_name_orig, &child_name_orig);
 
-	parent_inumber_orig = lookup(parent_name_orig, List);
+	/* start at root node */
+	parent_inumber_orig = FS_ROOT;
+
+	/* Lock Root */
+	lockInumberRead(parent_inumber_orig);
+	addList(List, getLockInumber(parent_inumber_orig));
+
+	/* get root inode data */
+	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
+
+	parent_name_orig = strtok(name_copy_orig, delim);
+
+	/* search for all sub nodes */
+	while (parent_name_orig != NULL && (parent_inumber_orig = lookup_sub_node(parent_name_orig, pdata_orig.dirEntries)) != FAIL) {
+		lockInumberRead(parent_inumber_orig);
+		addList(List, getLockInumber(parent_inumber_orig));
+
+		inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
+		parent_name_orig = strtok(NULL, delim);
+	}
 
 	if (parent_inumber_orig == FAIL) {
 		printf("failed to move %s, invalid parent dir %s\n",
@@ -218,11 +244,93 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	/* Unlocks Last Node */
-	lock_aux_orig = getLastItem(List);
-	unlockRW(lock_aux_orig);
+	inode_get(child_inumber_orig, &cType_orig, &cdata_orig);
 
-	/* Splits Child From Path */
+	if(lookup_sub_node(parent_name_orig, cdata_orig.dirEntries) != FAIL){
+
+		lockInumberRead(parent_inumber_orig);
+		addList(List, getLockInumber(parent_inumber_orig));
+	}
+
+		
+	if(lookup_sub_node(parent_name_orig, cdata_orig.dirEntries) == FAIL){
+		printf("failed to move %s, inexistent child in parent dir %s\n",child_name_orig, parent_name_orig);
+		return FAIL;		
+	}
+
+	//DESTINATION
+	
+	/* Split child from path */
+	strcpy(name_copy_dest, nodeDestination);
+	split_parent_child_from_path(name_copy_dest, &parent_name_dest, &child_name_dest);
+
+	/* start at root node */
+	parent_inumber_dest = FS_ROOT;
+
+	/* get root inode data */
+	inode_get(parent_inumber_dest, &pType_dest, &pdata_dest);
+	inode_get(child_inumber_dest, &cType_dest, &cdata_dest);
+
+
+	parent_name_dest = strtok(name_copy_dest, delim);
+
+	/* search for all sub nodes */
+	while (parent_name_dest != NULL && (parent_inumber_dest = lookup_sub_node(parent_name_dest, pdata_dest.dirEntries)) != FAIL) {
+		if(searchList(getLockInumber(parent_inumber_dest), List)==0){
+			lockInumberRead(parent_inumber_dest);
+			addList(List, getLockInumber(parent_inumber_dest));
+		}
+
+		if(lookup_sub_node(parent_name_dest, cdata_dest.dirEntries)!=FAIL){
+			printf("failed to move %s, invalid format dir %s\n",child_name_dest, parent_name_dest);
+			return FAIL;
+		}
+
+		inode_get(parent_inumber_dest, &pType_dest, &pdata_dest);
+		parent_name_dest = strtok(NULL, delim);
+	}
+
+	if (parent_inumber_dest == FAIL) {
+		printf("failed to move %s, invalid parent dir %s\n",
+		        child_name_dest, parent_name_dest);
+		return FAIL;
+	}
+		
+	if(lookup_sub_node(parent_name_dest, cdata_dest.dirEntries) != FAIL){
+		printf("failed to move %s, already exists child in parent dir %s\n",child_name_dest, parent_name_dest);
+		return FAIL;		
+	}
+
+	deleteList(List, getLockInumber(parent_inumber_orig));
+	unlockRW(getLockInumber(parent_inumber_orig));
+
+	if (tryLockWrite(getLockInumber(parent_inumber_orig))!=0){
+
+		return WAIT;
+
+	}
+
+	addList(List, getLockInumber(parent_inumber_dest));
+
+	deleteList(List, getLockInumber(parent_inumber_dest));
+	unlockRW(getLockInumber(parent_inumber_dest));
+
+	if (tryLockWrite(getLockInumber(parent_inumber_dest))!=0){
+
+		return WAIT;
+
+	}
+
+	addList(List, getLockInumber(parent_inumber_dest));
+
+	dir_reset_entry(parent_inumber_orig, child_inumber_orig);
+
+	dir_add_entry(parent_inumber_dest,child_inumber_dest,child_name_dest);
+
+	return SUCCESS;
+
+
+	/* // Splits Child From Path 
 	strcpy(name_copy_dest, nodeDestination);
 	split_parent_child_from_path(name_copy_dest, &parent_name_dest, &child_name_dest);
 
@@ -234,7 +342,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	/* Unlock Last Node */
+	// Unlock Last Node 
 	lock_aux_dest = getLastItem(List);
 	unlockRW(lock_aux_dest);
 
@@ -244,7 +352,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	/* Lock Write */
+	// Lock Write 
 	if(parent_inumber_orig < parent_inumber_dest){
 		lockInumberWrite(parent_inumber_orig);
 		addList(List, getLockInumber(parent_inumber_orig));
@@ -260,7 +368,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		addList(List, getLockInumber(parent_inumber_orig));
 	}
 
-	/* Verify if parent is directory */
+	// Verify if parent is directory 
 	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
 
 	if(pType_orig != T_DIRECTORY) {
@@ -269,7 +377,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	/* Verify if child origin exists */
+	// Verify if child origin exists 
 	child_inumber_orig = lookup_sub_node(child_name_orig, pdata_orig.dirEntries);
 
 	if (child_inumber_orig == FAIL) {
@@ -278,8 +386,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	return SUCCESS; /* Just to test */
-
+	return SUCCESS; */
 
 	//check locks in list
 	//sort out how to index nodes
@@ -304,6 +411,7 @@ int delete(char *name, list *List){
 
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
+	
 
 	if(DEBUG){
 		printf("Lets Delete: %s/%s\n", parent_name, child_name);

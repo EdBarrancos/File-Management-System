@@ -121,8 +121,12 @@ void lockWriteRW(pthread_rwlock_t *lockRW){
         errorParse("Error while locking write rwlock\n");
 }
 
-int tryLockRW(pthread_rwlock_t *lockRW){
+int tryLockRead(pthread_rwlock_t *lockRW){
     return pthread_rwlock_tryrdlock(lockRW);       //fails if rwlock already acquired
+}
+
+int tryLockWrite(pthread_rwlock_t *lockRW){
+    return pthread_rwlock_trywrlock(lockRW);       //fails if rwlock already acquired
 }
 
 void unlockRW(pthread_rwlock_t *lockRW){

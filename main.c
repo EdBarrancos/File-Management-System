@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <unistd.h>
 
 #include "cq/circularqueue.h"
 #include "lst/list.h"
@@ -206,7 +207,11 @@ void applyCommands(list* List){
 
                 case 'm':
                     printf("Move: %s to %s\n", name, typeAndName);
-                    move(name, typeAndName, List);
+                    while(move(name, typeAndName, List) == WAIT){
+                        List = freeItemsList(List, unlockItem);
+                        sleep(rand() % 50);
+                        move(name, typeAndName, List);
+                    }
                     List = freeItemsList(List, unlockItem);
                     break;
                     
