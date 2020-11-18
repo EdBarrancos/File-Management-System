@@ -12,9 +12,16 @@
 /Lif
 /s1
 /s1/s2
+<<<<<<< Updated upstream
 /s1/s4
 /s1/s3
 /s1/s5
 /saccharimetrical
 /reluctantly
 /grapelet
+=======
+/s1/s3
+/s1/s4
+/s1/s5
+/benumb
+>>>>>>> Stashed changes

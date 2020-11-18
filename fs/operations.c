@@ -104,7 +104,6 @@ int lookup_sub_node(char *name, DirEntry *entries) {
 		return FAIL;
 	}
 	for (int i = 0; i < MAX_DIR_ENTRIES; i++) {
-		printf("Testing %s\n", entries[i].name);
         if (entries[i].inumber != FREE_INODE && strcmp(entries[i].name, name) == 0) {
             return entries[i].inumber;
         }
@@ -130,12 +129,6 @@ int create(char *name, type nodeType, list *List){
 
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
-
-	printf("parent %s\n", parent_name);
-
-	if(DEBUG){
-		printf("Lets Create: %s/%s\n", parent_name, child_name);
-	}
 
 	parent_inumber = lookup(parent_name, List, 1);
 
@@ -178,9 +171,6 @@ int create(char *name, type nodeType, list *List){
 		       child_name, parent_name);
 		return FAIL;
 	}
-
-	if(DEBUG)
-		printf("Finished Create %s/%s\n", parent_name, child_name);
 	
 	return SUCCESS;
 }
@@ -235,7 +225,6 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	}
 	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
 	inode_get(parent_inumber_dest, &pType_dest, &pdata_dest);
-	printf("LookUp subnode of %s\n", parent_name_orig);
 	child_inumber_orig = lookup_sub_node(child_name_orig, pdata_orig.dirEntries);
 	inode_get(child_inumber_orig, &cType_orig, &cdata_orig);
 
@@ -277,9 +266,7 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	}
 
 	/* Destination cant exist */
-	printf("lookup sub node of %s\n", parent_name_dest);
 	if (lookup_sub_node(child_name_dest, pdata_dest.dirEntries) != FAIL) {
-		printf("Child Orig %s, Child Dest %s, Parent Orig %s, Parent Dest %s\n", child_name_orig, child_name_dest, parent_name_orig, parent_name_dest);
 		printf("failed to move %s, already exists in dir %s\n",
 		       child_name_orig, parent_name_dest);
 		return FAIL;
@@ -457,7 +444,6 @@ int lookup(char *name, list* List, int doLockWrite) {
 
 		inode_get(current_inumber, &nType, &data);
 		path = strtok_r(NULL, delim, &saveptr);
-
 	}
 
 	if(DEBUG)

@@ -1,5 +1,6 @@
 
 /ergal
+<<<<<<< Updated upstream
 /telfer
 /saccharimetrical
 /reluctantly
@@ -7,13 +8,29 @@
 /Ceramium
 /coheritage
 /Paulinist
+=======
+/drapery
+/telfer
+/cypseline
+/nonarcing
+/reluctantly
+/coheritage
+/Paulinist
+/expiry
+>>>>>>> Stashed changes
 /mesiogingival
 /unwaggable
+/dalle
+/saccharimetrical
+/Ceramium
 /Lif
+<<<<<<< Updated upstream
 /s1
 /s1/s2
 /s1/s5
 /s1/s4
 /cypseline
+=======
+>>>>>>> Stashed changes
 /autophotometry
-/nonarcing
+/benumb

@@ -1,14 +1,22 @@
 
 /a
-/c
 /e
+<<<<<<< Updated upstream
 /y
+=======
+/c
+>>>>>>> Stashed changes
 /b
 /b4
 /b2
 /b3
+<<<<<<< Updated upstream
 /b5
+=======
+/b4
+>>>>>>> Stashed changes
 /z
+/b5
 /d
 /d2
 /d3

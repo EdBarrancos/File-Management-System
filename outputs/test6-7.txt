@@ -1,6 +1,7 @@
 
 /a
 /a/a
+<<<<<<< Updated upstream
 /a/a/b4
 /a/c
 /a/c/g1
@@ -30,5 +31,19 @@
 /b/e
 /b/d4
 /b/d3
+=======
+/a/a/a
+/a/c
+/a/c/c
+/a/b
+/a/d
+/b
+/b/b
+/b/b/b
+/b/d
+/b/d/d
+/b/c
+/b/e
+>>>>>>> Stashed changes
 /c
 /d

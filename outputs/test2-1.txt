@@ -2,4 +2,8 @@
 /a
 /a/b
 /a/x
+<<<<<<< Updated upstream
 /a/y
+=======
+/a/x/y
+>>>>>>> Stashed changes

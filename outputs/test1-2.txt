@@ -1,8 +1,15 @@
 
 /a
+<<<<<<< Updated upstream
+=======
+/b
+>>>>>>> Stashed changes
 /d
 /e
 /f
 /g
 /h
+<<<<<<< Updated upstream
 /b
+=======
+>>>>>>> Stashed changes

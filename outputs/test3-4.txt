@@ -1,11 +1,18 @@
 
+<<<<<<< Updated upstream
 /drapery
 /cypseline
+=======
+/cypseline
+/drapery
+/ergal
+>>>>>>> Stashed changes
 /telfer
 /saccharimetrical
 /reluctantly
 /dalle
 /Ceramium
+<<<<<<< Updated upstream
 /coheritage
 /Paulinist
 /mesiogingival
@@ -17,4 +24,12 @@
 /s1/s3
 /s1/s5
 /ergal
+=======
+/mesiogingival
+/Paulinist
+/coheritage
+/unwaggable
+/Lif
+/s1
+>>>>>>> Stashed changes
 /benumb

@@ -2,4 +2,8 @@
 /fruits
 /fruits/apple
 /fruits/orange
+<<<<<<< Updated upstream
+=======
+/fruits/banana
+>>>>>>> Stashed changes
 /animals

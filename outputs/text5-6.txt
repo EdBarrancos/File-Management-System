@@ -3,4 +3,8 @@
 /a/c
 /a/j
 /b
+<<<<<<< Updated upstream
+=======
+/b/c
+>>>>>>> Stashed changes
 /b/g
