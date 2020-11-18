@@ -371,28 +371,42 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 		return FAIL;
 	}
 
-	// Unlock Last Node 
-	lock_aux_dest = getLastItem(List);
-	unlockRW(lock_aux_dest);
-
 	if(!strcmp(child_name_orig, child_name_dest)){
 		printf("failed to move %s, invalid destiny path %s\n ",
 			child_name_orig, child_name_dest);
 		return FAIL;
 	}
 
-	// Lock Write 
+	inode_get(parent_inumber_dest, &pType_dest, &pdata_dest;
+
+	if (lookup_sub_node(child_inumber_dest, pdata_dest.dirEntries) != FAIL) {
+		printf("failed to move %s, already exists in dir %s\n",
+		       child_inumber_orig, parent_inumber_dest);
+		return FAIL;
+	}
+
+	/* FINISHED CHECKING IF ITS POSSIBLE TO MOVE */
+
+	// Lock Write In order
 	if(parent_inumber_orig < parent_inumber_dest){
+		deleteList(List, getLockInumber(parent_inumber_orig));
+		unlockRW(parent_inumber_orig);
 		lockInumberWrite(parent_inumber_orig);
 		addList(List, getLockInumber(parent_inumber_orig));
 
+		deleteList(List, getLockInumber(parent_inumber_dest));
+		unlockRW(parent_inumber_dest);
 		lockInumberWrite(parent_inumber_dest);
 		addList(List, getLockInumber(parent_inumber_dest));
 	}
 	else{
+		deleteList(List, getLockInumber(parent_inumber_dest));
+		unlockRW(parent_inumber_dest);
 		lockInumberWrite(parent_inumber_dest);
 		addList(List, getLockInumber(parent_inumber_dest));
 
+		deleteList(List, getLockInumber(parent_inumber_orig));
+		unlockRW(parent_inumber_orig);
 		lockInumberWrite(parent_inumber_orig);
 		addList(List, getLockInumber(parent_inumber_orig));
 	}
