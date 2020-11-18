@@ -59,7 +59,7 @@ void deleteList(list *List, pthread_rwlock_t* _item){
             if(current==List->tail){
                 List->tail=prev;
             }
-            
+            printf("Freeing\n");
             free(current);
             break;
         

@@ -1,9 +1,9 @@
 
-/drapery
 /ergal
 /cypseline
 /telfer
 /saccharimetrical
+/drapery
 /reluctantly
 /dalle
 /Ceramium
@@ -13,5 +13,4 @@
 /unwaggable
 /Lif
 /s1
-/s1/s4
 /benumb
