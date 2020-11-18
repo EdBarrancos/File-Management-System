@@ -43,8 +43,6 @@ int insertCommand(char* data) {
         
     unlockMutex();
 
-    if(DEBUG)
-        printf("inserted Command %s", data);
     
     return 1;        
 }
@@ -60,9 +58,8 @@ char* removeCommand() {
     /* FIXME esta parte nao ta bem, mas nao podemos logo returnar o removeQueue que depois de fazermos removeQueue temos
         de dar signal e unlock */
     removedCommand = removeQueue(Queue);
+    
 
-    if(DEBUG)
-        printf("Run Command %s", removedCommand);
 
     numberCommands--;
     signal(&waitToNotBeFull);
@@ -138,12 +135,11 @@ void applyCommands(list* List){
     
     while(TRUE){
 
-        lockReadRW(&lockR);
+        lockMutex();
         
         if (!getFinishedState(Queue) || !emptyQueue(Queue)){
+            unlockMutex();
             char* command = removeCommand();
-
-            unlockRW(&lockR);
 
             if (command == NULL){
                 continue;
@@ -153,13 +149,12 @@ void applyCommands(list* List){
             char typeAndName[MAX_FILE_NAME];
             char name[MAX_FILE_NAME];
             int numTokens = sscanf(command, "%c %s %s", &token, name, typeAndName);
+            printf("freed %s", command);
             free(command);
             if (numTokens < 2)
                 errorParse("Error: invalid command in Queue\n");
 
             int searchResult;
-
-            printf("command: %s name: %s type: %s\n",command,name,typeAndName);
 
             switch (token) {
                 case 'c':
@@ -223,7 +218,7 @@ void applyCommands(list* List){
 
         else{
             TRUE = 0;
-            unlockRW(&lockR);
+            unlockMutex();
         }
     }
 }
@@ -266,7 +261,7 @@ int main(int argc, char* argv[]) {
     
     pthread_cond_init(&waitToNotBeFull,NULL);
 
-    initLockRW(&lockR);
+    //initLockRW(&lockR);
 
     /* Initialize queue */
     Queue = createQueue();
@@ -304,7 +299,7 @@ int main(int argc, char* argv[]) {
     /* release allocated memory */
     destroy_fs();
     destroyMutex();
-    destroyRW(&lockR);
+    //destroyRW(&lockR);
     gettimeofday(&tvfinal,NULL);
     printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
     exit(EXIT_SUCCESS);
