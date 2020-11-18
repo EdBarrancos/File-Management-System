@@ -85,42 +85,40 @@ int inode_create(type nType) {
     insert_delay(DELAY);
 
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
-        if(tryLockRead(&inode_table[inumber].lockP)!=0){
+        if(tryLockWrite(&inode_table[inumber].lockP)!=0){
             continue;
         }
 
         if (inode_table[inumber].nodeType == T_NONE) {
+            
+            inode_table[inumber].nodeType = nType;
+
+            if (nType == T_DIRECTORY) {
+                /* Initializes entry table */
+                inode_table[inumber].data.dirEntries = malloc(sizeof(DirEntry) * MAX_DIR_ENTRIES);
+                
+                for (int i = 0; i < MAX_DIR_ENTRIES; i++) {
+                    inode_table[inumber].data.dirEntries[i].inumber = FREE_INODE;
+                }
+            }
+            else {
+                inode_table[inumber].data.fileContents = NULL;
+            }
 
             unlockRW(&inode_table[inumber].lockP);
-            lockWriteRW(&inode_table[inumber].lockP);
-            
-            if (inode_table[inumber].nodeType == T_NONE){
-                inode_table[inumber].nodeType = nType;
 
-                if (nType == T_DIRECTORY) {
-                    /* Initializes entry table */
-                    inode_table[inumber].data.dirEntries = malloc(sizeof(DirEntry) * MAX_DIR_ENTRIES);
-                    
-                    for (int i = 0; i < MAX_DIR_ENTRIES; i++) {
-                        inode_table[inumber].data.dirEntries[i].inumber = FREE_INODE;
-                    }
-                }
-                else {
-                    inode_table[inumber].data.fileContents = NULL;
-                }
+            return inumber;                
+        } 
 
-                unlockRW(&inode_table[inumber].lockP);
 
-                return inumber;                
-            } 
-
-        }
         unlockRW(&inode_table[inumber].lockP);
     }
 
     return FAIL;
 
 }
+
+
 
 /*
  * Deletes the i-node.

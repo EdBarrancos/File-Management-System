@@ -131,6 +131,8 @@ int create(char *name, type nodeType, list *List){
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
 
+	printf("parent %s\n", parent_name);
+
 	if(DEBUG){
 		printf("Lets Create: %s/%s\n", parent_name, child_name);
 	}
@@ -158,9 +160,13 @@ int create(char *name, type nodeType, list *List){
 		       child_name, parent_name);
 		return FAIL;
 	}
+	
+	printf("child %s\n", child_name);
+
 
 	/* create node and add entry to folder that contains new node */
 	child_inumber = inode_create(nodeType);
+
 	if (child_inumber == FAIL) {
 		printf("failed to create %s in  %s, couldn't allocate inode\n",
 		        child_name, parent_name);
@@ -398,11 +404,15 @@ int delete(char *name, list *List){
  */
 int lookup(char *name, list* List, int doLockWrite) {
 	char full_path[MAX_FILE_NAME];
+	char test_path[MAX_FILE_NAME];
+
 	char delim[] = "/";
-	char *parent_name, *child_name;
+	char *parent_name, *child_name, *saveptr;
 
 	strcpy(full_path, name);
-	split_parent_child_from_path(full_path, &parent_name, &child_name);
+	strcpy(test_path, name);
+	split_parent_child_from_path(test_path, &parent_name, &child_name);
+
 
 	if(DEBUG)
 		printf("LookUp Strated %s\n", full_path);
@@ -429,7 +439,7 @@ int lookup(char *name, list* List, int doLockWrite) {
 	/* get root inode data */
 	inode_get(current_inumber, &nType, &data);
 
-	char *path = strtok(full_path, delim);
+	char *path = strtok_r(full_path, delim, &saveptr);
 
 	/* search for all sub nodes */
 	while (path != NULL && (current_inumber = lookup_sub_node(path, data.dirEntries)) != FAIL) {
@@ -446,7 +456,8 @@ int lookup(char *name, list* List, int doLockWrite) {
 		}
 
 		inode_get(current_inumber, &nType, &data);
-		path = strtok(NULL, delim);
+		path = strtok_r(NULL, delim, &saveptr);
+
 	}
 
 	if(DEBUG)
