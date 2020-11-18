@@ -1,13 +1,11 @@
 
-/a
-/a/a
-/a/a/a
-/a/a/a/a
-/a/a/a/b3
-/a/a/a/b4
-/a/a/b
-/a/c
-/a/c/d
-/a/c/c
-/a/c/c/c
 /b
+/b/b
+/b/b/c
+/b/b/b
+/b/b/b/b
+/b/b/b/d1
+/b/b/b/d3
+/b/b/b/d2
+/b/d
+/a

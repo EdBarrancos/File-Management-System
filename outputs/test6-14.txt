@@ -1,9 +1,10 @@
 
 /a
 /a/a
-/a/a/b
 /a/a/a
 /a/a/a/a
+/a/a/a/b2
+/a/a/b
 /a/c
 /a/c/c
 /a/c/c/c
@@ -14,7 +15,4 @@
 /b/b/b/b
 /b/b/c
 /b/d
-/b/d/d
-/b/d/d/d
 /b/d/e
-/b/d/e/i1

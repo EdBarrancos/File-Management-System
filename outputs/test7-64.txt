@@ -1,17 +1,11 @@
 
-/a
-/a/d
-/a/d2
-/a/b5
-/a/z
-/a/b3
-/a/b4
-/a/d3
-/a/d4
-/a/d5
 /c
-/c/b2
-/c/b
+/c/d2
+/c/d5
+/c/d
+/c/d4
+/c/d3
+/a
 /e
 /y
 /x

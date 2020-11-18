@@ -1,12 +1,11 @@
 
-/drapery
-/ergal
 /cypseline
+/ergal
 /telfer
-/saccharimetrical
-/benumb
-/autophotometry
+/Dungan
+/reluctantly
 /dalle
+/drapery
 /Ceramium
 /coheritage
 /Paulinist
@@ -14,4 +13,4 @@
 /unwaggable
 /Lif
 /s1
-/reluctantly
+/benumb

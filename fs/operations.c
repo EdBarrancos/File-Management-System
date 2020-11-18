@@ -142,7 +142,6 @@ int create(char *name, type nodeType, list *List){
 	inode_get(parent_inumber, &pType, &pdata);
 
 	if(pType != T_DIRECTORY) {
-
 		printf("failed to create %s, parent %s is not a dir\n",
 		        name, parent_name);
 		return FAIL;
@@ -153,8 +152,6 @@ int create(char *name, type nodeType, list *List){
 		       child_name, parent_name);
 		return FAIL;
 	}
-	
-	printf("child %s\n", child_name);
 
 
 	/* create node and add entry to folder that contains new node */
@@ -194,16 +191,6 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 
 	type pType_dest;
 	union Data pdata_dest;
-
-	/* Adacao das criancas CHECK
-	Ver se fazemos orig, dest qual primeiro CHECK
-	lookup na ordem certa CHECK
-		locks
-	verificoes
-	delete orig
-	apagos dirEntries orig
-	Create node
-	Add to direntries dest */
 
 	// Split child from path 
 	strcpy(name_copy_orig, nodeOrigin);
@@ -323,11 +310,7 @@ int delete(char *name, list *List){
 
 	strcpy(name_copy, name);
 	split_parent_child_from_path(name_copy, &parent_name, &child_name);
-	
 
-	if(DEBUG){
-		printf("Lets Delete: %s/%s\n", parent_name, child_name);
-	}
 
 	parent_inumber = lookup(parent_name, List, 1);
 
@@ -374,9 +357,6 @@ int delete(char *name, list *List){
 		return FAIL;
 	}
 
-	if(DEBUG)
-		printf("Finished Delete %s/%s\n", parent_name, child_name);
-
 	return SUCCESS;
 }
 
@@ -400,9 +380,6 @@ int lookup(char *name, list* List, int doLockWrite) {
 	strcpy(test_path, name);
 	split_parent_child_from_path(test_path, &parent_name, &child_name);
 
-
-	if(DEBUG)
-		printf("LookUp Strated %s\n", full_path);
 
 	/* start at root node */
 	int current_inumber = FS_ROOT;
@@ -445,9 +422,6 @@ int lookup(char *name, list* List, int doLockWrite) {
 		inode_get(current_inumber, &nType, &data);
 		path = strtok_r(NULL, delim, &saveptr);
 	}
-
-	if(DEBUG)
-		printf("LookUp Finished and The Number Found: %d\n", current_inumber);
 
 	return current_inumber;
 }

@@ -3,13 +3,10 @@
 /a/b
 /a/b3
 /a/z
+/a/b4
 /a/b2
 /a/b5
-/e
-/e/f
-/e/f3
-/e/b4
-/e/f2
 /c
+/e
 /y
 /x

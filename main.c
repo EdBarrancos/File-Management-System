@@ -42,9 +42,7 @@ int insertCommand(char* data) {
     signal(&waitToNotBeEmpty);
         
     unlockMutex();
-
-    
-    return 1;        
+    return SUCCESS;        
 }
 
 char* removeCommand() {
@@ -55,12 +53,7 @@ char* removeCommand() {
         wait(&waitToNotBeEmpty);
     }
 
-    /* FIXME esta parte nao ta bem, mas nao podemos logo returnar o removeQueue que depois de fazermos removeQueue temos
-        de dar signal e unlock */
     removedCommand = removeQueue(Queue);
-    
-
-
     numberCommands--;
     signal(&waitToNotBeFull);
     unlockMutex();
@@ -91,25 +84,25 @@ void *fnThreadProcessInput(void* arg){
             case 'c':
                 if(numTokens != 3)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(!insertCommand(line))
                     break;
             
             case 'l':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(!insertCommand(line))
                     break;
             
             case 'd':
                 if(numTokens != 2)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(!insertCommand(line))
                     break;
 
             case 'm':
                 if(numTokens != 3)
                     errorParse("Error: command invalid\n");
-                if(insertCommand(line))
+                if(!insertCommand(line))
                     break;
             
             case '#':
@@ -123,15 +116,10 @@ void *fnThreadProcessInput(void* arg){
     closeFile(inputFile);
     switchFinishedState(Queue);
     broadcast(&waitToNotBeEmpty);
-
-    if(DEBUG)
-        printf("Finished with commands\n");
     return NULL;
 }
 
 void applyCommands(list* List){
-    if(DEBUG)
-        printf("Lets Start Applying Commands\n");
     
     while(TRUE){
 
@@ -162,19 +150,11 @@ void applyCommands(list* List){
                             printf("Create file: %s\n", name);
                             create(name, T_FILE, List);
                             List = freeItemsList(List, unlockItem);
-
-                            if(DEBUG)
-                                printf("Created the cool file: %s\n", name);
-
                             break;
                         case 'd':
                             printf("Create directory: %s\n", name);
                             create(name, T_DIRECTORY, List);
                             List = freeItemsList(List, unlockItem);
-
-                            if(DEBUG)
-                                printf("Created the cool directory: %s\n", name);
-
                             break;
                         default:
                             errorParse("Error: invalid node type\n");
@@ -187,23 +167,17 @@ void applyCommands(list* List){
                     else
                         printf("Search: %s not found\n", name);
                     List = freeItemsList(List, unlockItem);
-                    if(DEBUG)
-                        printf("Finished a search\n");
                     break;
                 case 'd':
                     printf("Delete: %s\n", name);
                     delete(name, List);
                     List = freeItemsList(List, unlockItem);
-
-                    if(DEBUG)
-                        printf("Deleted the cool: %s\n", name);
                     break;
 
                 case 'm':
                     printf("Move: %s to %s\n", name, typeAndName);
                     move(name, typeAndName, List);
                     List = freeItemsList(List, unlockItem);
-
                     break;
                     
                 default: { /* error */
@@ -211,7 +185,6 @@ void applyCommands(list* List){
                 }
             }
         }
-
         else{
             TRUE = 0;
             unlockMutex();
@@ -226,14 +199,8 @@ void *fnThread(void* arg){
 
     applyCommands(inodeList);
 
-    if(DEBUG)
-        printf("Free List\n");
-
     /* Free List */
     freeList(inodeList);
-
-    if(DEBUG)
-        printf("Completed Thread\n");
 
     return NULL;
 }
@@ -256,8 +223,6 @@ int main(int argc, char* argv[]) {
     pthread_cond_init(&waitToNotBeEmpty,NULL);
     
     pthread_cond_init(&waitToNotBeFull,NULL);
-
-    //initLockRW(&lockR);
 
     /* Initialize queue */
     Queue = createQueue();

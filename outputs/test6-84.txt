@@ -12,6 +12,8 @@
 /b/b
 /b/b/b
 /b/b/b/b
+/b/b/b/d2
+/b/b/b/d1
 /b/b/c
 /b/d
 /b/d/d

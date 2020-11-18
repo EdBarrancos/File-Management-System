@@ -59,7 +59,6 @@ void deleteList(list *List, pthread_rwlock_t* _item){
             if(current==List->tail){
                 List->tail=prev;
             }
-            printf("Freeing\n");
             free(current);
             break;
         
@@ -131,15 +130,3 @@ int emptyList(list* List){
     return List->head == NULL;
 
 }
-
-//nodeptr headList(list* List){
-//   return List->head;
-//}
-
-//void* getNode(nodeptr _nextNode){
-//    return _nextNode->item;
-//}
-
-//nodeptr nextNode(nodeptr _nextNode){
-//    return _nextNode->next;
-//}
