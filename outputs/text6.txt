@@ -1,9 +1,0 @@
-c a d
-c b d
-c a/c f
-m a/c b/c
-m b/c a/c
-l a
-l b
-l a/c
-l b/c

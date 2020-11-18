@@ -216,7 +216,6 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 	// Verify if parent is directory 
 	inode_get(parent_inumber_orig, &pType_orig, &pdata_orig);
 
-	printf("%d\n", pType_orig == T_DIRECTORY);
 
 	if(pType_orig != T_DIRECTORY) {
 		printf("failed to move %s, parent %s is not a dir\n",
@@ -271,28 +270,61 @@ int move(char* nodeOrigin, char* nodeDestination, list *List){
 
 	/* FINISHED CHECKING IF ITS POSSIBLE TO MOVE */
 
+	/* m a/b c/b
+		m c/d a/d */
+
 	// Lock Write In order
 	if(parent_inumber_orig < parent_inumber_dest){
-		deleteList(List, getLockInumber(parent_inumber_orig));
+		printf("Ordem certa %d %s, %d %s\n", parent_inumber_orig, parent_name_orig, parent_inumber_dest, parent_name_dest);
+		printf("ORddem Certa Locking First %s\n", parent_name_orig);
+
 		unlockRW(getLockInumber(parent_inumber_orig));
+		deleteList(List, getLockInumber(parent_inumber_orig));
 		lockInumberWrite(parent_inumber_orig);
+
+		printf("Locked Write\n");
+
 		addList(List, getLockInumber(parent_inumber_orig));
 
-		deleteList(List, getLockInumber(parent_inumber_dest));
+		printf("ORddem Certa Locked %s\n", parent_name_orig);
+
+		printf("ORddem Certa Locking Second %s\n", parent_name_dest);
+
 		unlockRW(getLockInumber(parent_inumber_dest));
+		deleteList(List, getLockInumber(parent_inumber_dest));
 		lockInumberWrite(parent_inumber_dest);
+
+		printf("Locked Write\n");
+
 		addList(List, getLockInumber(parent_inumber_dest));
+
+		printf("ORddem Certa Locked %s\n", parent_name_dest);
 	}
 	else{
-		deleteList(List, getLockInumber(parent_inumber_dest));
+		printf("Ordem certa %d %s, %d %s\n", parent_inumber_orig, parent_name_orig, parent_inumber_dest, parent_name_dest);
+		printf("ORdem Errada Locking First %s\n", parent_name_dest);
+
 		unlockRW(getLockInumber(parent_inumber_dest));
+		deleteList(List, getLockInumber(parent_inumber_dest));
 		lockInumberWrite(parent_inumber_dest);
+
+		printf("Locked Write\n");
+
 		addList(List, getLockInumber(parent_inumber_dest));
 
-		deleteList(List, getLockInumber(parent_inumber_orig));
+		printf("ORdem Errada Locked %s\n", parent_name_dest);
+
+		printf("ORdem Errada Locking Second %s\n", parent_name_orig);
+
 		unlockRW(getLockInumber(parent_inumber_orig));
+		deleteList(List, getLockInumber(parent_inumber_orig));
 		lockInumberWrite(parent_inumber_orig);
+
+		printf("Locked Write\n");
+
 		addList(List, getLockInumber(parent_inumber_orig));
+
+		printf("ORdem Errada Locked %s\n", parent_name_orig);
 	}
 
 	/* Delete Node */
@@ -419,7 +451,7 @@ int delete(char *name, list *List){
  *  inumber: identifier of the i-node, if found
  *     FAIL: otherwise
  */
-int lookup(char *name, list* List) {
+int lookup(char *name, list* List, int doLockWrite) {
 	char full_path[MAX_FILE_NAME];
 	char delim[] = "/";
 

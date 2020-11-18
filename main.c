@@ -163,18 +163,20 @@ void applyCommands(list* List){
                 case 'c':
                     switch (typeAndName[0]) {
                         case 'f':
-                            printf("Create file: %s\n", name);
+                            
                             create(name, T_FILE, List);
                             List = freeItemsList(List, unlockItem);
+                            printf("Create file: %s\n", name);
 
                             if(DEBUG)
                                 printf("Created the cool file: %s\n", name);
 
                             break;
                         case 'd':
-                            printf("Create directory: %s\n", name);
+                            
                             create(name, T_DIRECTORY, List);
                             List = freeItemsList(List, unlockItem);
+                            printf("Create directory: %s\n", name);
 
                             if(DEBUG)
                                 printf("Created the cool directory: %s\n", name);
@@ -185,7 +187,7 @@ void applyCommands(list* List){
                     }
                     break;
                 case 'l': 
-                    searchResult = lookup(name, List);
+                    searchResult = lookup(name, List, 0);
                     if (searchResult >= 0)
                         printf("Search: %s found\n", name);
                     else
@@ -195,22 +197,21 @@ void applyCommands(list* List){
                         printf("Finished a search\n");
                     break;
                 case 'd':
-                    printf("Delete: %s\n", name);
+                    
                     delete(name, List);
                     List = freeItemsList(List, unlockItem);
+                    printf("Delete: %s\n", name);
 
                     if(DEBUG)
                         printf("Deleted the cool: %s\n", name);
                     break;
 
                 case 'm':
-                    printf("Move: %s to %s\n", name, typeAndName);
-                    while(move(name, typeAndName, List) == WAIT){
-                        List = freeItemsList(List, unlockItem);
-                        sleep(rand() % 50);
-                        move(name, typeAndName, List);
-                    }
+                    
+                    move(name, typeAndName, List);
                     List = freeItemsList(List, unlockItem);
+                    printf("Move: %s to %s\n", name, typeAndName);
+
                     break;
                     
                 default: { /* error */
