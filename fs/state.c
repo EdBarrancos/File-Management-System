@@ -85,9 +85,6 @@ int inode_create(type nType) {
     insert_delay(DELAY);
 
     for (int inumber = 0; inumber < INODE_TABLE_SIZE; inumber++) {
-        if(DEBUG)
-            printf("%d\n", inumber);
-
         if(tryLockRead(&inode_table[inumber].lockP)!=0){
             continue;
         }
@@ -99,9 +96,6 @@ int inode_create(type nType) {
             
             if (inode_table[inumber].nodeType == T_NONE){
                 inode_table[inumber].nodeType = nType;
-
-                if(DEBUG)
-                    printf("Inode is NONE\n");
 
                 if (nType == T_DIRECTORY) {
                     /* Initializes entry table */
