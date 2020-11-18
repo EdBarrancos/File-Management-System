@@ -1,37 +1,24 @@
 
 /drapery
-/saccharimetrical
-/reluctantly
-/benumb
-/telfer
-<<<<<<< Updated upstream
+/cypseline
+/ergal
 /dalle
+/benumb
 /Ceramium
 /coheritage
 /Paulinist
+/Dungan
 /mesiogingival
 /unwaggable
 /Lif
 /s1
 /s1/s2
-/s1/s5
-/s1/s4
+/s1/s2/s4
+/s1/s2/s5
 /s1/s3
-/ergal
-/cypseline
+/telfer
+/grapelet
+/therology
+/autophotometry
 /nonarcing
 /expiry
-=======
-/ergal
-/saccharimetrical
-/reluctantly
-/mesiogingival
-/Ceramium
-/coheritage
-/Paulinist
-/dalle
-/unwaggable
-/Lif
-/s1
-/benumb
->>>>>>> Stashed changes

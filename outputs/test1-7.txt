@@ -1,19 +1,9 @@
 
-<<<<<<< Updated upstream
+/a
+/b
+/h
+/e
 /f
 /g
-/h
-/b
-/a
-/d
-/e
-=======
-/b
-/a
 /c
 /d
-/e
-/f
-/g
-/h
->>>>>>> Stashed changes

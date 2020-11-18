@@ -1,35 +1,24 @@
 
-<<<<<<< Updated upstream
 /drapery
-/cypseline
-=======
-/cypseline
-/drapery
-/ergal
->>>>>>> Stashed changes
 /telfer
+/ergal
+/cypseline
 /saccharimetrical
 /reluctantly
-/dalle
-/Ceramium
-<<<<<<< Updated upstream
-/coheritage
-/Paulinist
+/heterolysin
 /mesiogingival
+/dalle
+/Paulinist
+/Ceramium
+/coheritage
 /unwaggable
 /Lif
 /s1
 /s1/s2
-/s1/s4
+/s1/s2/s4
+/s1/s2/s5
 /s1/s3
-/s1/s5
-/ergal
-=======
-/mesiogingival
-/Paulinist
-/coheritage
-/unwaggable
-/Lif
-/s1
->>>>>>> Stashed changes
 /benumb
+/Dungan
+/grapelet
+/therology

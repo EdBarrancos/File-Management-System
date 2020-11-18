@@ -1,9 +1,2 @@
 
 /a
-<<<<<<< Updated upstream
-/a/x
-/a/b
-=======
->>>>>>> Stashed changes
-/a/y
-/a/b

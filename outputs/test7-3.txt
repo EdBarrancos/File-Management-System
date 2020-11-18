@@ -1,34 +1,20 @@
 
-/c
 /a
-<<<<<<< Updated upstream
+/a/d
+/a/d3
+/a/d4
+/a/d5
+/a/d2
+/a/z
 /c
+/c/b2
+/c/f2
+/c/f3
+/c/b
+/c/f
 /e
+/e/b4
+/e/b5
+/e/b3
 /y
-=======
-/e
-/b2
->>>>>>> Stashed changes
-/b
-/b3
-/b2
-/z
-/b4
-/b5
-/d2
-/d
-/d3
-/d4
-<<<<<<< Updated upstream
-=======
-/d5
->>>>>>> Stashed changes
-/f
-/d5
-/f2
-/f3
-<<<<<<< Updated upstream
-=======
-/y
->>>>>>> Stashed changes
 /x

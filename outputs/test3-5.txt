@@ -1,40 +1,16 @@
 
 /drapery
 /ergal
-<<<<<<< Updated upstream
-=======
 /cypseline
 /telfer
 /saccharimetrical
 /reluctantly
-/heterolysin
-/mesiogingival
->>>>>>> Stashed changes
 /dalle
-/Amalfitan
 /Ceramium
 /coheritage
 /Paulinist
-<<<<<<< Updated upstream
 /mesiogingival
-=======
->>>>>>> Stashed changes
 /unwaggable
-/Lif
+/grapelet
 /s1
-/s1/s2
-/s1/s3
-/s1/s5
-<<<<<<< Updated upstream
-/s1/s4
-/telfer
-/saccharimetrical
-/grapelet
-/therology
-/autophotometry
-=======
 /benumb
-/Dungan
-/grapelet
-/therology
->>>>>>> Stashed changes
