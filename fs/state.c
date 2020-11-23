@@ -10,8 +10,6 @@
 
 inode_t inode_table[INODE_TABLE_SIZE];
 
-#define DEBUG 0
-
 void lockInumberRead(int inumber){
     lockReadRW(&inode_table[inumber].lockP);
 }

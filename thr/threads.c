@@ -6,7 +6,6 @@
 #include "../er/error.h"
 #include "../cq/circularqueue.h"
 
-#define DEBUG 0
 pthread_mutex_t lockM;
 
 /*  Creates threads and associates tasks
@@ -19,9 +18,7 @@ void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcess
     int i;
 
     for (i=0; i<numberThreads; i++){
-        if(DEBUG)
-            printf("Creating threads\n");
-
+    
         if (pthread_create(&tid[i], NULL, fnThread, NULL)!=0){
             /* Error Handling */
             errorParse("Error while creating task.\n");
@@ -145,8 +142,6 @@ void destroyRW(pthread_rwlock_t *lockRW){
 * unlock each inode of list*/
 
 void unlockItem (pthread_rwlock_t* _item){
-    /*transformar Item em ptr_jogo, para aceder a nome_jogo*/
-//    pthread_rwlock_t* lockINode;
-//    lockINode = (pthread_rwlock_t*)_item;
+
     unlockRW(_item);
 }

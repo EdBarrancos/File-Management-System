@@ -1,7 +1,5 @@
 #include "list.h"
 
-#define DEBUG 0
-
 struct _list {
     nodeptr head;
     nodeptr tail;
@@ -72,10 +70,8 @@ void deleteList(list *List, pthread_rwlock_t* _item){
 
 int searchList(pthread_rwlock_t* itemSearch, list* List){
     nodeptr currentINode;
-    //pthread_rwlock_t* itemFound;
 
     currentINode = List->head;
-    //itemFound = NULL;
 
     // Iterate till last element until key is not found
     while(currentINode != NULL && currentINode->item != itemSearch){

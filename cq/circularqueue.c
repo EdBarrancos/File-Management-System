@@ -110,22 +110,7 @@ void freeQueue(queue* Queue){
     free(Queue);
 }
 
-/*
- *display queue*/
-void displayQueues(queue* Queue) {
-  int i;
-  if (emptyQueue(Queue))
-    printf(" \n Empty Queue\n");
-  else {
-    printf("\n Front -> %d ", Queue->head);
-    printf("\n Items -> ");
-    for (i = Queue->head; i != Queue->tail; i = (i + 1) % MAX) {
-      printf("%s ", Queue->inputCommands[i]);
-    }
-    printf("%s ", Queue->inputCommands[i]);
-    printf("\n Rear -> %d \n", Queue->tail);
-  }
-}
+
 
 
 

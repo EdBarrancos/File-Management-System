@@ -39,8 +39,5 @@ char* removeQueue(queue* Queue);
  *free queue*/
 void freeQueue(queue* Queue);
 
-/*
- *display queue*/
-void displayQueue(queue* Queue);
 
 #endif

@@ -16,7 +16,6 @@
 
 #define SUCCESS 0
 #define FAIL -1
-#define WAIT -2
 
 #define DELAY 5000
 

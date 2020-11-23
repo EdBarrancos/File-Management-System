@@ -6,8 +6,6 @@
 #include "../er/error.h"
 #include "../thr/threads.h"
 
-#define DEBUG 0
-
 
 /* Given a path, fills pointers with strings for the parent path and child
  * file name
@@ -99,8 +97,6 @@ int is_dir_empty(DirEntry *dirEntries) {
  */
 int lookup_sub_node(char *name, DirEntry *entries) {
 	if (entries == NULL) {
-		if(DEBUG)
-			printf("FAILED\n");
 		return FAIL;
 	}
 	for (int i = 0; i < MAX_DIR_ENTRIES; i++) {

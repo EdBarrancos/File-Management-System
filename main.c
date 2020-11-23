@@ -6,6 +6,12 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <strings.h>
+#include <sys/uio.h>
+#include <sys/stat.h>
 
 #include "cq/circularqueue.h"
 #include "lst/list.h"
@@ -13,6 +19,11 @@
 #include "fh/fileHandling.h"
 #include "thr/threads.h"
 #include "er/error.h"
+
+//server constants
+#define NAMESERVER "/tmp/serverTFS"
+#define INDIM 30
+#define OUTDIM 512
 
 int TRUE = 1;
 int numberThreads = 0;
@@ -23,8 +34,6 @@ int numberCommands = 0;
 
 FILE *inputFile;
 FILE *outputFile;
-
-#define DEBUG 0
 
 pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
 pthread_rwlock_t  lockR;
@@ -63,9 +72,6 @@ char* removeCommand() {
 
 void *fnThreadProcessInput(void* arg){
     char line[MAX_INPUT_SIZE];
-
-    if(DEBUG)
-        printf("ProcessInput\n");
 
     /* break loop with ^Z or ^D */
 
@@ -205,6 +211,18 @@ void *fnThread(void* arg){
     return NULL;
 }
 
+int setSockAddrUn(char *path, struct sockaddr_un *addr) {
+
+  if (addr == NULL)
+    return 0;
+
+  bzero((char *)addr, sizeof(struct sockaddr_un));
+  addr->sun_family = AF_UNIX;
+  strcpy(addr->sun_path, path);
+
+  return SUN_LEN(addr);
+}
+
 /*  Argv:
         1 -> inputfile
         2 -> outputfile
@@ -217,8 +235,58 @@ void setInitialValues(char *argv[]){
 
 int main(int argc, char* argv[]) {
 
+    //server variables
+    int sockfd;
+    struct sockaddr_un server_addr;
+    socklen_t addrlen;
+    char *path;
+
+    //time variables
     struct timeval tvinicio;
     struct timeval tvfinal;
+
+    //initializes server
+    if ((sockfd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0) {
+        perror("server: can't open socket");
+        exit(EXIT_FAILURE);
+    }
+
+    path = NAMESERVER;
+
+    unlink(path);
+
+    addrlen = setSockAddrUn (NAMESERVER, &server_addr);
+    if (bind(sockfd, (struct sockaddr *) &server_addr, addrlen) < 0) {
+        perror("server: bind error");
+        exit(EXIT_FAILURE);
+    }
+    
+    if (chmod(NAMESERVER, 00222) == -1){
+        perror("server:: can't change permission of socket\n");
+    }
+
+    
+    while (1) {
+        struct sockaddr_un client_addr;
+        char in_buffer[INDIM], out_buffer[OUTDIM];
+        int c;
+
+        addrlen=sizeof(struct sockaddr_un);
+        c = recvfrom(sockfd, in_buffer, sizeof(in_buffer)-1, 0, (struct sockaddr *)&client_addr, &addrlen);
+
+        if (c <= 0) 
+            continue;
+        //Preventivo, caso o cliente nao tenha terminado a mensagem em '\0', 
+        in_buffer[c]='\0';
+        
+        printf("Recebeu mensagem de %s\n", client_addr.sun_path);
+
+        c = sprintf(out_buffer, "%s", in_buffer);
+        
+        sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+
+    }
+    
 
     pthread_cond_init(&waitToNotBeEmpty,NULL);
     
@@ -263,5 +331,8 @@ int main(int argc, char* argv[]) {
     //destroyRW(&lockR);
     gettimeofday(&tvfinal,NULL);
     printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
+    //Fechar e apagar o nome do socket, apesar deste programa nunca chegar a este ponto
+    //close(sockfd);
+    //unlink(argv[1]);
     exit(EXIT_SUCCESS);
 }
