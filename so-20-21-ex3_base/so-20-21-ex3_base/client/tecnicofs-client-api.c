@@ -32,7 +32,11 @@ int tfsCreate(char *path, char nodeType) {
 
   printf("Recebeu resposta do servidor: Create %s\n", buffer);
 
-  return 0;
+  if(!strcmp(buffer, commandSuccess)){
+    return 0;
+  }
+  
+  return -1;
 
 }
 
@@ -56,7 +60,11 @@ int tfsDelete(char *path) {
 
   printf("Recebeu resposta do servidor: Delete %s\n", buffer);
 
-  return 0;
+  if(!strcmp(buffer, commandSuccess)){
+    return 0;
+  }
+  
+  return -1;
 
 }
 
@@ -80,7 +88,11 @@ int tfsMove(char *from, char *to) {
 
   printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
 
-  return 0;
+  if(!strcmp(buffer, commandSuccess)){
+    return 0;
+  }
+  
+  return -1;
 
 }
 
@@ -104,7 +116,11 @@ int tfsLookup(char *path) {
 
   printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
 
-  return 0;
+  if(!strcmp(buffer, commandSuccess)){
+    return 0;
+  }
+  
+  return -1;
 
 }
 
