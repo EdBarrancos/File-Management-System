@@ -41,6 +41,7 @@ void *processInput() {
         int res;
 
         int numTokens = sscanf(line, "%c %s %s", &op, arg1, arg2);
+        printf("%s %s\n", arg1, arg2);
 
         /* perform minimal validation */
         if (numTokens < 1) {

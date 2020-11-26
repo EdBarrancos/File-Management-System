@@ -230,6 +230,7 @@ int setSockAddrUn(char *path, struct sockaddr_un *addr) {
 void setInitialValues(char *argv[]){
     numberThreads = getNumberThreads(argv[1]);
     sprintf(nameServer, "/tmp/%s", argv[2]);
+    printf("%s", nameServer);
 }
 
 int main(int argc, char* argv[]) {
@@ -243,6 +244,20 @@ int main(int argc, char* argv[]) {
     //time variables
     struct timeval tvinicio;
     struct timeval tvfinal;
+
+    pthread_cond_init(&waitToNotBeEmpty,NULL);
+    
+    pthread_cond_init(&waitToNotBeFull,NULL);
+
+    /* Initialize queue */
+    Queue = createQueue();
+
+    /* Define Arguments */
+    setInitialValues( argv);
+
+    if (numberThreads <= 0)
+        /* Error Handling */
+        errorParse("Error: Wrong number of threads");
 
     //initializes server
     if ((sockfd = socket(AF_UNIX, SOCK_DGRAM, 0)) < 0) {
@@ -285,21 +300,6 @@ int main(int argc, char* argv[]) {
         sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
 
     }
-    
-
-    pthread_cond_init(&waitToNotBeEmpty,NULL);
-    
-    pthread_cond_init(&waitToNotBeFull,NULL);
-
-    /* Initialize queue */
-    Queue = createQueue();
-
-    /* Define Arguments */
-    setInitialValues( argv);
-
-    if (numberThreads <= 0)
-        /* Error Handling */
-        errorParse("Error: Wrong number of threads");
 
     /* init synch system */
     initLockMutex();

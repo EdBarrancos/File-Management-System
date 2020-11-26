@@ -12,11 +12,11 @@ int setSockAddrUn(char *path, struct sockaddr_un *addr) {
   return SUN_LEN(addr);
 }
 
-int tfsCreate(char *filename, char nodeType) {
+int tfsCreate(char *path, char nodeType) {
 
   servlen = setSockAddrUn(nameserver, &serv_addr);
 
-  if (sendto(sockfd, filename, strlen(filename)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
+  if (sendto(sockfd, path, strlen(path)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;;
   } 
@@ -30,11 +30,26 @@ int tfsCreate(char *filename, char nodeType) {
 
   return 0;
 
-  
 }
 
 int tfsDelete(char *path) {
-  return -1;
+
+  servlen = setSockAddrUn(nameserver, &serv_addr);
+
+  if (sendto(sockfd, path, strlen(path)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
+    perror("client: sendto error");
+    return -1;;
+  } 
+
+  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+    perror("client: recvfrom error");
+    return -1;;
+  } 
+
+  printf("Recebeu resposta do servidor: Delete %s\n", buffer);
+
+  return 0;
+
 }
 
 int tfsMove(char *from, char *to) {
@@ -42,7 +57,23 @@ int tfsMove(char *from, char *to) {
 }
 
 int tfsLookup(char *path) {
-  return -1;
+
+  servlen = setSockAddrUn(nameserver, &serv_addr);
+
+  if (sendto(sockfd, path, strlen(path)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
+    perror("client: sendto error");
+    return -1;;
+  } 
+
+  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+    perror("client: recvfrom error");
+    return -1;;
+  } 
+
+  printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
+
+  return 0;
+
 }
 
 int tfsMount(char * sockPath) {
