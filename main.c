@@ -13,7 +13,6 @@
 #include <sys/uio.h>
 #include <sys/stat.h>
 
-#include "cq/circularqueue.h"
 #include "lst/list.h"
 #include "fs/operations.h"
 #include "fh/fileHandling.h"

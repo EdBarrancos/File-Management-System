@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "../er/error.h"
-#include "../cq/circularqueue.h"
 
 pthread_mutex_t lockM;
 
