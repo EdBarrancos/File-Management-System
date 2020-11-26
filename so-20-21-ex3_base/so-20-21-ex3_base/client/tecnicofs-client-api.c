@@ -46,12 +46,12 @@ int tfsDelete(char *path) {
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
-    return -1;;
+    return -1;
   } 
 
   if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
-    return -1;;
+    return -1;
   } 
 
   printf("Recebeu resposta do servidor: Delete %s\n", buffer);
@@ -70,12 +70,12 @@ int tfsMove(char *from, char *to) {
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
-    return -1;;
+    return -1;
   } 
 
   if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
-    return -1;;
+    return -1;
   } 
 
   printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
@@ -94,12 +94,12 @@ int tfsLookup(char *path) {
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
-    return -1;;
+    return -1;
   } 
 
   if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
-    return -1;;
+    return -1;
   } 
 
   printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
