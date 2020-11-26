@@ -22,7 +22,7 @@
 //server constants and variables
 #define INDIM 30
 #define OUTDIM 512
-#define TRUE 
+#define TRUE 1
 char nameServer[108];
 int sockfd;
 struct sockaddr_un server_addr;
