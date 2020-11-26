@@ -18,7 +18,7 @@ int sockfd;
 socklen_t servlen, clilen;
 struct sockaddr_un serv_addr, client_addr;
 char buffer[1024];
-char nameserver[1000];
+char nameserver[108];
 int setSockAddrUn(char *path, struct sockaddr_un *addr);
 int tfsCreate(char *path, char nodeType);
 int tfsDelete(char *path);

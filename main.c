@@ -21,9 +21,10 @@
 #include "er/error.h"
 
 //server constants
-#define NAMESERVER "/tmp/serverTFS"
+//#define DIRSERVER "/tmp/"
 #define INDIM 30
 #define OUTDIM 512
+char nameServer[108];
 
 int TRUE = 1;
 int numberThreads = 0;
@@ -224,13 +225,11 @@ int setSockAddrUn(char *path, struct sockaddr_un *addr) {
 }
 
 /*  Argv:
-        1 -> inputfile
-        2 -> outputfile
-        3 -> numThreads */
+        1 -> numThread
+        2 -> nameServer */
 void setInitialValues(char *argv[]){
-    inputFile = openFile(argv[1], "r");
-    outputFile = openFile(argv[2], "w");
-    numberThreads = getNumberThreads(argv[3]);
+    numberThreads = getNumberThreads(argv[1]);
+    sprintf(nameServer, "/tmp/%s", argv[2]);
 }
 
 int main(int argc, char* argv[]) {
