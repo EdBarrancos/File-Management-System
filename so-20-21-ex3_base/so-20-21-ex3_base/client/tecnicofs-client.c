@@ -112,6 +112,8 @@ void *processInput() {
 int main(int argc, char* argv[]) {
     parseArgs(argc, argv);
 
+    sprintf(nameclient,"/tmp/clientTFS%d",getpid());
+
     if (tfsMount(serverName) == 0)
       printf("Mounted! (socket = %s)\n", serverName);
     else {

@@ -52,8 +52,8 @@ int tfsMount(char * sockPath) {
     return -1;;
   }
 
-  unlink(CLIENTSOCKET);
-  clilen = setSockAddrUn (CLIENTSOCKET, &client_addr);
+  unlink(nameclient);
+  clilen = setSockAddrUn (nameclient, &client_addr);
   if (bind(sockfd, (struct sockaddr *) &client_addr, clilen) < 0) {
     perror("client: bind error");
     return -1;;

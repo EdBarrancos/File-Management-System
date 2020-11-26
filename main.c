@@ -250,17 +250,17 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    path = NAMESERVER;
+    path = nameServer;
 
     unlink(path);
 
-    addrlen = setSockAddrUn (NAMESERVER, &server_addr);
+    addrlen = setSockAddrUn (nameServer, &server_addr);
     if (bind(sockfd, (struct sockaddr *) &server_addr, addrlen) < 0) {
         perror("server: bind error");
         exit(EXIT_FAILURE);
     }
     
-    if (chmod(NAMESERVER, 00222) == -1){
+    if (chmod(nameServer, 00222) == -1){
         perror("server:: can't change permission of socket\n");
     }
 
