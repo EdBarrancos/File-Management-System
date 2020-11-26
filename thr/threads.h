@@ -5,7 +5,7 @@
 #include "../lst/list.h"
 
 
-void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)());
+void poolThreads(int numberThreads, void *(*fnThread)());
 int getNumberThreads(char *numThreads);
 
 /* Mutex */

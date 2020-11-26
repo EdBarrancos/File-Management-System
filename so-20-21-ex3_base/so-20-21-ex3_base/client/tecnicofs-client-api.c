@@ -22,12 +22,12 @@ int tfsCreate(char *path, char nodeType) {
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
-    return -1;;
+    return -1;
   } 
 
   if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
-    return -1;;
+    return -1;
   } 
 
   printf("Recebeu resposta do servidor: Create %s\n", buffer);
@@ -112,14 +112,14 @@ int tfsMount(char * sockPath) {
 
   if ((sockfd = socket(AF_UNIX, SOCK_DGRAM, 0) ) < 0) {
     perror("client: can't open socket");
-    return -1;;
+    return -1;
   }
 
   unlink(nameclient);
   clilen = setSockAddrUn (nameclient, &client_addr);
   if (bind(sockfd, (struct sockaddr *) &client_addr, clilen) < 0) {
     perror("client: bind error");
-    return -1;;
+    return -1;
   } 
 
   return 0;

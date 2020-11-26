@@ -43,92 +43,6 @@ pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
 pthread_rwlock_t  lockR;
 
 
-int insertCommand(char* data) {
-    lockMutex();
-
-    while(fullQueue(Queue)){
-        wait(&waitToNotBeFull);
-    }
-
-    insertQueue(Queue, data);
-    numberCommands++;
-    signal(&waitToNotBeEmpty);
-        
-    unlockMutex();
-    return SUCCESS;        
-}
-
-char* removeCommand() {
-    lockMutex();
-    char *removedCommand;
-    
-    while(emptyQueue(Queue) && !getFinishedState(Queue)){
-        wait(&waitToNotBeEmpty);
-    }
-
-    removedCommand = removeQueue(Queue);
-    numberCommands--;
-    signal(&waitToNotBeFull);
-    unlockMutex();
-
-    return removedCommand;
-}
-
-void *fnThreadProcessInput(void* arg){
-    char line[MAX_INPUT_SIZE];
-
-    /* break loop with ^Z or ^D */
-
-    while (fgets(line, sizeof(line)/sizeof(char), inputFile)) {
-        char token;
-        char typeAndName[MAX_FILE_NAME];
-        char name[MAX_FILE_NAME];
-
-        int numTokens = sscanf(line, "%c %s %s", &token, name, typeAndName);
-
-        /* perform minimal validation */
-        if (numTokens < 1) {
-            continue;
-        }
-        switch (token) {
-            case 'c':
-                if(numTokens != 3)
-                    errorParse("Error: command invalid\n");
-                if(!insertCommand(line))
-                    break;
-            
-            case 'l':
-                if(numTokens != 2)
-                    errorParse("Error: command invalid\n");
-                if(!insertCommand(line))
-                    break;
-            
-            case 'd':
-                if(numTokens != 2)
-                    errorParse("Error: command invalid\n");
-                if(!insertCommand(line))
-                    break;
-
-            case 'm':
-                if(numTokens != 3)
-                    errorParse("Error: command invalid\n");
-                if(!insertCommand(line))
-                    break;
-            
-            case '#':
-                break;
-            
-            default: { /* error */
-                errorParse("Error: command invalid\n");
-            }
-        }
-    }
-    closeFile(inputFile);
-    switchFinishedState(Queue);
-    broadcast(&waitToNotBeEmpty);
-    return NULL;
-}
-
 void applyCommands(list* List){
     
     while(TRUE){
@@ -215,11 +129,6 @@ void applyCommands(list* List){
                     errorParse("Error: command to apply\n");
                 }
             }
-        }
-        else{
-            TRUE = 0;
-            unlockMutex();
-        }
     }
 }
 
@@ -328,7 +237,7 @@ int main(int argc, char* argv[]) {
     gettimeofday(&tvinicio,NULL);
 
     /*creates pool of threads and process input and print tree */
-    poolThreads(numberThreads, fnThread, fnThreadProcessInput);
+    poolThreads(numberThreads, fnThread);
 
     /* Free Queue */
     freeQueue(Queue);

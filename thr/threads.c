@@ -12,7 +12,7 @@ pthread_mutex_t lockM;
     Input
         char* numThreads -> Number of threads to be created
         void *(*fnThread)() -> Pointer to the functions to be executed */
-void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcessInput)()){
+void poolThreads(int numberThreads, void *(*fnThread)()){
     
     pthread_t tid[numberThreads];
     int i;
@@ -24,8 +24,6 @@ void poolThreads(int numberThreads, void *(*fnThread)(), void *(*fnThreadProcess
             errorParse("Error while creating task.\n");
         }
     }
-
-    fnThreadProcessInput();
 
     for (i=0; i<numberThreads; i++){
         if(pthread_join(tid[i], NULL))
