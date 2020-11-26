@@ -58,8 +58,8 @@ int tfsMount(char * sockPath) {
     perror("client: bind error");
     return -1;;
   } 
-  //talvez mudar e alocar a memoria necessaria apenas 
-  strcpy(nameserver,sockPath);
+
+  strcpy(nameserver, sockPath);
 
   return 0;
 }
