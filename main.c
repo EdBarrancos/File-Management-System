@@ -31,14 +31,6 @@ char *path;
 
 int numberThreads = 0;
 
-int numberCommands = 0;
-
-FILE *inputFile;
-FILE *outputFile;
-
-pthread_cond_t waitToNotBeEmpty, waitToNotBeFull;
-pthread_rwlock_t  lockR;
-
 
 void applyCommands(list* List){
     
@@ -91,22 +83,16 @@ void applyCommands(list* List){
                     break;
                 case 'l': 
                     searchResult = lookup(name, List, 0);
-                    //if (searchResult >= 0)
-                    //    printf("Search: %s found\n", name);
-                    //else
-                    //    printf("Search: %s not found\n", name);
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
                 case 'd':
-                    //printf("Delete: %s\n", name);
                     delete(name, List);
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
 
                 case 'm':
-                    //printf("Move: %s to %s\n", name, typeAndName);
                     move(name, typeAndName, List);
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
@@ -158,10 +144,6 @@ int main(int argc, char* argv[]) {
     struct timeval tvinicio;
     struct timeval tvfinal;
 
-    pthread_cond_init(&waitToNotBeEmpty,NULL);
-    
-    pthread_cond_init(&waitToNotBeFull,NULL);
-
     /* Define Arguments */
     setInitialValues( argv);
 
@@ -188,31 +170,6 @@ int main(int argc, char* argv[]) {
     if (chmod(nameServer, 00222) == -1){
         perror("server:: can't change permission of socket\n");
     }
-
-    
-/*     while (1) {
-        struct sockaddr_un client_addr;
-        char in_buffer[INDIM], out_buffer[OUTDIM];
-        int c;
-
-        addrlen=sizeof(struct sockaddr_un);
-        c = recvfrom(sockfd, in_buffer, sizeof(in_buffer)-1, 0, (struct sockaddr *)&client_addr, &addrlen);
-
-        if (c <= 0) 
-            continue;
-        //Preventivo, caso o cliente nao tenha terminado a mensagem em '\0', 
-        in_buffer[c]='\0';
-        
-        printf("Recebeu mensagem de %s\n", client_addr.sun_path);
-
-        c = sprintf(out_buffer, "%s", in_buffer);
-        
-        sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
-
-    }
- */
-    /* init synch system */
-    initLockMutex();
     
     /* init filesystem */
     init_fs();
@@ -223,22 +180,9 @@ int main(int argc, char* argv[]) {
     /*creates pool of threads and process input and print tree */
     poolThreads(numberThreads, fnThread);
 
-    print_tecnicofs_tree(outputFile);
-    
-    closeFile(outputFile);
-
-    pthread_cond_destroy(&waitToNotBeEmpty);
-    
-    pthread_cond_destroy(&waitToNotBeFull);
-
     /* release allocated memory */
     destroy_fs();
-    destroyMutex();
-    //destroyRW(&lockR);
     gettimeofday(&tvfinal,NULL);
     printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
-    //Fechar e apagar o nome do socket, apesar deste programa nunca chegar a este ponto
-    //close(sockfd);
-    //unlink(argv[1]);
     exit(EXIT_SUCCESS);
 }
