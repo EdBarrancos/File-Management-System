@@ -1,4 +1,6 @@
 #include "tecnicofs-client-api.h"
+char commandSuccess[10]="SUCCESS";
+char commandFail[10]="FAIL";
 
 int setSockAddrUn(char *path, struct sockaddr_un *addr) {
 
