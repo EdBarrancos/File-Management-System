@@ -23,17 +23,15 @@
 //server constants and variables
 #define INDIM 30
 #define OUTDIM 512
+#define TRUE 1
 char nameServer[108];
 int sockfd;
 struct sockaddr_un server_addr;
 socklen_t addrlen;
 char *path;
 
-int TRUE = 1;
 int numberThreads = 0;
-queue* Queue;
 
-//char inputCommands[MAX_COMMANDS][MAX_INPUT_SIZE];
 int numberCommands = 0;
 
 FILE *inputFile;
@@ -46,16 +44,6 @@ pthread_rwlock_t  lockR;
 void applyCommands(list* List){
     
     while(TRUE){
-
-/*         lockMutex();
-        
-        if (!getFinishedState(Queue) || !emptyQueue(Queue)){
-            unlockMutex();
-            char* command = removeCommand();
-
-            if (command == NULL){
-                continue;
-            }*/
 
             char token;
             char typeAndName[MAX_FILE_NAME];
@@ -175,9 +163,6 @@ int main(int argc, char* argv[]) {
     
     pthread_cond_init(&waitToNotBeFull,NULL);
 
-    /* Initialize queue */
-    Queue = createQueue();
-
     /* Define Arguments */
     setInitialValues( argv);
 
@@ -238,9 +223,6 @@ int main(int argc, char* argv[]) {
 
     /*creates pool of threads and process input and print tree */
     poolThreads(numberThreads, fnThread);
-
-    /* Free Queue */
-    freeQueue(Queue);
 
     print_tecnicofs_tree(outputFile);
     
