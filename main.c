@@ -22,7 +22,7 @@
 //server constants and variables
 #define INDIM 30
 #define OUTDIM 512
-#define TRUE 1
+#define TRUE 
 char nameServer[108];
 int sockfd;
 struct sockaddr_un server_addr;
@@ -31,6 +31,8 @@ char *path;
 
 int numberThreads = 0;
 
+char commandSuccess[10]="SUCCESS";
+char commandFail[10]="FAIL";
 
 void applyCommands(list* List){
     
@@ -60,45 +62,71 @@ void applyCommands(list* List){
 
             int searchResult;
 
-            c = sprintf(out_buffer, "%s", in_buffer);
-
             switch (token) {
                 case 'c':
                     switch (typeAndName[0]) {
                         case 'f':
-                            //printf("Create file: %s\n", name);
-                            create(name, T_FILE, List);
+                            if(!create(name, T_FILE, List)){
+                                c = sprintf(out_buffer, "%s", commandSuccess);
+                            }
+                            else{
+                                c = sprintf(out_buffer, "%s", commandFail);
+                            }
                             List = freeItemsList(List, unlockItem);            
                             sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         case 'd':
-                            //printf("Create directory: %s\n", name);
-                            create(name, T_DIRECTORY, List);
+                            if(!create(name, T_DIRECTORY, List)){
+                                c = sprintf(out_buffer, "%s", commandSuccess);
+                            }
+                            else{
+                                c = sprintf(out_buffer, "%s", commandFail);
+                            }
                             List = freeItemsList(List, unlockItem);
                             sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         default:
+                            c = sprintf(out_buffer, "%s", commandFail);
+                            sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             errorParse("Error: invalid node type\n");
                     }
                     break;
                 case 'l': 
                     searchResult = lookup(name, List, 0);
+                    if(searchResult>=0){
+                        c = sprintf(out_buffer, "%s", commandSuccess);
+                    }
+                    else{
+                        c = sprintf(out_buffer, "%s", commandFail);
+                    }
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
                 case 'd':
-                    delete(name, List);
+                    if(!delete(name, List)){
+                        c = sprintf(out_buffer, "%s", commandSuccess);
+                    }
+                    else{
+                        c = sprintf(out_buffer, "%s", commandFail);
+                    }
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
 
                 case 'm':
-                    move(name, typeAndName, List);
+                    if(!move(name, typeAndName, List)){
+                        c = sprintf(out_buffer, "%s", commandSuccess);
+                    }
+                    else{
+                        c = sprintf(out_buffer, "%s", commandFail);
+                    }
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
                     
                 default: { /* error */
+                    c = sprintf(out_buffer, "%s", commandFail);
+                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     errorParse("Error: command to apply\n");
                 }
             }
