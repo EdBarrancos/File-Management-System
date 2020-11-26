@@ -230,7 +230,6 @@ int setSockAddrUn(char *path, struct sockaddr_un *addr) {
 void setInitialValues(char *argv[]){
     numberThreads = getNumberThreads(argv[1]);
     sprintf(nameServer, "/tmp/%s", argv[2]);
-    printf("%s", nameServer);
 }
 
 int main(int argc, char* argv[]) {
