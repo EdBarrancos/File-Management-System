@@ -90,8 +90,6 @@ int tfsMount(char * sockPath) {
     return -1;;
   } 
 
-  strcpy(nameserver, sockPath);
-
   return 0;
 }
 
