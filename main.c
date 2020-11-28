@@ -31,6 +31,11 @@ char *path;
 
 int numberThreads = 0;
 
+int modifyingThreads = 0;
+int quiescenteCommandOnline = 0;
+pthread_cond_t waitQuiescente = PTHREAD_COND_INITIALIZER;
+pthread_cond_t waitModifying = PTHREAD_COND_INITIALIZER;
+
 char commandSuccess[10]="SUCCESS";
 char commandFail[10]="FAIL";
 
@@ -66,22 +71,32 @@ void applyCommands(list* List){
                 case 'c':
                     switch (typeAndName[0]) {
                         case 'f':
+                            startingModifyingCommand();
+
                             if(!create(name, T_FILE, List)){
                                 c = sprintf(out_buffer, "%s", commandSuccess);
                             }
                             else{
                                 c = sprintf(out_buffer, "%s", commandFail);
                             }
+
+                            finishingModifyingCommand();
+
                             List = freeItemsList(List, unlockItem);            
                             sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         case 'd':
+                            startingModifyingCommand();
+
                             if(!create(name, T_DIRECTORY, List)){
                                 c = sprintf(out_buffer, "%s", commandSuccess);
                             }
                             else{
                                 c = sprintf(out_buffer, "%s", commandFail);
                             }
+
+                            finishingModifyingCommand();
+
                             List = freeItemsList(List, unlockItem);
                             sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
@@ -91,7 +106,7 @@ void applyCommands(list* List){
                             errorParse("Error: invalid node type\n");
                     }
                     break;
-                case 'l': 
+                case 'l':
                     searchResult = lookup(name, List, 0);
                     if(searchResult>=0){
                         c = sprintf(out_buffer, "%s", commandSuccess);
@@ -103,26 +118,42 @@ void applyCommands(list* List){
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
                 case 'd':
+
+                    startingModifyingCommand();
+
                     if(!delete(name, List)){
                         c = sprintf(out_buffer, "%s", commandSuccess);
                     }
                     else{
                         c = sprintf(out_buffer, "%s", commandFail);
                     }
+
+                    finishingModifyingCommand();
+
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
 
                 case 'm':
+
+                    startingModifyingCommand();
+
                     if(!move(name, typeAndName, List)){
                         c = sprintf(out_buffer, "%s", commandSuccess);
                     }
                     else{
                         c = sprintf(out_buffer, "%s", commandFail);
                     }
+                    finishingModifyingCommand();
                     List = freeItemsList(List, unlockItem);
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
+
+                case 'p':
+                    startQuiescenteCommand();
+                    FILE *output = openFile(name, "w");
+                    
+                    finishingQuiescenteCommand();
                     
                 default: { /* error */
                     c = sprintf(out_buffer, "%s", commandFail);
@@ -131,6 +162,36 @@ void applyCommands(list* List){
                 }
             }
     }
+}
+
+void startingModifyingCommand(){
+    lockMutex();
+    while(quiescenteCommandOnline != 0)
+        wait(&waitModifying);
+    modifyingThreads++;
+    unlockMutex();
+}
+
+void finishingModifyingCommand(){
+    lockMutex();
+    modifyingThreads--;
+    unlockMutex();
+    signal(&waitQuiescente);
+}
+
+void startQuiescenteCommand(){
+    lockMutex();
+    quiescenteCommandOnline = 1;
+    while(modifyingThreads != 0)
+        wait(&waitQuiescente);
+    unlockMutex();
+}
+
+void finishingQuiescenteCommand(){
+    lockMutex();
+    quiescenteCommandOnline = 0;
+    unlockMutex();
+    broadcast(&waitModifying);
 }
 
 void *fnThread(void* arg){

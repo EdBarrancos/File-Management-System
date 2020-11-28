@@ -5,7 +5,7 @@
 #include <string.h>
 #include "../er/error.h"
 
-pthread_mutex_t lockM;
+pthread_mutex_t lockM = PTHREAD_MUTEX_INITIALIZER;
 
 /*  Creates threads and associates tasks
     Input
