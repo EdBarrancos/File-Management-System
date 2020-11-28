@@ -152,7 +152,7 @@ void applyCommands(list* List){
                 case 'p':
                     startQuiescenteCommand();
                     FILE *output = openFile(name, "w");
-                    
+                    print_tecnicofs_tree(output);
                     finishingQuiescenteCommand();
                     
                 default: { /* error */
