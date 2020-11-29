@@ -144,5 +144,9 @@ int tfsMount(char * sockPath) {
 }
 
 int tfsUnmount() {
-  return -1;
+  close(sockfd);
+
+  unlink(nameclient);
+
+  return 0;
 }
