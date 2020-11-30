@@ -32,12 +32,42 @@ char *path;
 int numberThreads = 0;
 
 int modifyingThreads = 0;
-int quiescenteCommandOnline = 0;
+int quiescenteThreads = 0;
 pthread_cond_t waitQuiescente = PTHREAD_COND_INITIALIZER;
 pthread_cond_t waitModifying = PTHREAD_COND_INITIALIZER;
 
 char commandSuccess[10]="SUCCESS";
 char commandFail[10]="FAIL";
+
+void startingModifyingCommand(){
+    lockMutex();
+    while(quiescenteThreads != 0)
+        wait(&waitModifying);
+    modifyingThreads++;
+    unlockMutex();
+}
+
+void finishingModifyingCommand(){
+    lockMutex();
+    modifyingThreads--;
+    unlockMutex();
+    signal(&waitQuiescente);
+}
+
+void startQuiescenteCommand(){
+    lockMutex();
+    quiescenteThreads++;
+    while(modifyingThreads != 0)
+        wait(&waitQuiescente);
+    unlockMutex();
+}
+
+void finishingQuiescenteCommand(){
+    lockMutex();
+    quiescenteThreads--;
+    unlockMutex();
+    broadcast(&waitModifying);
+}
 
 void applyCommands(list* List){
     
@@ -162,36 +192,6 @@ void applyCommands(list* List){
                 }
             }
     }
-}
-
-void startingModifyingCommand(){
-    lockMutex();
-    while(quiescenteCommandOnline != 0)
-        wait(&waitModifying);
-    modifyingThreads++;
-    unlockMutex();
-}
-
-void finishingModifyingCommand(){
-    lockMutex();
-    modifyingThreads--;
-    unlockMutex();
-    signal(&waitQuiescente);
-}
-
-void startQuiescenteCommand(){
-    lockMutex();
-    quiescenteCommandOnline = 1;
-    while(modifyingThreads != 0)
-        wait(&waitQuiescente);
-    unlockMutex();
-}
-
-void finishingQuiescenteCommand(){
-    lockMutex();
-    quiescenteCommandOnline = 0;
-    unlockMutex();
-    broadcast(&waitModifying);
 }
 
 void *fnThread(void* arg){
