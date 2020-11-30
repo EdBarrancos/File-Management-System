@@ -58,9 +58,13 @@ void finishingModifyingCommand(){
 void startQuiescenteCommand(){
     lockMutex();
     quiescenteThreads++;
+    printf("Modifyin Threads: %d\n",modifyingThreads);
     while(modifyingThreads != 0)
         wait(&waitQuiescente);
+
+    printf("While Modifyin Threads: %d\n",modifyingThreads);
     unlockMutex();
+
 }
 
 void finishingQuiescenteCommand(){
