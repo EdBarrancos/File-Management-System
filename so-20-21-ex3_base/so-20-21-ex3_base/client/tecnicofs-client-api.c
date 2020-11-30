@@ -88,7 +88,7 @@ int tfsMove(char *from, char *to) {
     return -1;
   } 
 
-  printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
+  printf("Recebeu resposta do servidor: Move %s\n", buffer);
 
   if(!strcmp(buffer, commandSuccess)){
     return 0;
