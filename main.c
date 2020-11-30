@@ -191,8 +191,8 @@ void applyCommands(list* List){
                     c = sprintf(out_buffer, "%s", commandSuccess);
                     if(output == NULL)
                         c = sprintf(out_buffer, "%s", commandFail);
-
-                    print_tecnicofs_tree(output);
+                    else
+                        print_tecnicofs_tree(output);
 
                     if(closeFile(output) == NULL)
                         c = sprintf(out_buffer, "%s", commandFail);
