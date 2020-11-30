@@ -24,6 +24,7 @@ int setSockAddrUn(char *path, struct sockaddr_un *addr);
 int tfsCreate(char *path, char nodeType);
 int tfsDelete(char *path);
 int tfsLookup(char *path);
+int tfsPrint(char *path);
 int tfsMove(char *from, char *to);
 int tfsMount(char* serverName);
 int tfsUnmount();
