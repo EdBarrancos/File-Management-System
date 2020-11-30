@@ -51,8 +51,8 @@ void startingModifyingCommand(){
 void finishingModifyingCommand(){
     lockMutex();
     modifyingThreads--;
-    unlockMutex();
     signal(&waitQuiescente);
+    unlockMutex();
 }
 
 void startQuiescenteCommand(){
@@ -66,8 +66,8 @@ void startQuiescenteCommand(){
 void finishingQuiescenteCommand(){
     lockMutex();
     quiescenteThreads--;
-    unlockMutex();
     broadcast(&waitModifying);
+    unlockMutex();
 }
 
 void applyCommands(list* List){
