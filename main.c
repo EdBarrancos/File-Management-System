@@ -23,6 +23,8 @@
 #define INDIM 30
 #define OUTDIM 512
 #define TRUE 1
+#define FAIL 1
+
 char nameServer[108];
 int sockfd;
 struct sockaddr_un server_addr;
@@ -181,8 +183,18 @@ void applyCommands(list* List){
 
                 case 'p':
                     startQuiescenteCommand();
+                    
                     FILE *output = openFile(name, "w");
+                    c = sprintf(out_buffer, "%s", commandSuccess);
+                    if(output == FAIL)
+                        c = sprintf(out_buffer, "%s", commandFail);
+
                     print_tecnicofs_tree(output);
+
+                    if(closeFile(output) == FAIL)
+                        c = sprintf(out_buffer, "%s", commandFail);
+
+                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     finishingQuiescenteCommand();
                     
                 default: { /* error */

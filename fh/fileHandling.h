@@ -3,6 +3,6 @@
 #include <stdio.h>
 
 FILE *openFile(const char *pathname, const char *mode);
-void closeFile(FILE *stream);
+int closeFile(FILE *stream);
 
 #endif
