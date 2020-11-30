@@ -126,6 +126,34 @@ int tfsLookup(char *path) {
 
 }
 
+int tfsPrint(char *path) {
+
+  char command[MAX_INPUT_SIZE];
+
+  sprintf(command,"p %s", path);
+
+  servlen = setSockAddrUn(nameserver, &serv_addr);
+
+  if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
+    perror("client: sendto error");
+    return -1;
+  } 
+
+  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+    perror("client: recvfrom error");
+    return -1;
+  } 
+
+  printf("Recebeu resposta do servidor: Print %s\n", buffer);
+
+  if(!strcmp(buffer, commandSuccess)){
+    return 0;
+  }
+  
+  return -1;
+
+}
+
 int tfsMount(char * sockPath) {
 
   if ((sockfd = socket(AF_UNIX, SOCK_DGRAM, 0) ) < 0) {
