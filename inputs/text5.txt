@@ -18,3 +18,4 @@ l j
 l g
 l a/j
 l b/g
+p outputs/test5.txt

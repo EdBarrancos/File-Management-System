@@ -10,3 +10,4 @@ c h d
 l c
 d c
 l c
+p outputs/test1.txt
