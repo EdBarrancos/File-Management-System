@@ -195,6 +195,7 @@ void applyCommands(list* List){
 
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     finishingQuiescenteCommand();
+                    break;
                     
                 default: { /* error */
                     c = sprintf(out_buffer, "%s", commandFail);

@@ -172,9 +172,15 @@ int tfsMount(char * sockPath) {
 }
 
 int tfsUnmount() {
-  close(sockfd);
+  if(close(sockfd)){
+    perror("client: unmount error");
+    return -1;
+  }
 
-  unlink(nameclient);
+  if(unlink(nameclient)){
+    perror("client: unmount error");
+    return -1;
+  }
 
   return 0;
 }
