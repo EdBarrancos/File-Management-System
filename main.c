@@ -191,11 +191,11 @@ void applyCommands(list* List){
                     c = sprintf(out_buffer, "%s", commandSuccess);
                     if(output == NULL)
                         c = sprintf(out_buffer, "%s", commandFail);
-                    else
+                    else{
                         print_tecnicofs_tree(output);
-
-                    if(closeFile(output) == NULL)
-                        c = sprintf(out_buffer, "%s", commandFail);
+                        if(closeFile(output) == NULL)
+                            c = sprintf(out_buffer, "%s", commandFail);
+                    }
 
                     sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     finishingQuiescenteCommand();
