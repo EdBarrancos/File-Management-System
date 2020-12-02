@@ -215,13 +215,9 @@ void setInitialValues(char *argv[]){
 }
 
 int main(int argc, char* argv[]) {
-
-    //time variables
-    struct timeval tvinicio;
-    struct timeval tvfinal;
-
+    
     /* Define Arguments */
-    setInitialValues( argv);
+    setInitialValues(argv);
 
     if (numberThreads <= 0)
         /* Error Handling */
@@ -250,15 +246,10 @@ int main(int argc, char* argv[]) {
     /* init filesystem */
     init_fs();
 
-    /*starts counting the time*/
-    gettimeofday(&tvinicio,NULL);
-
     /*creates pool of threads and process input and print tree */
     poolThreads(numberThreads, fnThread);
 
     /* release allocated memory */
     destroy_fs();
-    gettimeofday(&tvfinal,NULL);
-    printf("TecnicoFS completed in %.4f seconds.\n", (double)(tvfinal.tv_sec - tvinicio.tv_sec) + ((tvfinal.tv_usec - tvinicio.tv_usec)/1000000.0));
     exit(EXIT_SUCCESS);
 }
