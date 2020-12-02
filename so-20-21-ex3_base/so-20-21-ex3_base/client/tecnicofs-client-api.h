@@ -18,6 +18,7 @@ int sockfd;
 socklen_t servlen, clilen;
 struct sockaddr_un serv_addr, client_addr;
 char buffer[1024];
+int bufferInt;
 char nameserver[108];
 char nameclient[108];
 int setSockAddrUn(char *path, struct sockaddr_un *addr);

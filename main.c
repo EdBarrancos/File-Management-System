@@ -80,7 +80,7 @@ void applyCommands(list* List){
             char typeAndName[MAX_FILE_NAME];
             char name[MAX_FILE_NAME]; 
             struct sockaddr_un client_addr;
-            char in_buffer[INDIM], out_buffer[OUTDIM];
+            char in_buffer[INDIM];
             int c;
 
             addrlen=sizeof(struct sockaddr_un);
@@ -111,7 +111,7 @@ void applyCommands(list* List){
                             finishingModifyingCommand();
 
                             List = freeItemsList(List, unlockItem);            
-                            sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         case 'd':
                             startingModifyingCommand();
@@ -121,17 +121,18 @@ void applyCommands(list* List){
                             finishingModifyingCommand();
 
                             List = freeItemsList(List, unlockItem);
-                            sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                             break;
                         default:
-                            sendto(sockfd, FAIL, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                            searchResult = FAIL;
+                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                             errorParse("Error: invalid node type\n");
                     }
                     break;
                 case 'l':
                     searchResult = lookup(name, List, 0);
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                     break;
                 case 'd':
 
@@ -142,7 +143,7 @@ void applyCommands(list* List){
                     finishingModifyingCommand();
 
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                     break;
 
                 case 'm':
@@ -153,7 +154,7 @@ void applyCommands(list* List){
 
                     finishingModifyingCommand();
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                     break;
 
                 case 'p':
@@ -166,15 +167,16 @@ void applyCommands(list* List){
                     else{
                         print_tecnicofs_tree(output);
                         if(closeFile(output) == NULL)
-                            searchResult = FAIL
+                            searchResult = FAIL;
                     }
 
-                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                     finishingQuiescenteCommand();
                     break;
                     
                 default: { /* error */
-                    sendto(sockfd, FAIL, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    searchResult = FAIL;
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                     errorParse("Error: command to apply\n");
                 }
             }

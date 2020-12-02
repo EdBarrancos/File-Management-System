@@ -25,18 +25,13 @@ int tfsCreate(char *path, char nodeType) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  printf("Recebeu resposta do servidor: Create %s\n", buffer);
-
-  if(!strcmp(buffer, commandSuccess)){
-    return 0;
-  }
-  
-  return -1;
+  printf("HI %d\n", bufferInt);
+  return bufferInt;
 
 }
 
@@ -51,18 +46,12 @@ int tfsDelete(char *path) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  printf("Recebeu resposta do servidor: Delete %s\n", buffer);
-
-  if(!strcmp(buffer, commandSuccess)){
-    return 0;
-  }
-  
-  return -1;
+  return bufferInt;
 
 }
 
@@ -77,18 +66,12 @@ int tfsMove(char *from, char *to) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  printf("Recebeu resposta do servidor: Move %s\n", buffer);
-
-  if(!strcmp(buffer, commandSuccess)){
-    return 0;
-  }
-  
-  return -1;
+  return bufferInt;
 
 }
 
@@ -103,18 +86,12 @@ int tfsLookup(char *path) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  printf("Recebeu resposta do servidor: Lookup %s\n", buffer);
-
-  if(!strcmp(buffer, commandSuccess)){
-    return 0;
-  }
-  
-  return -1;
+  return bufferInt;
 
 }
 
@@ -129,18 +106,12 @@ int tfsPrint(char *path) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, buffer, sizeof(buffer), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  printf("Recebeu resposta do servidor: Print %s\n", buffer);
-
-  if(!strcmp(buffer, commandSuccess)){
-    return 0;
-  }
-  
-  return -1;
+  return bufferInt;
 
 }
 

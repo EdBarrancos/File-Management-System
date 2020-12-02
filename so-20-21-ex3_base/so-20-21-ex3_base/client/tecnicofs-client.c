@@ -41,7 +41,7 @@ void *processInput() {
         int res;
 
         int numTokens = sscanf(line, "%c %s %s", &op, arg1, arg2);
-        
+
         /* perform minimal validation */
         if (numTokens < 1) {
             continue;
@@ -52,6 +52,7 @@ void *processInput() {
                     errorParse();
                     break;
                 }
+                printf("Create btw\n");
                 switch (arg2[0]) {
                     case 'f':
                         res = tfsCreate(arg1, 'f');
