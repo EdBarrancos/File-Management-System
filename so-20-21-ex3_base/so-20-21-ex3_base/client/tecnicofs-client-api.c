@@ -17,6 +17,7 @@ int setSockAddrUn(char *path, struct sockaddr_un *addr) {
 int tfsCreate(char *path, char nodeType) {
 
   char command[MAX_INPUT_SIZE];
+  int receive;
 
   sprintf(command,"c %s %c", path, nodeType);
 
@@ -25,19 +26,19 @@ int tfsCreate(char *path, char nodeType) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &receive, sizeof(&receive), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  printf("HI %d\n", bufferInt);
-  return bufferInt;
+  return receive;
 
 }
 
 int tfsDelete(char *path) {
 
   char command[MAX_INPUT_SIZE];
+  int receive;
 
   sprintf(command,"d %s", path);
 
@@ -46,18 +47,19 @@ int tfsDelete(char *path) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &receive, sizeof(&receive), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  return bufferInt;
+  return receive;
 
 }
 
 int tfsMove(char *from, char *to) {
 
   char command[MAX_INPUT_SIZE];
+  int receive;
 
   sprintf(command,"m %s %s", from, to);
 
@@ -66,18 +68,19 @@ int tfsMove(char *from, char *to) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &receive, sizeof(&receive), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  return bufferInt;
+  return receive;
 
 }
 
 int tfsLookup(char *path) {
 
   char command[MAX_INPUT_SIZE];
+  int receive;
 
   sprintf(command,"l %s", path);
 
@@ -86,18 +89,19 @@ int tfsLookup(char *path) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &receive, sizeof(&receive), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  return bufferInt;
+  return receive;
 
 }
 
 int tfsPrint(char *path) {
 
   char command[MAX_INPUT_SIZE];
+  int receive;
 
   sprintf(command,"p %s", path);
 
@@ -106,12 +110,12 @@ int tfsPrint(char *path) {
     return -1;
   } 
 
-  if (recvfrom(sockfd, (void*) &bufferInt, sizeof(&bufferInt), 0, 0, 0) < 0) {
+  if (recvfrom(sockfd, (void*) &receive, sizeof(&receive), 0, 0, 0) < 0) {
     perror("client: recvfrom error");
     return -1;
   } 
 
-  return bufferInt;
+  return receive;
 
 }
 

@@ -52,7 +52,6 @@ void *processInput() {
                     errorParse();
                     break;
                 }
-                printf("Create btw\n");
                 switch (arg2[0]) {
                     case 'f':
                         res = tfsCreate(arg1, 'f');
