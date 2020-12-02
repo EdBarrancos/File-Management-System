@@ -20,8 +20,6 @@ int tfsCreate(char *path, char nodeType) {
 
   sprintf(command,"c %s %c", path, nodeType);
 
-  servlen = setSockAddrUn(nameserver, &serv_addr);
-
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
@@ -47,8 +45,6 @@ int tfsDelete(char *path) {
   char command[MAX_INPUT_SIZE];
 
   sprintf(command,"d %s", path);
-
-  servlen = setSockAddrUn(nameserver, &serv_addr);
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
@@ -76,8 +72,6 @@ int tfsMove(char *from, char *to) {
 
   sprintf(command,"m %s %s", from, to);
 
-  servlen = setSockAddrUn(nameserver, &serv_addr);
-
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
@@ -104,8 +98,6 @@ int tfsLookup(char *path) {
 
   sprintf(command,"l %s", path);
 
-  servlen = setSockAddrUn(nameserver, &serv_addr);
-
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
@@ -131,8 +123,6 @@ int tfsPrint(char *path) {
   char command[MAX_INPUT_SIZE];
 
   sprintf(command,"p %s", path);
-
-  servlen = setSockAddrUn(nameserver, &serv_addr);
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
