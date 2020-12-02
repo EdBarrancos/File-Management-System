@@ -157,9 +157,16 @@ int tfsPrint(char *path) {
 int tfsMount(char * sockPath) {
 
   if ((sockfd = socket(AF_UNIX, SOCK_DGRAM, 0) ) < 0) {
-    perror("client: can't open socket");
-    return -1;
+      perror("client: can't open socket");
+      return -1;
   }
+
+  servlen = setSockAddrUn (sockPath, &serv_addr);
+
+  if (bind(sockfd, (struct sockaddr *) &serv_addr, servlen) >= 0) {
+    perror("client: can't find socket");
+    return -1;
+  } 
 
   unlink(nameclient);
   clilen = setSockAddrUn (nameclient, &client_addr);
