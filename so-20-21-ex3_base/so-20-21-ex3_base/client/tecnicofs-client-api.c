@@ -20,8 +20,6 @@ int tfsCreate(char *path, char nodeType) {
 
   sprintf(command,"c %s %c", path, nodeType);
 
-  servlen = setSockAddrUn(nameserver, &serv_addr);
-
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
@@ -47,8 +45,6 @@ int tfsDelete(char *path) {
   char command[MAX_INPUT_SIZE];
 
   sprintf(command,"d %s", path);
-
-  servlen = setSockAddrUn(nameserver, &serv_addr);
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
@@ -76,8 +72,6 @@ int tfsMove(char *from, char *to) {
 
   sprintf(command,"m %s %s", from, to);
 
-  servlen = setSockAddrUn(nameserver, &serv_addr);
-
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
@@ -103,8 +97,6 @@ int tfsLookup(char *path) {
   char command[MAX_INPUT_SIZE];
 
   sprintf(command,"l %s", path);
-
-  servlen = setSockAddrUn(nameserver, &serv_addr);
 
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
@@ -132,8 +124,6 @@ int tfsPrint(char *path) {
 
   sprintf(command,"p %s", path);
 
-  servlen = setSockAddrUn(nameserver, &serv_addr);
-
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
@@ -157,9 +147,16 @@ int tfsPrint(char *path) {
 int tfsMount(char * sockPath) {
 
   if ((sockfd = socket(AF_UNIX, SOCK_DGRAM, 0) ) < 0) {
-    perror("client: can't open socket");
-    return -1;
+      perror("client: can't open socket");
+      return -1;
   }
+
+  servlen = setSockAddrUn (sockPath, &serv_addr);
+
+  if (bind(sockfd, (struct sockaddr *) &serv_addr, servlen) >= 0) {
+    perror("client: can't find socket");
+    return -1;
+  } 
 
   unlink(nameclient);
   clilen = setSockAddrUn (nameclient, &client_addr);
