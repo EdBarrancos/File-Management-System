@@ -106,102 +106,75 @@ void applyCommands(list* List){
                         case 'f':
                             startingModifyingCommand();
 
-                            if(!create(name, T_FILE, List)){
-                                c = sprintf(out_buffer, "%s", commandSuccess);
-                            }
-                            else{
-                                c = sprintf(out_buffer, "%s", commandFail);
-                            }
+                            searchResult = create(name, T_FILE, List);
 
                             finishingModifyingCommand();
 
                             List = freeItemsList(List, unlockItem);            
-                            sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                            sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         case 'd':
                             startingModifyingCommand();
 
-                            if(!create(name, T_DIRECTORY, List)){
-                                c = sprintf(out_buffer, "%s", commandSuccess);
-                            }
-                            else{
-                                c = sprintf(out_buffer, "%s", commandFail);
-                            }
+                            searchResult = create(name, T_DIRECTORY, List);
 
                             finishingModifyingCommand();
 
                             List = freeItemsList(List, unlockItem);
-                            sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                            sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         default:
-                            c = sprintf(out_buffer, "%s", commandFail);
-                            sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                            sendto(sockfd, FAIL, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                             errorParse("Error: invalid node type\n");
                     }
                     break;
                 case 'l':
                     searchResult = lookup(name, List, 0);
-                    if(searchResult>=0){
-                        c = sprintf(out_buffer, "%s", commandSuccess);
-                    }
-                    else{
-                        c = sprintf(out_buffer, "%s", commandFail);
-                    }
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
                 case 'd':
 
                     startingModifyingCommand();
 
-                    if(!delete(name, List)){
-                        c = sprintf(out_buffer, "%s", commandSuccess);
-                    }
-                    else{
-                        c = sprintf(out_buffer, "%s", commandFail);
-                    }
+                    searchResult = delete(name, List);
 
                     finishingModifyingCommand();
 
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
 
                 case 'm':
 
                     startingModifyingCommand();
 
-                    if(!move(name, typeAndName, List)){
-                        c = sprintf(out_buffer, "%s", commandSuccess);
-                    }
-                    else{
-                        c = sprintf(out_buffer, "%s", commandFail);
-                    }
+                    searchResult = move(name, typeAndName, List);
+
                     finishingModifyingCommand();
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     break;
 
                 case 'p':
                     startQuiescenteCommand();
 
                     FILE *output = openFile(name, "w");
-                    c = sprintf(out_buffer, "%s", commandSuccess);
+                    searchResult = SUCCESS;
                     if(output == NULL)
-                        c = sprintf(out_buffer, "%s", commandFail);
+                        searchResult = FAIL;
                     else{
                         print_tecnicofs_tree(output);
                         if(closeFile(output) == NULL)
-                            c = sprintf(out_buffer, "%s", commandFail);
+                            searchResult = FAIL
                     }
 
-                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, searchResult, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     finishingQuiescenteCommand();
                     break;
                     
                 default: { /* error */
-                    c = sprintf(out_buffer, "%s", commandFail);
-                    sendto(sockfd, out_buffer, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
+                    sendto(sockfd, FAIL, c+1, 0, (struct sockaddr *)&client_addr, addrlen);
                     errorParse("Error: command to apply\n");
                 }
             }
