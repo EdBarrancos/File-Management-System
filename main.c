@@ -90,13 +90,17 @@ void applyCommands(list* List){
                 continue;
             //Preventivo, caso o cliente nao tenha terminado a mensagem em '\0', 
             in_buffer[c]='\0';
-            
-            printf("Recebeu mensagem de %s\n", client_addr.sun_path);
 
             int numTokens = sscanf(in_buffer, "%c %s %s", &token, name, typeAndName);
             //free(command);
             if (numTokens < 2)
                 errorParse("Error: invalid command in Queue\n");
+
+            if (token == 't'){
+                continue;
+            }
+            
+            printf("Recebeu mensagem de %s\n", client_addr.sun_path);
 
             int searchResult;
 

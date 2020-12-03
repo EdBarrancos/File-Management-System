@@ -128,8 +128,13 @@ int tfsMount(char * sockPath) {
 
   servlen = setSockAddrUn (sockPath, &serv_addr);
 
-  if (bind(sockfd, (struct sockaddr *) &serv_addr, servlen) >= 0) {
-    perror("client: can't find socket");
+  if (bind(sockfd, (struct sockaddr *) &serv_addr, servlen) != -1) {
+    perror("client: socket does not exist");
+    return -1;
+  }
+
+  if (sendto(sockfd, "t", strlen("t")+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
+    perror("client: sendto error");
     return -1;
   } 
 
