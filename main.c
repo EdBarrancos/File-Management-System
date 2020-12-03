@@ -92,13 +92,13 @@ void applyCommands(list* List){
             in_buffer[c]='\0';
 
             int numTokens = sscanf(in_buffer, "%c %s %s", &token, name, typeAndName);
-            //free(command);
-            if (numTokens < 2)
-                errorParse("Error: invalid command in Queue\n");
 
             if (token == 't'){
                 continue;
             }
+            //free(command);
+            if (numTokens < 2)
+                errorParse("Error: invalid command in Queue\n");
             
             printf("Recebeu mensagem de %s\n", client_addr.sun_path);
 
