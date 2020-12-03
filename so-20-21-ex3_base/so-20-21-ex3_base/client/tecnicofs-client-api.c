@@ -24,7 +24,7 @@ int tfsCreate(char *path, char nodeType) {
   if (sendto(sockfd, command, strlen(command)+1, 0, (struct sockaddr *) &serv_addr, servlen) < 0) {
     perror("client: sendto error");
     return -1;
-  } 
+  }
 
   if (recvfrom(sockfd, (void*) &receive, sizeof(&receive), 0, 0, 0) < 0) {
     perror("client: recvfrom error");

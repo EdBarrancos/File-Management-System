@@ -37,9 +37,6 @@ int quiescenteThreads = 0;
 pthread_cond_t waitQuiescente = PTHREAD_COND_INITIALIZER;
 pthread_cond_t waitModifying = PTHREAD_COND_INITIALIZER;
 
-char commandSuccess[10]="SUCCESS";
-char commandFail[10]="FAIL";
-
 void startingModifyingCommand(){
     lockMutex();
     while(quiescenteThreads != 0)
@@ -51,7 +48,7 @@ void startingModifyingCommand(){
 void finishingModifyingCommand(){
     lockMutex();
     modifyingThreads--;
-    signal(&waitQuiescente);
+    broadcast(&waitQuiescente);
     unlockMutex();
 }
 
@@ -102,7 +99,7 @@ void applyCommands(list* List){
             
             printf("Recebeu mensagem de %s\n", client_addr.sun_path);
 
-            int searchResult;
+            int searchResult = FAIL;
 
             switch (token) {
                 case 'c':
@@ -114,7 +111,7 @@ void applyCommands(list* List){
 
                             finishingModifyingCommand();
 
-                            List = freeItemsList(List, unlockItem);            
+                            List = freeItemsList(List, unlockItem);           
                             sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);
                             break;
                         case 'd':
@@ -125,18 +122,18 @@ void applyCommands(list* List){
                             finishingModifyingCommand();
 
                             List = freeItemsList(List, unlockItem);
-                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
+                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                        
                             break;
                         default:
                             searchResult = FAIL;
-                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
+                            sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            
                             errorParse("Error: invalid node type\n");
                     }
                     break;
                 case 'l':
                     searchResult = lookup(name, List, 0);
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            
                     break;
                 case 'd':
 
@@ -147,7 +144,7 @@ void applyCommands(list* List){
                     finishingModifyingCommand();
 
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                           
                     break;
 
                 case 'm':
@@ -158,14 +155,16 @@ void applyCommands(list* List){
 
                     finishingModifyingCommand();
                     List = freeItemsList(List, unlockItem);
-                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                         
                     break;
 
                 case 'p':
                     startQuiescenteCommand();
 
                     FILE *output = openFile(name, "w");
+
                     searchResult = SUCCESS;
+
                     if(output == NULL)
                         searchResult = FAIL;
                     else{
@@ -174,14 +173,15 @@ void applyCommands(list* List){
                             searchResult = FAIL;
                     }
 
-                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
                     finishingQuiescenteCommand();
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            
                     break;
                     
                 default: { /* error */
                     searchResult = FAIL;
-                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                            break;
+                    sendto(sockfd, (void*)&searchResult, sizeof(&searchResult), 0, (struct sockaddr *)&client_addr, addrlen);                           
                     errorParse("Error: command to apply\n");
+                    break;
                 }
             }
     }
